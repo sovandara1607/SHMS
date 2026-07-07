@@ -1,0 +1,110 @@
+- generic [ref=f95e2]:
+  - complementary [ref=f95e3]:
+    - generic [ref=f95e4]:
+      - img [ref=f95e6]
+      - generic [ref=f95e8]:
+        - generic [ref=f95e9]: Smart Hospital
+        - generic [ref=f95e10]: Management System
+    - navigation [ref=f95e11]:
+      - generic [ref=f95e12]:
+        - paragraph [ref=f95e13]: Overview
+        - link "Dashboard" [ref=f95e14] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=f95e15]
+          - text: Dashboard
+      - generic [ref=f95e17]:
+        - paragraph [ref=f95e18]: Patient Care
+        - link "Patients" [ref=f95e19] [cursor=pointer]:
+          - /url: /patients
+          - img [ref=f95e20]
+          - text: Patients
+        - link "Appointments" [ref=f95e22] [cursor=pointer]:
+          - /url: /appointments
+          - img [ref=f95e23]
+          - text: Appointments
+        - link "Medical Records" [ref=f95e25] [cursor=pointer]:
+          - /url: /medical-records
+          - img [ref=f95e26]
+          - text: Medical Records
+        - link "Treatments" [ref=f95e28] [cursor=pointer]:
+          - /url: /treatments
+          - img [ref=f95e29]
+          - text: Treatments
+      - generic [ref=f95e31]:
+        - paragraph [ref=f95e32]: Hospital
+        - link "Staff" [ref=f95e33] [cursor=pointer]:
+          - /url: /staff
+          - img [ref=f95e34]
+          - text: Staff
+        - link "Departments" [ref=f95e36] [cursor=pointer]:
+          - /url: /departments
+          - img [ref=f95e37]
+          - text: Departments
+        - link "Rooms & Beds" [ref=f95e39] [cursor=pointer]:
+          - /url: /rooms
+          - img [ref=f95e40]
+          - text: Rooms & Beds
+      - generic [ref=f95e42]:
+        - paragraph [ref=f95e43]: Services
+        - link "Pharmacy" [ref=f95e44] [cursor=pointer]:
+          - /url: /medicines
+          - img [ref=f95e45]
+          - text: Pharmacy
+        - link "Laboratory" [ref=f95e47] [cursor=pointer]:
+          - /url: /lab-orders
+          - img [ref=f95e48]
+          - text: Laboratory
+        - link "Billing & Payments" [ref=f95e50] [cursor=pointer]:
+          - /url: /bills
+          - img [ref=f95e51]
+          - text: Billing & Payments
+    - generic [ref=f95e53]:
+      - link "Profile" [ref=f95e54] [cursor=pointer]:
+        - /url: /profile
+        - img [ref=f95e55]
+        - text: Profile
+      - link "Settings" [ref=f95e57] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=f95e58]
+        - text: Settings
+      - button "Logout" [ref=f95e61]:
+        - img [ref=f95e62]
+        - text: Logout
+  - generic [ref=f95e64]:
+    - banner [ref=f95e65]:
+      - generic [ref=f95e66]:
+        - img
+        - searchbox "Search..." [ref=f95e67]
+      - button "S Super Admin superadmin@hospital.test" [ref=f95e69]:
+        - generic [ref=f95e70]: S
+        - generic [ref=f95e71]:
+          - generic [ref=f95e72]: Super Admin
+          - generic [ref=f95e73]: superadmin@hospital.test
+        - img [ref=f95e74]
+    - main [ref=f95e76]:
+      - heading "Dashboard" [level=2] [ref=f95e77]
+      - generic [ref=f95e78]:
+        - generic [ref=f95e79]:
+          - generic [ref=f95e80]: "2"
+          - generic [ref=f95e81]: Active patients
+        - generic [ref=f95e82]:
+          - generic [ref=f95e83]: "1"
+          - generic [ref=f95e84]: Upcoming appointments
+        - generic [ref=f95e85]:
+          - generic [ref=f95e86]: "0"
+          - generic [ref=f95e87]: Pending lab orders
+        - generic [ref=f95e88]:
+          - generic [ref=f95e89]: "1"
+          - generic [ref=f95e90]: Low-stock medicines
+        - generic [ref=f95e91]:
+          - generic [ref=f95e92]: "1"
+          - generic [ref=f95e93]: Unpaid bills
+        - generic [ref=f95e94]:
+          - generic [ref=f95e95]: "7"
+          - generic [ref=f95e96]: Active staff
+      - paragraph [ref=f95e98]:
+        - text: Summary cached in
+        - strong [ref=f95e99]: Redis
+        - text: "(60s TTL) via Laravel's Cache. Your role:"
+        - strong [ref=f95e100]: super_admin
+        - text: . Navigation is filtered by Gate permissions.

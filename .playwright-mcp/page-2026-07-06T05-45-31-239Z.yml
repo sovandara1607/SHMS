@@ -1,0 +1,159 @@
+- generic [ref=f170e2]:
+  - complementary [ref=f170e3]:
+    - generic [ref=f170e4]:
+      - img [ref=f170e6]
+      - generic [ref=f170e8]:
+        - generic [ref=f170e9]: Smart Hospital
+        - generic [ref=f170e10]: Management System
+    - navigation [ref=f170e11]:
+      - generic [ref=f170e12]:
+        - paragraph [ref=f170e13]: Overview
+        - link "Dashboard" [ref=f170e14] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=f170e15]
+          - text: Dashboard
+      - generic [ref=f170e17]:
+        - paragraph [ref=f170e18]: Patient Care
+        - link "Patients" [ref=f170e19] [cursor=pointer]:
+          - /url: /patients
+          - img [ref=f170e20]
+          - text: Patients
+        - link "Appointments" [ref=f170e22] [cursor=pointer]:
+          - /url: /appointments
+          - img [ref=f170e23]
+          - text: Appointments
+        - link "Medical Records" [ref=f170e25] [cursor=pointer]:
+          - /url: /medical-records
+          - img [ref=f170e26]
+          - text: Medical Records
+        - link "Treatments" [ref=f170e28] [cursor=pointer]:
+          - /url: /treatments
+          - img [ref=f170e29]
+          - text: Treatments
+      - generic [ref=f170e31]:
+        - paragraph [ref=f170e32]: Hospital
+        - link "Staff" [ref=f170e33] [cursor=pointer]:
+          - /url: /staff
+          - img [ref=f170e34]
+          - text: Staff
+        - link "Departments" [ref=f170e36] [cursor=pointer]:
+          - /url: /departments
+          - img [ref=f170e37]
+          - text: Departments
+        - link "Rooms & Beds" [ref=f170e39] [cursor=pointer]:
+          - /url: /rooms
+          - img [ref=f170e40]
+          - text: Rooms & Beds
+      - generic [ref=f170e42]:
+        - paragraph [ref=f170e43]: Services
+        - link "Pharmacy" [ref=f170e44] [cursor=pointer]:
+          - /url: /medicines
+          - img [ref=f170e45]
+          - text: Pharmacy
+        - link "Laboratory" [ref=f170e47] [cursor=pointer]:
+          - /url: /lab-orders
+          - img [ref=f170e48]
+          - text: Laboratory
+        - link "Billing & Payments" [ref=f170e50] [cursor=pointer]:
+          - /url: /bills
+          - img [ref=f170e51]
+          - text: Billing & Payments
+      - generic [ref=f170e53]:
+        - paragraph [ref=f170e54]: Administration
+        - link "Roles & Permissions" [ref=f170e55] [cursor=pointer]:
+          - /url: /roles-permissions
+          - img [ref=f170e56]
+          - text: Roles & Permissions
+        - link "Settings" [ref=f170e58] [cursor=pointer]:
+          - /url: /hospital-settings
+          - img [ref=f170e59]
+          - text: Settings
+    - generic [ref=f170e61]:
+      - link "Profile" [ref=f170e62] [cursor=pointer]:
+        - /url: /profile
+        - img [ref=f170e63]
+        - text: Profile
+      - link "Settings" [ref=f170e65] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=f170e66]
+        - text: Settings
+      - button "Logout" [ref=f170e69]:
+        - img [ref=f170e70]
+        - text: Logout
+  - generic [ref=f170e72]:
+    - banner [ref=f170e73]:
+      - generic [ref=f170e74]:
+        - img
+        - searchbox "Search..." [ref=f170e75]
+      - button "S Super Admin superadmin@hospital.test" [ref=f170e77]:
+        - generic [ref=f170e78]: S
+        - generic [ref=f170e79]:
+          - generic [ref=f170e80]: Super Admin
+          - generic [ref=f170e81]: superadmin@hospital.test
+        - img [ref=f170e82]
+    - main [ref=f170e84]:
+      - heading "Settings" [level=1] [ref=f170e87]
+      - generic [ref=f170e88]:
+        - generic [ref=f170e89]:
+          - generic [ref=f170e90]:
+            - paragraph [ref=f170e91]: Hospital Information
+            - generic [ref=f170e92]:
+              - generic [ref=f170e93]:
+                - generic [ref=f170e94]: Hospital Name
+                - textbox [ref=f170e95]: Smart Hospital
+              - generic [ref=f170e96]:
+                - generic [ref=f170e97]:
+                  - generic [ref=f170e98]: Hospital Code / ID
+                  - textbox [ref=f170e99]
+                - generic [ref=f170e100]:
+                  - generic [ref=f170e101]: License Number
+                  - textbox [ref=f170e102]
+              - generic [ref=f170e103]:
+                - generic [ref=f170e104]: Address
+                - textbox [ref=f170e105]
+              - generic [ref=f170e106]:
+                - generic [ref=f170e107]:
+                  - generic [ref=f170e108]: Phone Number
+                  - textbox [ref=f170e109]
+                - generic [ref=f170e110]:
+                  - generic [ref=f170e111]: Email Address
+                  - textbox [ref=f170e112]
+              - generic [ref=f170e113]:
+                - generic [ref=f170e114]:
+                  - generic [ref=f170e115]: Website
+                  - textbox [ref=f170e116]
+                - generic [ref=f170e117]:
+                  - generic [ref=f170e118]: Established Year
+                  - textbox [ref=f170e119]
+          - generic [ref=f170e120]:
+            - generic [ref=f170e121]:
+              - paragraph [ref=f170e122]: Operating Hours
+              - generic [ref=f170e123]:
+                - generic [ref=f170e124]:
+                  - generic [ref=f170e125]: Monday - Friday
+                  - textbox [ref=f170e126]: 06:00 AM - 10:00 PM
+                - generic [ref=f170e127]:
+                  - generic [ref=f170e128]: Saturday
+                  - textbox [ref=f170e129]: 08:00 AM - 08:00 PM
+                - generic [ref=f170e130]:
+                  - generic [ref=f170e131]: Sunday
+                  - textbox [ref=f170e132]: 09:00 AM - 04:00 PM
+                - generic [ref=f170e133]:
+                  - generic [ref=f170e134]: Emergency
+                  - textbox [ref=f170e135]: 24/7
+            - generic [ref=f170e136]:
+              - paragraph [ref=f170e137]: Department Capacity
+              - generic [ref=f170e138]:
+                - generic [ref=f170e139]:
+                  - generic [ref=f170e140]: Total Beds
+                  - spinbutton [ref=f170e141]
+                - generic [ref=f170e142]:
+                  - generic [ref=f170e143]: ICU Beds
+                  - spinbutton [ref=f170e144]
+                - generic [ref=f170e145]:
+                  - generic [ref=f170e146]: Emergency Bays
+                  - spinbutton [ref=f170e147]
+                - generic [ref=f170e148]:
+                  - generic [ref=f170e149]: Operating Rooms
+                  - spinbutton [ref=f170e150]
+        - button "Save Settings" [ref=f170e152]

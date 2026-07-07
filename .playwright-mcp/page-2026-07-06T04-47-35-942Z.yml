@@ -1,0 +1,122 @@
+- generic [ref=f93e2]:
+  - complementary [ref=f93e3]:
+    - generic [ref=f93e4]:
+      - img [ref=f93e6]
+      - generic [ref=f93e8]:
+        - generic [ref=f93e9]: Smart Hospital
+        - generic [ref=f93e10]: Management System
+    - navigation [ref=f93e11]:
+      - generic [ref=f93e12]:
+        - paragraph [ref=f93e13]: Overview
+        - link "Dashboard" [ref=f93e14] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=f93e15]
+          - text: Dashboard
+      - generic [ref=f93e17]:
+        - paragraph [ref=f93e18]: Patient Care
+        - link "Patients" [ref=f93e19] [cursor=pointer]:
+          - /url: /patients
+          - img [ref=f93e20]
+          - text: Patients
+        - link "Appointments" [ref=f93e22] [cursor=pointer]:
+          - /url: /appointments
+          - img [ref=f93e23]
+          - text: Appointments
+        - link "Medical Records" [ref=f93e25] [cursor=pointer]:
+          - /url: /medical-records
+          - img [ref=f93e26]
+          - text: Medical Records
+        - link "Treatments" [ref=f93e28] [cursor=pointer]:
+          - /url: /treatments
+          - img [ref=f93e29]
+          - text: Treatments
+      - generic [ref=f93e31]:
+        - paragraph [ref=f93e32]: Hospital
+        - link "Staff" [ref=f93e33] [cursor=pointer]:
+          - /url: /staff
+          - img [ref=f93e34]
+          - text: Staff
+        - link "Departments" [ref=f93e36] [cursor=pointer]:
+          - /url: /departments
+          - img [ref=f93e37]
+          - text: Departments
+        - link "Rooms & Beds" [ref=f93e39] [cursor=pointer]:
+          - /url: /rooms
+          - img [ref=f93e40]
+          - text: Rooms & Beds
+      - generic [ref=f93e42]:
+        - paragraph [ref=f93e43]: Services
+        - link "Pharmacy" [ref=f93e44] [cursor=pointer]:
+          - /url: /medicines
+          - img [ref=f93e45]
+          - text: Pharmacy
+        - link "Laboratory" [ref=f93e47] [cursor=pointer]:
+          - /url: /lab-orders
+          - img [ref=f93e48]
+          - text: Laboratory
+        - link "Billing & Payments" [ref=f93e50] [cursor=pointer]:
+          - /url: /bills
+          - img [ref=f93e51]
+          - text: Billing & Payments
+    - generic [ref=f93e53]:
+      - link "Profile" [ref=f93e54] [cursor=pointer]:
+        - /url: /profile
+        - img [ref=f93e55]
+        - text: Profile
+      - link "Settings" [ref=f93e57] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=f93e58]
+        - text: Settings
+      - button "Logout" [ref=f93e61]:
+        - img [ref=f93e62]
+        - text: Logout
+  - generic [ref=f93e64]:
+    - banner [ref=f93e65]:
+      - generic [ref=f93e66]:
+        - img
+        - searchbox "Search..." [ref=f93e67]
+      - button "S Super Admin superadmin@hospital.test" [ref=f93e69]:
+        - generic [ref=f93e70]: S
+        - generic [ref=f93e71]:
+          - generic [ref=f93e72]: Super Admin
+          - generic [ref=f93e73]: superadmin@hospital.test
+        - img [ref=f93e74]
+    - main [ref=f93e76]:
+      - generic [ref=f93e77]:
+        - generic [ref=f93e78]:
+          - generic [ref=f93e79]:
+            - heading "Medical Records" [level=1] [ref=f93e80]
+            - paragraph [ref=f93e81]: 1 records total
+          - button "Add Medical Record" [ref=f93e83]:
+            - img [ref=f93e84]
+            - text: Add Medical Record
+        - generic [ref=f93e86]:
+          - generic [ref=f93e87]:
+            - img
+            - textbox "Search by medical record ID, patient ID, patient name, or doctor name..." [ref=f93e88]
+          - combobox [ref=f93e89]:
+            - option "All Doctors" [selected]
+            - option "David Heart"
+        - table [ref=f93e91]:
+          - rowgroup [ref=f93e92]:
+            - row "Medical Record ID Patient ID Patient Name Doctor Diagnosis Date Version Actions" [ref=f93e93]:
+              - columnheader "Medical Record ID" [ref=f93e94]
+              - columnheader "Patient ID" [ref=f93e95]
+              - columnheader "Patient Name" [ref=f93e96]
+              - columnheader "Doctor" [ref=f93e97]
+              - columnheader "Diagnosis" [ref=f93e98]
+              - columnheader "Date" [ref=f93e99]
+              - columnheader "Version" [ref=f93e100]
+              - columnheader "Actions" [ref=f93e101]
+          - rowgroup [ref=f93e102]:
+            - row "MR0001 PAT0001 John Doe David Heart Test diag 2026-07-06 11:47:11 v3" [ref=f93e103]:
+              - cell "MR0001" [ref=f93e104]
+              - cell "PAT0001" [ref=f93e105]
+              - cell "John Doe" [ref=f93e106]
+              - cell "David Heart" [ref=f93e107]
+              - cell "Test diag" [ref=f93e108]
+              - cell "2026-07-06 11:47:11" [ref=f93e109]
+              - cell "v3" [ref=f93e110]
+              - cell [ref=f93e111]:
+                - button [ref=f93e113]:
+                  - img [ref=f93e114]

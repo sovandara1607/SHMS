@@ -1,0 +1,145 @@
+- generic [ref=f111e2]:
+  - complementary [ref=f111e3]:
+    - generic [ref=f111e4]:
+      - img [ref=f111e6]
+      - generic [ref=f111e8]:
+        - generic [ref=f111e9]: Smart Hospital
+        - generic [ref=f111e10]: Management System
+    - navigation [ref=f111e11]:
+      - generic [ref=f111e12]:
+        - paragraph [ref=f111e13]: Overview
+        - link "Dashboard" [ref=f111e14] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=f111e15]
+          - text: Dashboard
+      - generic [ref=f111e17]:
+        - paragraph [ref=f111e18]: Patient Care
+        - link "Patients" [ref=f111e19] [cursor=pointer]:
+          - /url: /patients
+          - img [ref=f111e20]
+          - text: Patients
+        - link "Appointments" [ref=f111e22] [cursor=pointer]:
+          - /url: /appointments
+          - img [ref=f111e23]
+          - text: Appointments
+        - link "Medical Records" [ref=f111e25] [cursor=pointer]:
+          - /url: /medical-records
+          - img [ref=f111e26]
+          - text: Medical Records
+        - link "Treatments" [ref=f111e28] [cursor=pointer]:
+          - /url: /treatments
+          - img [ref=f111e29]
+          - text: Treatments
+      - generic [ref=f111e31]:
+        - paragraph [ref=f111e32]: Hospital
+        - link "Staff" [ref=f111e33] [cursor=pointer]:
+          - /url: /staff
+          - img [ref=f111e34]
+          - text: Staff
+        - link "Departments" [ref=f111e36] [cursor=pointer]:
+          - /url: /departments
+          - img [ref=f111e37]
+          - text: Departments
+        - link "Rooms & Beds" [ref=f111e39] [cursor=pointer]:
+          - /url: /rooms
+          - img [ref=f111e40]
+          - text: Rooms & Beds
+      - generic [ref=f111e42]:
+        - paragraph [ref=f111e43]: Services
+        - link "Pharmacy" [ref=f111e44] [cursor=pointer]:
+          - /url: /medicines
+          - img [ref=f111e45]
+          - text: Pharmacy
+        - link "Laboratory" [ref=f111e47] [cursor=pointer]:
+          - /url: /lab-orders
+          - img [ref=f111e48]
+          - text: Laboratory
+        - link "Billing & Payments" [ref=f111e50] [cursor=pointer]:
+          - /url: /bills
+          - img [ref=f111e51]
+          - text: Billing & Payments
+    - generic [ref=f111e53]:
+      - link "Profile" [ref=f111e54] [cursor=pointer]:
+        - /url: /profile
+        - img [ref=f111e55]
+        - text: Profile
+      - link "Settings" [ref=f111e57] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=f111e58]
+        - text: Settings
+      - button "Logout" [ref=f111e61]:
+        - img [ref=f111e62]
+        - text: Logout
+  - generic [ref=f111e64]:
+    - banner [ref=f111e65]:
+      - generic [ref=f111e66]:
+        - img
+        - searchbox "Search..." [ref=f111e67]
+      - button "S Super Admin superadmin@hospital.test" [ref=f111e69]:
+        - generic [ref=f111e70]: S
+        - generic [ref=f111e71]:
+          - generic [ref=f111e72]: Super Admin
+          - generic [ref=f111e73]: superadmin@hospital.test
+        - img [ref=f111e74]
+    - main [ref=f111e76]:
+      - generic [ref=f111e77]:
+        - generic [ref=f111e78]:
+          - heading "Pharmacy &amp; Inventory" [level=1] [ref=f111e80]
+          - button "Add Medicine" [ref=f111e82]:
+            - img [ref=f111e83]
+            - text: Add Medicine
+        - generic [ref=f111e85]:
+          - generic [ref=f111e87]:
+            - generic [ref=f111e88]:
+              - paragraph [ref=f111e89]: Total Medicines
+              - paragraph [ref=f111e90]: "2"
+            - img [ref=f111e92]
+          - generic [ref=f111e95]:
+            - generic [ref=f111e96]:
+              - paragraph [ref=f111e97]: Available Medicines
+              - paragraph [ref=f111e98]: "2"
+            - img [ref=f111e100]
+          - generic [ref=f111e103]:
+            - generic [ref=f111e104]:
+              - paragraph [ref=f111e105]: Low Stock Medicines
+              - paragraph [ref=f111e106]: "1"
+            - img [ref=f111e108]
+          - generic [ref=f111e111]:
+            - generic [ref=f111e112]:
+              - paragraph [ref=f111e113]: Expired Batches
+              - paragraph [ref=f111e114]: "0"
+            - img [ref=f111e116]
+        - generic [ref=f111e118]:
+          - button "Medicine Inventory" [ref=f111e119]
+          - button "Medicine Batches" [ref=f111e120]
+          - button "Prescriptions" [ref=f111e121]
+          - button "Dispensing Records" [ref=f111e122]
+        - table [ref=f111e125]:
+          - rowgroup [ref=f111e126]:
+            - row "Medicine ID Name Type Manufacturer Unit Price Stock Status" [ref=f111e127]:
+              - columnheader "Medicine ID" [ref=f111e128]
+              - columnheader "Name" [ref=f111e129]
+              - columnheader "Type" [ref=f111e130]
+              - columnheader "Manufacturer" [ref=f111e131]
+              - columnheader "Unit Price" [ref=f111e132]
+              - columnheader "Stock" [ref=f111e133]
+              - columnheader "Status" [ref=f111e134]
+          - rowgroup [ref=f111e135]:
+            - row "MED0002 Amoxicillin 250mg Capsule Beta Labs $0.25 15 Available" [ref=f111e136]:
+              - cell "MED0002" [ref=f111e137]
+              - cell "Amoxicillin 250mg" [ref=f111e138]
+              - cell "Capsule" [ref=f111e139]
+              - cell "Beta Labs" [ref=f111e140]
+              - cell "$0.25" [ref=f111e141]
+              - cell "15" [ref=f111e142]
+              - cell "Available" [ref=f111e143]:
+                - generic [ref=f111e144]: Available
+            - row "MED0001 Paracetamol 500mg Tablet Acme Pharma $0.10 500 Available" [ref=f111e145]:
+              - cell "MED0001" [ref=f111e146]
+              - cell "Paracetamol 500mg" [ref=f111e147]
+              - cell "Tablet" [ref=f111e148]
+              - cell "Acme Pharma" [ref=f111e149]
+              - cell "$0.10" [ref=f111e150]
+              - cell "500" [ref=f111e151]
+              - cell "Available" [ref=f111e152]:
+                - generic [ref=f111e153]: Available

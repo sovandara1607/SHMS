@@ -1,0 +1,31 @@
+/* Registered first so it's the lowest-priority layer — the legacy
+   stylesheet (public/assets/css/app.css) is wrapped in this same layer name,
+   which keeps it from beating Tailwind utilities via the unlayered-always-wins
+   cascade rule. Drop both once Phase 3 finishes migrating every view. */
+@layer legacy;
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Brand palette sampled from the Figma "Smart Hospital" design. */
+    --color-brand-50: #eff6ff;
+    --color-brand-100: #dbeafe;
+    --color-brand-500: #3b82f6;
+    --color-brand-600: #2563eb;
+    --color-brand-700: #1d4ed8;
+}
+
+@layer utilities {
+    .brand-gradient {
+        background-image: linear-gradient(135deg, #2563eb 0%, #4f46e5 60%, #06b6d4 100%);
+    }
+
+    .hero-gradient {
+        background-image: linear-gradient(90deg, #2563eb 0%, #4f46e5 100%);
+    }
+}

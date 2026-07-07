@@ -1,0 +1,237 @@
+- generic [ref=f72e2]:
+  - complementary [ref=f72e3]:
+    - generic [ref=f72e4]:
+      - img [ref=f72e6]
+      - generic [ref=f72e8]:
+        - generic [ref=f72e9]: Smart Hospital
+        - generic [ref=f72e10]: Management System
+    - navigation [ref=f72e11]:
+      - generic [ref=f72e12]:
+        - paragraph [ref=f72e13]: Overview
+        - link "Dashboard" [ref=f72e14] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=f72e15]
+          - text: Dashboard
+      - generic [ref=f72e17]:
+        - paragraph [ref=f72e18]: Patient Care
+        - link "Patients" [ref=f72e19] [cursor=pointer]:
+          - /url: /patients
+          - img [ref=f72e20]
+          - text: Patients
+        - link "Appointments" [ref=f72e22] [cursor=pointer]:
+          - /url: /appointments
+          - img [ref=f72e23]
+          - text: Appointments
+        - link "Medical Records" [ref=f72e25] [cursor=pointer]:
+          - /url: /medical-records
+          - img [ref=f72e26]
+          - text: Medical Records
+        - link "Treatments" [ref=f72e28] [cursor=pointer]:
+          - /url: /treatments
+          - img [ref=f72e29]
+          - text: Treatments
+      - generic [ref=f72e31]:
+        - paragraph [ref=f72e32]: Hospital
+        - link "Staff" [ref=f72e33] [cursor=pointer]:
+          - /url: /staff
+          - img [ref=f72e34]
+          - text: Staff
+        - link "Departments" [ref=f72e36] [cursor=pointer]:
+          - /url: /departments
+          - img [ref=f72e37]
+          - text: Departments
+        - link "Rooms & Beds" [ref=f72e39] [cursor=pointer]:
+          - /url: /rooms
+          - img [ref=f72e40]
+          - text: Rooms & Beds
+      - generic [ref=f72e42]:
+        - paragraph [ref=f72e43]: Services
+        - link "Pharmacy" [ref=f72e44] [cursor=pointer]:
+          - /url: /medicines
+          - img [ref=f72e45]
+          - text: Pharmacy
+        - link "Laboratory" [ref=f72e47] [cursor=pointer]:
+          - /url: /lab-orders
+          - img [ref=f72e48]
+          - text: Laboratory
+        - link "Billing & Payments" [ref=f72e50] [cursor=pointer]:
+          - /url: /bills
+          - img [ref=f72e51]
+          - text: Billing & Payments
+    - generic [ref=f72e53]:
+      - link "Profile" [ref=f72e54] [cursor=pointer]:
+        - /url: /profile
+        - img [ref=f72e55]
+        - text: Profile
+      - link "Settings" [ref=f72e57] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=f72e58]
+        - text: Settings
+      - button "Logout" [ref=f72e61]:
+        - img [ref=f72e62]
+        - text: Logout
+  - generic [ref=f72e64]:
+    - banner [ref=f72e65]:
+      - generic [ref=f72e66]:
+        - img
+        - searchbox "Search..." [ref=f72e67]
+      - button "S Super Admin superadmin@hospital.test" [ref=f72e69]:
+        - generic [ref=f72e70]: S
+        - generic [ref=f72e71]:
+          - generic [ref=f72e72]: Super Admin
+          - generic [ref=f72e73]: superadmin@hospital.test
+        - img [ref=f72e74]
+    - main [ref=f72e76]:
+      - generic [ref=f72e77]: Doctor assigned.
+      - generic [ref=f72e78]:
+        - generic [ref=f72e79]:
+          - generic [ref=f72e80]:
+            - heading "Patient Management" [level=1] [ref=f72e81]
+            - paragraph [ref=f72e82]: 3 total patients registered
+          - generic [ref=f72e83]:
+            - button "Export" [ref=f72e84]:
+              - img [ref=f72e85]
+              - text: Export
+            - button "Add Patient" [ref=f72e87]:
+              - img [ref=f72e88]
+              - text: Add Patient
+        - generic [ref=f72e90]:
+          - generic [ref=f72e91]:
+            - img
+            - textbox "Search by name or patient ID..." [ref=f72e92]
+          - generic [ref=f72e93]:
+            - link "All" [ref=f72e94] [cursor=pointer]:
+              - /url: /patients?status=all&q=
+            - link "Active" [ref=f72e95] [cursor=pointer]:
+              - /url: /patients?status=active&q=
+            - link "Admitted" [ref=f72e96] [cursor=pointer]:
+              - /url: /patients?status=admitted&q=
+            - link "ICU" [ref=f72e97] [cursor=pointer]:
+              - /url: /patients?status=icu&q=
+            - link "Discharged" [ref=f72e98] [cursor=pointer]:
+              - /url: /patients?status=discharged&q=
+            - link "Inactive" [ref=f72e99] [cursor=pointer]:
+              - /url: /patients?status=inactive&q=
+        - table [ref=f72e101]:
+          - rowgroup [ref=f72e102]:
+            - row "Patient ID Patient Name Gender Date of Birth / Age Phone Blood Status Actions" [ref=f72e103]:
+              - columnheader "Patient ID" [ref=f72e104]
+              - columnheader "Patient Name" [ref=f72e105]
+              - columnheader "Gender" [ref=f72e106]
+              - columnheader "Date of Birth / Age" [ref=f72e107]
+              - columnheader "Phone" [ref=f72e108]
+              - columnheader "Blood" [ref=f72e109]
+              - columnheader "Status" [ref=f72e110]
+              - columnheader "Actions" [ref=f72e111]
+          - rowgroup [ref=f72e112]:
+            - row "PAT0003 TP Test Patient — — — — Active" [ref=f72e113]:
+              - cell "PAT0003" [ref=f72e114]
+              - cell "TP Test Patient" [ref=f72e115]:
+                - generic [ref=f72e116]:
+                  - generic [ref=f72e117]: TP
+                  - generic [ref=f72e119]: Test Patient
+              - cell "—" [ref=f72e120]
+              - cell "—" [ref=f72e121]
+              - cell "—" [ref=f72e122]
+              - cell "—" [ref=f72e123]
+              - cell "Active" [ref=f72e124]:
+                - generic [ref=f72e125]: Active
+              - cell [ref=f72e126]:
+                - generic [ref=f72e127]:
+                  - button [ref=f72e128]:
+                    - img [ref=f72e129]
+                  - button [ref=f72e131]:
+                    - img [ref=f72e132]
+            - row "PAT0001 JD John Doe john@example.test Male 1988-04-12 (38 yrs) 0123456789 O+ Active" [ref=f72e134]:
+              - cell "PAT0001" [ref=f72e135]
+              - cell "JD John Doe john@example.test" [ref=f72e136]:
+                - generic [ref=f72e137]:
+                  - generic [ref=f72e138]: JD
+                  - generic [ref=f72e139]:
+                    - generic [ref=f72e140]: John Doe
+                    - generic [ref=f72e141]: john@example.test
+              - cell "Male" [ref=f72e142]
+              - cell "1988-04-12 (38 yrs)" [ref=f72e143]
+              - cell "0123456789" [ref=f72e144]
+              - cell "O+" [ref=f72e145]
+              - cell "Active" [ref=f72e146]:
+                - generic [ref=f72e147]: Active
+              - cell [ref=f72e148]:
+                - generic [ref=f72e149]:
+                  - button [ref=f72e150]:
+                    - img [ref=f72e151]
+                  - button [ref=f72e153]:
+                    - img [ref=f72e154]
+            - row "PAT0002 MS Mary Smith mary@example.test Female 1995-09-30 (30 yrs) 0987654321 A- Active" [ref=f72e156]:
+              - cell "PAT0002" [ref=f72e157]
+              - cell "MS Mary Smith mary@example.test" [ref=f72e158]:
+                - generic [ref=f72e159]:
+                  - generic [ref=f72e160]: MS
+                  - generic [ref=f72e161]:
+                    - generic [ref=f72e162]: Mary Smith
+                    - generic [ref=f72e163]: mary@example.test
+              - cell "Female" [ref=f72e164]
+              - cell "1995-09-30 (30 yrs)" [ref=f72e165]
+              - cell "0987654321" [ref=f72e166]
+              - cell "A-" [ref=f72e167]
+              - cell "Active" [ref=f72e168]:
+                - generic [ref=f72e169]: Active
+              - cell [ref=f72e170]:
+                - generic [ref=f72e171]:
+                  - button [ref=f72e172]:
+                    - img [ref=f72e173]
+                  - button [ref=f72e175]:
+                    - img [ref=f72e176]
+        - dialog [ref=f72e178]:
+          - generic [ref=f72e183]:
+            - generic [ref=f72e184]:
+              - generic [ref=f72e185]:
+                - generic [ref=f72e186]: JD
+                - generic [ref=f72e187]:
+                  - generic [ref=f72e188]:
+                    - generic [ref=f72e189]: John Doe
+                    - generic [ref=f72e190]: Active
+                  - paragraph [ref=f72e191]: PAT0001 · 38 yrs · Male · O+
+              - generic [ref=f72e192]:
+                - button "Edit Patient" [ref=f72e193]
+                - button [ref=f72e194]:
+                  - img [ref=f72e195]
+            - generic [ref=f72e197]:
+              - button "Basic Information" [ref=f72e198]
+              - button "Appointments" [ref=f72e199]
+              - button "Doctor Assignments" [active] [ref=f72e200]
+              - button "Nurse Assignments" [ref=f72e201]
+              - button "Room Assignments" [ref=f72e202]
+              - button "Medical Records" [ref=f72e203]
+              - button "Billing History" [ref=f72e204]
+            - generic [ref=f72e206]:
+              - generic [ref=f72e207]:
+                - paragraph [ref=f72e208]: Personal Information
+                - generic [ref=f72e209]:
+                  - term [ref=f72e210]: Full Name
+                  - definition [ref=f72e211]: John Doe
+                  - term [ref=f72e212]: Gender
+                  - definition [ref=f72e213]: Male
+                  - term [ref=f72e214]: Date of Birth
+                  - definition [ref=f72e215]: 1988-04-12 (38 yrs)
+                  - term [ref=f72e216]: Phone
+                  - definition [ref=f72e217]: "0123456789"
+                  - term [ref=f72e218]: Email
+                  - definition [ref=f72e219]: john@example.test
+                  - term [ref=f72e220]: Address
+                  - definition [ref=f72e221]: —
+              - generic [ref=f72e222]:
+                - paragraph [ref=f72e223]: Medical Information
+                - generic [ref=f72e224]:
+                  - term [ref=f72e225]: Blood Type
+                  - definition [ref=f72e226]: O+
+                  - term [ref=f72e227]: Allergies
+                  - definition [ref=f72e228]: —
+              - generic [ref=f72e229]:
+                - paragraph [ref=f72e230]: Emergency Contact
+                - generic [ref=f72e231]:
+                  - term [ref=f72e232]: Contact Name
+                  - definition [ref=f72e233]: —
+                  - term [ref=f72e234]: Contact Phone
+                  - definition [ref=f72e235]: —
+              - button "Discharge Patient" [ref=f72e237]

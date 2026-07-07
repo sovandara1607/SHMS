@@ -1,0 +1,192 @@
+- generic [ref=f165e3]:
+  - generic [ref=f165e4]:
+    - generic [ref=f165e5]:
+      - paragraph [ref=f165e6]: Permissions — Doctor
+      - paragraph [ref=f165e7]: 20 permissions granted
+    - generic [ref=f165e8]:
+      - button "Select All" [ref=f165e9]
+      - button "Clear" [ref=f165e10]
+      - button "Save Changes" [ref=f165e11]
+  - generic [ref=f165e12]:
+    - generic [ref=f165e13]:
+      - paragraph [ref=f165e14]: Patient Management
+      - generic [ref=f165e15]:
+        - generic [ref=f165e16]:
+          - checkbox "View Patients" [checked] [ref=f165e17]
+          - text: View Patients
+        - generic [ref=f165e18]:
+          - checkbox "Add Patients" [ref=f165e19]
+          - text: Add Patients
+        - generic [ref=f165e20]:
+          - checkbox "Edit Patients" [ref=f165e21]
+          - text: Edit Patients
+        - generic [ref=f165e22]:
+          - checkbox "Discharge Patients" [ref=f165e23]
+          - text: Discharge Patients
+    - generic [ref=f165e24]:
+      - paragraph [ref=f165e25]: Appointments
+      - generic [ref=f165e26]:
+        - generic [ref=f165e27]:
+          - checkbox "View Appointments" [checked] [ref=f165e28]
+          - text: View Appointments
+        - generic [ref=f165e29]:
+          - checkbox "Book Appointments" [ref=f165e30]
+          - text: Book Appointments
+        - generic [ref=f165e31]:
+          - checkbox "Manage Appointments" [ref=f165e32]
+          - text: Manage Appointments
+        - generic [ref=f165e33]:
+          - checkbox "Cancel Appointments" [ref=f165e34]
+          - text: Cancel Appointments
+    - generic [ref=f165e35]:
+      - paragraph [ref=f165e36]: Medical Records & Treatment
+      - generic [ref=f165e37]:
+        - generic [ref=f165e38]:
+          - checkbox "View Medical Records" [checked] [ref=f165e39]
+          - text: View Medical Records
+        - generic [ref=f165e40]:
+          - checkbox "Create Medical Records" [checked] [ref=f165e41]
+          - text: Create Medical Records
+        - generic [ref=f165e42]:
+          - checkbox "Adjust Medical Records" [checked] [ref=f165e43]
+          - text: Adjust Medical Records
+        - generic [ref=f165e44]:
+          - checkbox "View Treatments" [checked] [ref=f165e45]
+          - text: View Treatments
+        - generic [ref=f165e46]:
+          - checkbox "Create Treatments" [checked] [ref=f165e47]
+          - text: Create Treatments
+        - generic [ref=f165e48]:
+          - checkbox "View Prescriptions" [checked] [ref=f165e49]
+          - text: View Prescriptions
+        - generic [ref=f165e50]:
+          - checkbox "Create Prescriptions" [checked] [ref=f165e51]
+          - text: Create Prescriptions
+        - generic [ref=f165e52]:
+          - checkbox "View Procedures" [checked] [ref=f165e53]
+          - text: View Procedures
+        - generic [ref=f165e54]:
+          - checkbox "Create Procedures" [checked] [ref=f165e55]
+          - text: Create Procedures
+        - generic [ref=f165e56]:
+          - checkbox "View Medical Reports" [checked] [ref=f165e57]
+          - text: View Medical Reports
+        - generic [ref=f165e58]:
+          - checkbox "Generate Medical Reports" [checked] [ref=f165e59]
+          - text: Generate Medical Reports
+        - generic [ref=f165e60]:
+          - checkbox "View Vital Signs" [checked] [ref=f165e61]
+          - text: View Vital Signs
+        - generic [ref=f165e62]:
+          - checkbox "Record Vital Signs" [ref=f165e63]
+          - text: Record Vital Signs
+    - generic [ref=f165e64]:
+      - paragraph [ref=f165e65]: Pharmacy
+      - generic [ref=f165e66]:
+        - generic [ref=f165e67]:
+          - checkbox "View Pharmacy" [ref=f165e68]
+          - text: View Pharmacy
+        - generic [ref=f165e69]:
+          - checkbox "Add Medicines" [ref=f165e70]
+          - text: Add Medicines
+        - generic [ref=f165e71]:
+          - checkbox "Update Medicines" [ref=f165e72]
+          - text: Update Medicines
+        - generic [ref=f165e73]:
+          - checkbox "View Batches" [ref=f165e74]
+          - text: View Batches
+        - generic [ref=f165e75]:
+          - checkbox "Add Batches" [ref=f165e76]
+          - text: Add Batches
+        - generic [ref=f165e77]:
+          - checkbox "Update Batches" [ref=f165e78]
+          - text: Update Batches
+        - generic [ref=f165e79]:
+          - checkbox "View Drug Interactions" [ref=f165e80]
+          - text: View Drug Interactions
+        - generic [ref=f165e81]:
+          - checkbox "Manage Drug Interactions" [ref=f165e82]
+          - text: Manage Drug Interactions
+        - generic [ref=f165e83]:
+          - checkbox "View Drug Substitutions" [ref=f165e84]
+          - text: View Drug Substitutions
+        - generic [ref=f165e85]:
+          - checkbox "Manage Drug Substitutions" [ref=f165e86]
+          - text: Manage Drug Substitutions
+        - generic [ref=f165e87]:
+          - checkbox "View Dispensing Records" [ref=f165e88]
+          - text: View Dispensing Records
+        - generic [ref=f165e89]:
+          - checkbox "Dispense Medicine" [ref=f165e90]
+          - text: Dispense Medicine
+    - generic [ref=f165e91]:
+      - paragraph [ref=f165e92]: Laboratory
+      - generic [ref=f165e93]:
+        - generic [ref=f165e94]:
+          - checkbox "View Lab Orders" [checked] [ref=f165e95]
+          - text: View Lab Orders
+        - generic [ref=f165e96]:
+          - checkbox "Create Lab Orders" [checked] [ref=f165e97]
+          - text: Create Lab Orders
+        - generic [ref=f165e98]:
+          - checkbox "Update Lab Orders" [ref=f165e99]
+          - text: Update Lab Orders
+        - generic [ref=f165e100]:
+          - checkbox "View Lab Results" [checked] [ref=f165e101]
+          - text: View Lab Results
+        - generic [ref=f165e102]:
+          - checkbox "Enter Lab Results" [ref=f165e103]
+          - text: Enter Lab Results
+        - generic [ref=f165e104]:
+          - checkbox "View Lab Equipment" [ref=f165e105]
+          - text: View Lab Equipment
+        - generic [ref=f165e106]:
+          - checkbox "Manage Lab Equipment" [ref=f165e107]
+          - text: Manage Lab Equipment
+        - generic [ref=f165e108]:
+          - checkbox "View Lab Reports" [ref=f165e109]
+          - text: View Lab Reports
+        - generic [ref=f165e110]:
+          - checkbox "Generate Lab Reports" [ref=f165e111]
+          - text: Generate Lab Reports
+    - generic [ref=f165e112]:
+      - paragraph [ref=f165e113]: Billing
+      - generic [ref=f165e114]:
+        - generic [ref=f165e115]:
+          - checkbox "View Billing" [ref=f165e116]
+          - text: View Billing
+        - generic [ref=f165e117]:
+          - checkbox "Create Bills" [ref=f165e118]
+          - text: Create Bills
+        - generic [ref=f165e119]:
+          - checkbox "Manage Billing" [ref=f165e120]
+          - text: Manage Billing
+        - generic [ref=f165e121]:
+          - checkbox "View Payments" [ref=f165e122]
+          - text: View Payments
+        - generic [ref=f165e123]:
+          - checkbox "Process Payment" [ref=f165e124]
+          - text: Process Payment
+    - generic [ref=f165e125]:
+      - paragraph [ref=f165e126]: Rooms & Schedule
+      - generic [ref=f165e127]:
+        - generic [ref=f165e128]:
+          - checkbox "View Rooms & Beds" [ref=f165e129]
+          - text: View Rooms & Beds
+        - generic [ref=f165e130]:
+          - checkbox "Assign Rooms & Beds" [ref=f165e131]
+          - text: Assign Rooms & Beds
+        - generic [ref=f165e132]:
+          - checkbox "View Schedules" [ref=f165e133]
+          - text: View Schedules
+    - generic [ref=f165e134]:
+      - paragraph [ref=f165e135]: Staff & System
+      - generic [ref=f165e136]:
+        - generic [ref=f165e137]:
+          - checkbox "Manage Staff & Departments" [ref=f165e138]
+          - text: Manage Staff & Departments
+        - generic [ref=f165e139]:
+          - checkbox "View Reports" [ref=f165e140]
+          - text: View Reports
+  - paragraph [ref=f165e141]: Changes apply immediately after saving. Users with this role will be affected.
+  - button "Save Changes" [ref=f165e143]

@@ -1,0 +1,128 @@
+- generic [ref=f123e2]:
+  - complementary [ref=f123e3]:
+    - generic [ref=f123e4]:
+      - img [ref=f123e6]
+      - generic [ref=f123e8]:
+        - generic [ref=f123e9]: Smart Hospital
+        - generic [ref=f123e10]: Management System
+    - navigation [ref=f123e11]:
+      - generic [ref=f123e12]:
+        - paragraph [ref=f123e13]: Overview
+        - link "Dashboard" [ref=f123e14] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=f123e15]
+          - text: Dashboard
+      - generic [ref=f123e17]:
+        - paragraph [ref=f123e18]: Patient Care
+        - link "Patients" [ref=f123e19] [cursor=pointer]:
+          - /url: /patients
+          - img [ref=f123e20]
+          - text: Patients
+        - link "Appointments" [ref=f123e22] [cursor=pointer]:
+          - /url: /appointments
+          - img [ref=f123e23]
+          - text: Appointments
+        - link "Medical Records" [ref=f123e25] [cursor=pointer]:
+          - /url: /medical-records
+          - img [ref=f123e26]
+          - text: Medical Records
+        - link "Treatments" [ref=f123e28] [cursor=pointer]:
+          - /url: /treatments
+          - img [ref=f123e29]
+          - text: Treatments
+      - generic [ref=f123e31]:
+        - paragraph [ref=f123e32]: Hospital
+        - link "Staff" [ref=f123e33] [cursor=pointer]:
+          - /url: /staff
+          - img [ref=f123e34]
+          - text: Staff
+        - link "Departments" [ref=f123e36] [cursor=pointer]:
+          - /url: /departments
+          - img [ref=f123e37]
+          - text: Departments
+        - link "Rooms & Beds" [ref=f123e39] [cursor=pointer]:
+          - /url: /rooms
+          - img [ref=f123e40]
+          - text: Rooms & Beds
+      - generic [ref=f123e42]:
+        - paragraph [ref=f123e43]: Services
+        - link "Pharmacy" [ref=f123e44] [cursor=pointer]:
+          - /url: /medicines
+          - img [ref=f123e45]
+          - text: Pharmacy
+        - link "Laboratory" [ref=f123e47] [cursor=pointer]:
+          - /url: /lab-orders
+          - img [ref=f123e48]
+          - text: Laboratory
+        - link "Billing & Payments" [ref=f123e50] [cursor=pointer]:
+          - /url: /bills
+          - img [ref=f123e51]
+          - text: Billing & Payments
+    - generic [ref=f123e53]:
+      - link "Profile" [ref=f123e54] [cursor=pointer]:
+        - /url: /profile
+        - img [ref=f123e55]
+        - text: Profile
+      - link "Settings" [ref=f123e57] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=f123e58]
+        - text: Settings
+      - button "Logout" [ref=f123e61]:
+        - img [ref=f123e62]
+        - text: Logout
+  - generic [ref=f123e64]:
+    - banner [ref=f123e65]:
+      - generic [ref=f123e66]:
+        - img
+        - searchbox "Search..." [ref=f123e67]
+      - button "S Super Admin superadmin@hospital.test" [ref=f123e69]:
+        - generic [ref=f123e70]: S
+        - generic [ref=f123e71]:
+          - generic [ref=f123e72]: Super Admin
+          - generic [ref=f123e73]: superadmin@hospital.test
+        - img [ref=f123e74]
+    - main [ref=f123e76]:
+      - generic [ref=f123e77]:
+        - generic [ref=f123e78]:
+          - heading "Laboratory &amp; Diagnostics" [level=1] [ref=f123e80]
+          - button "Order Lab Test" [ref=f123e82]:
+            - img [ref=f123e83]
+            - text: Order Lab Test
+        - generic [ref=f123e85]:
+          - generic [ref=f123e87]:
+            - generic [ref=f123e88]:
+              - paragraph [ref=f123e89]: Pending Test Orders
+              - paragraph [ref=f123e90]: "0"
+            - img [ref=f123e92]
+          - generic [ref=f123e95]:
+            - generic [ref=f123e96]:
+              - paragraph [ref=f123e97]: In Progress Tests
+              - paragraph [ref=f123e98]: "0"
+            - img [ref=f123e100]
+          - generic [ref=f123e103]:
+            - generic [ref=f123e104]:
+              - paragraph [ref=f123e105]: Completed Tests
+              - paragraph [ref=f123e106]: "0"
+            - img [ref=f123e108]
+          - generic [ref=f123e111]:
+            - generic [ref=f123e112]:
+              - paragraph [ref=f123e113]: Pending Result Entry
+              - paragraph [ref=f123e114]: "0"
+            - img [ref=f123e116]
+        - generic [ref=f123e118]:
+          - button "Lab Test Orders" [ref=f123e119]
+          - button "Test Results" [ref=f123e120]
+          - button "Lab Reports" [ref=f123e121]
+        - table [ref=f123e124]:
+          - rowgroup [ref=f123e125]:
+            - row "Order ID Patient Test Type Ordered By Technician Status Actions" [ref=f123e126]:
+              - columnheader "Order ID" [ref=f123e127]
+              - columnheader "Patient" [ref=f123e128]
+              - columnheader "Test Type" [ref=f123e129]
+              - columnheader "Ordered By" [ref=f123e130]
+              - columnheader "Technician" [ref=f123e131]
+              - columnheader "Status" [ref=f123e132]
+              - columnheader "Actions" [ref=f123e133]
+          - rowgroup [ref=f123e134]:
+            - row "No lab orders." [ref=f123e135]:
+              - cell "No lab orders." [ref=f123e136]
