@@ -1,0 +1,35 @@
+- generic [ref=f20e2]:
+  - generic [ref=f20e4]:
+    - img [ref=f20e6]
+    - heading "Smart Hospital Management" [level=1] [ref=f20e8]
+    - paragraph [ref=f20e9]: A comprehensive system for managing patients, staff, appointments, and hospital operations with ease.
+  - generic [ref=f20e11]:
+    - generic [ref=f20e12]:
+      - img [ref=f20e14]
+      - generic [ref=f20e16]:
+        - generic [ref=f20e17]: Smart Hospital
+        - generic [ref=f20e18]: Management System
+    - heading "Welcome back" [level=2] [ref=f20e19]
+    - paragraph [ref=f20e20]: Choose your role and sign in
+    - generic [ref=f20e21]: Invalid email or password.
+    - generic [ref=f20e22]:
+      - generic [ref=f20e23]:
+        - generic [ref=f20e24]: Email Address
+        - textbox "Email Address" [active] [ref=f20e25]:
+          - /placeholder: you@hospital.test
+          - text: doctor@hospital.test
+      - generic [ref=f20e26]:
+        - generic [ref=f20e27]:
+          - generic [ref=f20e28]: Password
+          - link "Forgot password?" [ref=f20e29] [cursor=pointer]:
+            - /url: /forgot-password
+        - generic [ref=f20e30]:
+          - textbox "Password" [ref=f20e31]:
+            - /placeholder: ••••••••
+          - button [ref=f20e32]:
+            - img [ref=f20e33]
+      - generic [ref=f20e36]:
+        - checkbox "Remember me for 30 days" [ref=f20e37]
+        - text: Remember me for 30 days
+      - button "Sign In" [ref=f20e38]
+    - paragraph [ref=f20e39]: Smart Hospital Management System · HIPAA Compliant

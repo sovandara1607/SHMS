@@ -1,0 +1,172 @@
+- generic [ref=f36e2]:
+  - complementary [ref=f36e3]:
+    - generic [ref=f36e4]:
+      - img [ref=f36e6]
+      - generic [ref=f36e8]:
+        - generic [ref=f36e9]: Smart Hospital
+        - generic [ref=f36e10]: Management System
+    - navigation [ref=f36e11]:
+      - generic [ref=f36e12]:
+        - paragraph [ref=f36e13]: Overview
+        - link "Dashboard" [ref=f36e14] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=f36e15]
+          - text: Dashboard
+      - generic [ref=f36e17]:
+        - paragraph [ref=f36e18]: Patient Care
+        - link "Patients" [ref=f36e19] [cursor=pointer]:
+          - /url: /patients
+          - img [ref=f36e20]
+          - text: Patients
+        - link "Appointments" [ref=f36e22] [cursor=pointer]:
+          - /url: /appointments
+          - img [ref=f36e23]
+          - text: Appointments
+        - link "Medical Records" [ref=f36e25] [cursor=pointer]:
+          - /url: /medical-records
+          - img [ref=f36e26]
+          - text: Medical Records
+        - link "Treatments" [ref=f36e28] [cursor=pointer]:
+          - /url: /treatments
+          - img [ref=f36e29]
+          - text: Treatments
+      - generic [ref=f36e31]:
+        - paragraph [ref=f36e32]: Services
+        - link "Laboratory" [ref=f36e33] [cursor=pointer]:
+          - /url: /lab-orders
+          - img [ref=f36e34]
+          - text: Laboratory
+    - generic [ref=f36e36]:
+      - link "Profile" [ref=f36e37] [cursor=pointer]:
+        - /url: /profile
+        - img [ref=f36e38]
+        - text: Profile
+      - link "Settings" [ref=f36e40] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=f36e41]
+        - text: Settings
+      - button "Logout" [ref=f36e44]:
+        - img [ref=f36e45]
+        - text: Logout
+  - generic [ref=f36e47]:
+    - banner [ref=f36e48]:
+      - generic [ref=f36e49]:
+        - img
+        - searchbox "Search..." [ref=f36e50]
+      - button "D Doctor doctor@hospital.test" [ref=f36e52]:
+        - generic [ref=f36e53]: D
+        - generic [ref=f36e54]:
+          - generic [ref=f36e55]: Doctor
+          - generic [ref=f36e56]: doctor@hospital.test
+        - img [ref=f36e57]
+    - main [ref=f36e59]:
+      - generic [ref=f36e60]:
+        - paragraph [ref=f36e61]: Welcome back
+        - generic [ref=f36e62]:
+          - generic [ref=f36e63]:
+            - heading "Doctor" [level=1] [ref=f36e64]
+            - paragraph [ref=f36e65]: Doctor Dashboard
+          - paragraph [ref=f36e66]:
+            - text: Thursday, July 9
+            - text: "2026"
+      - generic [ref=f36e67]:
+        - link "New Prescription" [ref=f36e68] [cursor=pointer]:
+          - /url: /prescriptions
+          - img [ref=f36e69]
+          - text: New Prescription
+        - link "Order Lab Test" [ref=f36e71] [cursor=pointer]:
+          - /url: /lab-orders
+          - img [ref=f36e72]
+          - text: Order Lab Test
+        - link "View Patients" [ref=f36e74] [cursor=pointer]:
+          - /url: /patients
+          - img [ref=f36e75]
+          - text: View Patients
+      - generic [ref=f36e77]:
+        - generic [ref=f36e79]:
+          - generic [ref=f36e80]:
+            - paragraph [ref=f36e81]: My Patients
+            - paragraph [ref=f36e82]: "182899"
+          - img [ref=f36e84]
+        - generic [ref=f36e87]:
+          - generic [ref=f36e88]:
+            - paragraph [ref=f36e89]: Today's Consults
+            - paragraph [ref=f36e90]: "495"
+          - img [ref=f36e92]
+        - generic [ref=f36e95]:
+          - generic [ref=f36e96]:
+            - paragraph [ref=f36e97]: Pending Reports
+            - paragraph [ref=f36e98]: "0"
+          - img [ref=f36e100]
+        - generic [ref=f36e103]:
+          - generic [ref=f36e104]:
+            - paragraph [ref=f36e105]: Critical Cases
+            - paragraph [ref=f36e106]: "124901"
+          - img [ref=f36e108]
+      - generic [ref=f36e110]:
+        - generic [ref=f36e111]:
+          - paragraph [ref=f36e112]: Today's Patients
+          - generic [ref=f36e113]:
+            - generic [ref=f36e114]:
+              - generic [ref=f36e115]:
+                - paragraph [ref=f36e116]: Marguerite Bechtelar
+                - paragraph [ref=f36e117]: Consultation · 00:01
+              - generic [ref=f36e118]: Icu
+            - generic [ref=f36e119]:
+              - generic [ref=f36e120]:
+                - paragraph [ref=f36e121]: Ronny Eichmann
+                - paragraph [ref=f36e122]: Post-op review · 00:02
+              - generic [ref=f36e123]: Admitted
+            - generic [ref=f36e124]:
+              - generic [ref=f36e125]:
+                - paragraph [ref=f36e126]: Wilhelm Jacobs
+                - paragraph [ref=f36e127]: Symptom review · 00:04
+              - generic [ref=f36e128]: Active
+            - generic [ref=f36e129]:
+              - generic [ref=f36e130]:
+                - paragraph [ref=f36e131]: Jasmin Crona
+                - paragraph [ref=f36e132]: Annual physical · 00:07
+              - generic [ref=f36e133]: Discharged
+            - generic [ref=f36e134]:
+              - generic [ref=f36e135]:
+                - paragraph [ref=f36e136]: Summer Hand
+                - paragraph [ref=f36e137]: Consultation · 00:08
+              - generic [ref=f36e138]: Active
+            - generic [ref=f36e139]:
+              - generic [ref=f36e140]:
+                - paragraph [ref=f36e141]: Luisa Kerluke
+                - paragraph [ref=f36e142]: Routine checkup · 00:09
+              - generic [ref=f36e143]: Inactive
+        - generic [ref=f36e144]:
+          - paragraph [ref=f36e145]: Pending Lab Results
+          - generic [ref=f36e146]:
+            - generic [ref=f36e147]:
+              - generic [ref=f36e148]:
+                - paragraph [ref=f36e149]: Blood Culture
+                - paragraph [ref=f36e150]: Mina Witting
+              - generic [ref=f36e151]: In Progress
+            - generic [ref=f36e152]:
+              - generic [ref=f36e153]:
+                - paragraph [ref=f36e154]: Blood Test
+                - paragraph [ref=f36e155]: Anika Fisher
+              - generic [ref=f36e156]: Pending
+            - generic [ref=f36e157]:
+              - generic [ref=f36e158]:
+                - paragraph [ref=f36e159]: Blood Culture
+                - paragraph [ref=f36e160]: Desiree Brekke
+              - generic [ref=f36e161]: Pending
+            - generic [ref=f36e162]:
+              - generic [ref=f36e163]:
+                - paragraph [ref=f36e164]: Blood Test
+                - paragraph [ref=f36e165]: Viola Daniel
+              - generic [ref=f36e166]: In Progress
+            - generic [ref=f36e167]:
+              - generic [ref=f36e168]:
+                - paragraph [ref=f36e169]: CT Scan
+                - paragraph [ref=f36e170]: Rebeca Boyle
+              - generic [ref=f36e171]: In Progress
+            - generic [ref=f36e172]:
+              - generic [ref=f36e173]:
+                - paragraph [ref=f36e174]: Lipid Panel
+                - paragraph [ref=f36e175]: Neoma Kutch
+              - generic [ref=f36e176]: In Progress

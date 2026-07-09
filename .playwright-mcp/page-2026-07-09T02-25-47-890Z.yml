@@ -1,0 +1,33 @@
+- generic [ref=e2]:
+  - generic [ref=e4]:
+    - img [ref=e6]
+    - heading "Smart Hospital Management" [level=1] [ref=e8]
+    - paragraph [ref=e9]: A comprehensive system for managing patients, staff, appointments, and hospital operations with ease.
+  - generic [ref=e11]:
+    - generic [ref=e12]:
+      - img [ref=e14]
+      - generic [ref=e16]:
+        - generic [ref=e17]: Smart Hospital
+        - generic [ref=e18]: Management System
+    - heading "Welcome back" [level=2] [ref=e19]
+    - paragraph [ref=e20]: Choose your role and sign in
+    - generic [ref=e21]:
+      - generic [ref=e22]:
+        - generic [ref=e23]: Email Address
+        - textbox "Email Address" [active] [ref=e24]:
+          - /placeholder: you@hospital.test
+      - generic [ref=e25]:
+        - generic [ref=e26]:
+          - generic [ref=e27]: Password
+          - link "Forgot password?" [ref=e28] [cursor=pointer]:
+            - /url: /forgot-password
+        - generic [ref=e29]:
+          - textbox "Password" [ref=e30]:
+            - /placeholder: ••••••••
+          - button [ref=e31]:
+            - img [ref=e32]
+      - generic [ref=e35]:
+        - checkbox "Remember me for 30 days" [ref=e36]
+        - text: Remember me for 30 days
+      - button "Sign In" [ref=e37]
+    - paragraph [ref=e38]: Smart Hospital Management System · HIPAA Compliant

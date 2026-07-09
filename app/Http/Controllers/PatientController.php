@@ -8,11 +8,12 @@ use App\Models\Patient;
 use App\Models\PatientInsurance;
 use App\Models\StaffShift;
 use App\Services\AuditLogger;
+use App\Services\RoomAssignmentService;
 use Illuminate\Http\Request;
 
 class PatientController extends Controller
 {
-    public function __construct(private AuditLogger $audit) {}
+    public function __construct(private AuditLogger $audit, private RoomAssignmentService $roomAssignments) {}
 
     public function index(Request $request)
     {
@@ -32,6 +33,34 @@ class PatientController extends Controller
             ->limit(200)->get();
 
         return view('patient.index', compact('patients', 'q', 'status'));
+    }
+
+    /**
+     * Lightweight JSON lookup backing the patient-picker used by
+     * appointment/billing/vitals/medical-record forms — never dump the full
+     * patient table into a page (it's seeded to 1M+ rows for scale testing).
+     */
+    public function search(Request $request)
+    {
+        $q = trim((string) $request->query('q', ''));
+        if ($q === '') {
+            return response()->json([]);
+        }
+
+        $like = '%' . $q . '%';
+        $patients = Patient::query()
+            ->where('patient_id', 'ilike', $like)
+            ->orWhereRaw("(first_name || ' ' || last_name) ilike ?", [$like])
+            ->orderBy('last_name')
+            ->limit(20)
+            ->get(['patient_id', 'first_name', 'last_name', 'patient_status']);
+
+        return response()->json($patients->map(fn (Patient $p) => [
+            'id' => $p->patient_id,
+            'label' => $p->fullName() . ' (' . $p->patient_id . ')',
+            'name' => $p->fullName(),
+            'status' => $p->patient_status,
+        ]));
     }
 
     public function show(string $id)
@@ -103,9 +132,10 @@ class PatientController extends Controller
     {
         $patient = Patient::findOrFail($id);
         $patient->update(['patient_status' => 'discharged']);
+        $this->roomAssignments->releaseForPatient($patient->patient_id);
         $this->audit->log('patient.discharge', 'patient', $patient->patient_id);
 
-        return redirect('/patients')->with('success', 'Patient discharged.')->with('reopen_patient', $patient->patient_id);
+        return redirect('/patients')->with('success', 'Patient discharged; bed released.')->with('reopen_patient', $patient->patient_id);
     }
 
     /** @return array{0: array, 1: array} */

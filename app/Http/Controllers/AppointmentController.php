@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use App\Models\Doctor;
-use App\Models\Patient;
 use App\Services\AuditLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -48,7 +47,6 @@ class AppointmentController extends Controller
         return view('appointment.index', [
             'appointments' => $appointments,
             'q' => $q, 'date' => $date, 'status' => $status, 'stats' => $stats,
-            'patients' => Patient::orderBy('last_name')->get(),
             'doctors'  => Doctor::with('staff')->get(),
         ]);
     }
@@ -58,7 +56,7 @@ class AppointmentController extends Controller
         return view('appointment.form', [
             'appointment' => new Appointment(),
             'mode' => 'create',
-            'patients' => Patient::orderBy('last_name')->get(),
+            'selectedPatient' => null,
             'doctors' => Doctor::with('staff')->get(),
         ]);
     }
@@ -72,10 +70,12 @@ class AppointmentController extends Controller
 
     public function edit(string $id)
     {
+        $appointment = Appointment::with('patient')->findOrFail($id);
+
         return view('appointment.form', [
-            'appointment' => Appointment::findOrFail($id),
+            'appointment' => $appointment,
             'mode' => 'edit',
-            'patients' => Patient::orderBy('last_name')->get(),
+            'selectedPatient' => $appointment->patient,
             'doctors' => Doctor::with('staff')->get(),
         ]);
     }

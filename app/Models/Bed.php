@@ -14,4 +14,9 @@ class Bed extends Model
     public string $idPrefix = 'BED';
     public $timestamps = false;
     protected $guarded = [];
+
+    public function room()
+    {
+        return $this->belongsTo(Room::class, 'room_id', 'room_id');
+    }
 }

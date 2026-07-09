@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\GenerateLabReportDocumentJob;
 use App\Models\LabReport;
 use App\Models\LabTestOrder;
 use App\Models\LabTestResult;
@@ -13,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class LabController extends Controller
@@ -55,8 +57,17 @@ class LabController extends Controller
             'pending'     => LabTestOrder::where('status', 'pending')->count(),
             'in_progress' => LabTestOrder::where('status', 'in_progress')->count(),
             'completed'   => LabTestOrder::where('status', 'completed')->count(),
-            'pending_results' => LabTestOrder::where('status', 'completed')
-                ->whereNotIn('test_order_id', LabTestResult::pluck('test_order_id'))->count(),
+            // NOT EXISTS instead of whereNotIn(...pluck()): at scale, pluck()
+            // inlines every lab_test_result id as a bound parameter and blows
+            // past Postgres's 65535-parameter-per-statement limit.
+            'pending_results' => DB::table('lab_test_order as o')
+                ->where('o.status', 'completed')
+                ->whereNotExists(function ($q) {
+                    $q->select(DB::raw(1))
+                        ->from('lab_test_result as r')
+                        ->whereColumn('r.test_order_id', 'o.test_order_id');
+                })
+                ->count(),
         ];
 
         return view('lab.orders', compact('orders', 'results', 'reports', 'status', 'stats'));
@@ -206,25 +217,41 @@ class LabController extends Controller
         $order = LabTestOrder::where('test_order_id', $data['test_order_id']);
         $order->update(['status' => 'completed']);
 
-        // Lab report snapshot in MongoDB + a queryable Postgres lab_report row.
-        DB::connection('mongodb')->table('lab_report_documents')->insert([
-            'test_order_id' => $data['test_order_id'],
-            'result_value' => $data['result_value'],
-            'result_status' => $data['result_status'],
-            'remarks' => $data['remarks'] ?? null,
-            'entered_by' => Auth::user()->staff_id,
-            'created_at' => now()->toIso8601String(),
-        ]);
-        LabReport::create([
+        // The report row itself is created synchronously (Postgres stays the
+        // immediately-consistent source of truth for the Lab Reports tab).
+        // The MongoDB snapshot and PDF generation/upload are handled by the
+        // Central Service's queue worker — see GenerateLabReportDocumentJob.
+        $labReport = LabReport::create([
             'test_order_id' => $data['test_order_id'],
             'patient_id' => LabTestOrder::where('test_order_id', $data['test_order_id'])->value('patient_id'),
             'report_content' => $data['result_value'] . ($data['remarks'] ? " — {$data['remarks']}" : ''),
             'generated_by' => Auth::user()->staff_id,
         ]);
 
+        GenerateLabReportDocumentJob::dispatch(
+            $labReport->lab_report_id,
+            $data['test_order_id'],
+            $data['result_value'],
+            $data['result_status'],
+            $data['remarks'] ?? null,
+            Auth::user()->staff_id,
+            now()->toIso8601String(),
+        );
+
         $this->audit->log('lab_result.create', 'lab_test_result', $data['test_order_id']);
 
         return redirect('/lab-orders')->with('success', 'Result entered; order marked completed.');
+    }
+
+    public function downloadReport(string $id)
+    {
+        $report = LabReport::findOrFail($id);
+        abort_if(! $report->report_file_path, 404, 'Report PDF is still being generated.');
+
+        $disk = Storage::disk(config('filesystems.documents'));
+        abort_if(! $disk->exists($report->report_file_path), 404, 'Report PDF not found.');
+
+        return $disk->download($report->report_file_path, "{$report->test_order_id}-lab-report.pdf");
     }
 
     public function equipment()

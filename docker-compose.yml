@@ -1,0 +1,50 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: smart_hospital
+      POSTGRES_USER: dara
+      POSTGRES_HOST_AUTH_METHOD: trust # matches the current empty DB_PASSWORD in .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - smart_hospital_pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dara -d smart_hospital"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - smart_hospital_redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: smart_hospital_docs
+    ports:
+      - "27017:27017"
+    volumes:
+      - smart_hospital_mongodata:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  smart_hospital_pgdata:
+  smart_hospital_redisdata:
+  smart_hospital_mongodata:

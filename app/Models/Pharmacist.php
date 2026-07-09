@@ -14,4 +14,9 @@ class Pharmacist extends Model
     public string $idPrefix = 'PHA';
     public $timestamps = false;
     protected $guarded = [];
+
+    public function staff()
+    {
+        return $this->belongsTo(Staff::class, 'staff_id', 'staff_id');
+    }
 }

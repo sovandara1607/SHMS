@@ -1,0 +1,305 @@
+- generic [ref=f5e2]:
+  - generic [ref=f5e4]:
+    - generic [ref=f5e5]:
+      - img [ref=f5e7]
+      - generic [ref=f5e10]: Internal Server Error
+    - button "Copy as Markdown" [ref=f5e11] [cursor=pointer]:
+      - img [ref=f5e12]
+      - generic [ref=f5e15]: Copy as Markdown
+  - generic [ref=f5e18]:
+    - generic [ref=f5e19]:
+      - heading "BadMethodCallException" [level=1] [ref=f5e20]
+      - generic [ref=f5e22]: vendor/laravel/framework/src/Illuminate/Support/Traits/ForwardsCalls.php:67
+      - paragraph [ref=f5e23]: Call to undefined method Illuminate\Http\RedirectResponse::when()
+    - generic [ref=f5e24]:
+      - generic [ref=f5e25]:
+        - generic [ref=f5e26]:
+          - generic [ref=f5e27]: LARAVEL
+          - generic [ref=f5e28]: 13.18.1
+        - generic [ref=f5e29]:
+          - generic [ref=f5e30]: PHP
+          - generic [ref=f5e31]: 8.4.14
+      - generic [ref=f5e32]:
+        - img [ref=f5e33]
+        - text: UNHANDLED
+      - generic [ref=f5e36]: CODE 0
+    - generic [ref=f5e38]:
+      - generic [ref=f5e39]:
+        - img [ref=f5e40]
+        - text: "500"
+      - generic [ref=f5e43]:
+        - img [ref=f5e44]
+        - text: POST
+      - generic [ref=f5e47]: http://127.0.0.1:8000/medical-records/MR0002/prescriptions
+      - button [ref=f5e48] [cursor=pointer]:
+        - img [ref=f5e49]
+  - generic [ref=f5e53]:
+    - generic [ref=f5e54]:
+      - generic [ref=f5e55]:
+        - img [ref=f5e57]
+        - heading "Exception trace" [level=3] [ref=f5e60]
+      - generic [ref=f5e61]:
+        - generic [ref=f5e63] [cursor=pointer]:
+          - img [ref=f5e64]
+          - generic [ref=f5e68]: 2 vendor frames
+          - button [ref=f5e69]:
+            - img [ref=f5e70]
+        - generic [ref=f5e74]:
+          - generic [ref=f5e75] [cursor=pointer]:
+            - generic [ref=f5e78]:
+              - code [ref=f5e82]:
+                - generic [ref=f5e83]: Illuminate\Http\RedirectResponse->__call(string, array)
+              - generic [ref=f5e85]: app/Http/Controllers/PrescriptionController.php:67
+            - button [ref=f5e87]:
+              - img [ref=f5e88]
+          - code [ref=f5e96]:
+            - generic [ref=f5e97]: 62 $warning = $this->interactionWarning(array_column($data['items'], 'medicine_id'));
+            - generic [ref=f5e98]: "63"
+            - generic [ref=f5e99]: 64 return redirect('/medical-records/' . $record->medical_record_id)
+            - generic [ref=f5e100]: "65 ->with('success', \"Prescription {$prescription->prescription_id} created.\")"
+            - generic [ref=f5e101]: 66 ->with('reopen_record', $record->medical_record_id)
+            - generic [ref=f5e102]: 67 ->when($warning, fn ($redirect) => $redirect->with('warning', $warning));
+            - generic [ref=f5e103]: "68 }"
+            - generic [ref=f5e104]: "69"
+            - generic [ref=f5e105]: 70 /**
+            - generic [ref=f5e106]: 71 * Checks every pairwise combination of the prescribed medicines against
+            - generic [ref=f5e107]: 72 * drug_interaction. Doesn't block the prescription — flags it for the
+            - generic [ref=f5e108]: 73 * doctor's clinical judgement, same as a real EHR interaction alert.
+            - generic [ref=f5e109]: 74 */
+            - generic [ref=f5e110]: "75 private function interactionWarning(array $medicineIds): ?string"
+            - generic [ref=f5e111]: "76 {"
+            - generic [ref=f5e112]: 77 $medicineIds = array_values(array_unique($medicineIds));
+            - generic [ref=f5e113]: "78 if (count($medicineIds) < 2) {"
+            - generic [ref=f5e114]: "79"
+        - generic [ref=f5e116] [cursor=pointer]:
+          - img [ref=f5e117]
+          - generic [ref=f5e121]: 5 vendor frames
+          - button [ref=f5e122]:
+            - img [ref=f5e123]
+        - generic [ref=f5e128] [cursor=pointer]:
+          - generic [ref=f5e131]:
+            - code [ref=f5e135]:
+              - generic [ref=f5e136]: "Illuminate\\Pipeline\\Pipeline->{closure:Illuminate\\Pipeline\\Pipeline::prepareDestination():178}(object(Illuminate\\Http\\Request))"
+            - generic [ref=f5e138]: app/Http/Middleware/EnsurePermission.php:22
+          - button [ref=f5e140]:
+            - img [ref=f5e141]
+        - generic [ref=f5e146] [cursor=pointer]:
+          - img [ref=f5e147]
+          - generic [ref=f5e151]: 45 vendor frames
+          - button [ref=f5e152]:
+            - img [ref=f5e153]
+        - generic [ref=f5e158] [cursor=pointer]:
+          - generic [ref=f5e161]:
+            - code [ref=f5e165]:
+              - generic [ref=f5e166]: Illuminate\Foundation\Application->handleRequest(object(Illuminate\Http\Request))
+            - generic [ref=f5e168]: public/index.php:20
+          - button [ref=f5e170]:
+            - img [ref=f5e171]
+        - generic [ref=f5e176] [cursor=pointer]:
+          - img [ref=f5e177]
+          - generic [ref=f5e181]: 1 vendor frame
+          - button [ref=f5e182]:
+            - img [ref=f5e183]
+    - generic [ref=f5e187]:
+      - generic [ref=f5e188]:
+        - generic [ref=f5e189]:
+          - img [ref=f5e191]
+          - heading "Queries" [level=3] [ref=f5e193]
+        - generic [ref=f5e195]: 1-10 of 13
+      - generic [ref=f5e196]:
+        - generic [ref=f5e197]:
+          - generic [ref=f5e198]:
+            - generic [ref=f5e199]:
+              - img [ref=f5e200]
+              - generic [ref=f5e202]: pgsql
+            - code [ref=f5e206]:
+              - generic [ref=f5e207]: select * from "users" where "user_id" = 'USR0002' limit 1
+          - generic [ref=f5e208]: 10.05ms
+        - generic [ref=f5e209]:
+          - generic [ref=f5e210]:
+            - generic [ref=f5e211]:
+              - img [ref=f5e212]
+              - generic [ref=f5e214]: pgsql
+            - code [ref=f5e218]:
+              - generic [ref=f5e219]: select "capability" from "role_permissions" where "role" = 'doctor'
+          - generic [ref=f5e220]: 1.33ms
+        - generic [ref=f5e221]:
+          - generic [ref=f5e222]:
+            - generic [ref=f5e223]:
+              - img [ref=f5e224]
+              - generic [ref=f5e226]: pgsql
+            - code [ref=f5e230]:
+              - generic [ref=f5e231]: select "capability" from "role_permissions" where "role" = 'doctor'
+          - generic [ref=f5e232]: 0.49ms
+        - generic [ref=f5e233]:
+          - generic [ref=f5e234]:
+            - generic [ref=f5e235]:
+              - img [ref=f5e236]
+              - generic [ref=f5e238]: pgsql
+            - code [ref=f5e242]:
+              - generic [ref=f5e243]: select * from "medical_record" where "medical_record"."medical_record_id" = 'MR0002' limit 1
+          - generic [ref=f5e244]: 2.31ms
+        - generic [ref=f5e245]:
+          - generic [ref=f5e246]:
+            - generic [ref=f5e247]:
+              - img [ref=f5e248]
+              - generic [ref=f5e250]: pgsql
+            - code [ref=f5e254]:
+              - generic [ref=f5e255]: select count(*) as "aggregate" from "medicine" where "medicine_id" = 'MED0001'
+          - generic [ref=f5e256]: 3.3ms
+        - generic [ref=f5e257]:
+          - generic [ref=f5e258]:
+            - generic [ref=f5e259]:
+              - img [ref=f5e260]
+              - generic [ref=f5e262]: pgsql
+            - code [ref=f5e266]:
+              - generic [ref=f5e267]: select count(*) as "aggregate" from "medicine" where "medicine_id" = 'MED0003'
+          - generic [ref=f5e268]: 0.78ms
+        - generic [ref=f5e269]:
+          - generic [ref=f5e270]:
+            - generic [ref=f5e271]:
+              - img [ref=f5e272]
+              - generic [ref=f5e274]: pgsql
+            - code [ref=f5e278]:
+              - generic [ref=f5e279]: select "prescription_id" from "prescription" where "prescription_id"::text like 'PRS%' order by length(prescription_id) desc, "prescription_id" desc limit 1
+          - generic [ref=f5e280]: 4.8ms
+        - generic [ref=f5e281]:
+          - generic [ref=f5e282]:
+            - generic [ref=f5e283]:
+              - img [ref=f5e284]
+              - generic [ref=f5e286]: pgsql
+            - code [ref=f5e290]:
+              - generic [ref=f5e291]: insert into "prescription" ("medical_record_id", "patient_id", "doctor_id", "prescription_date", "notes", "prescription_id") values ('MR0002', 'PAT0001', 'DOC0001', '2026-07-09', NULL, 'PRS0306')
+          - generic [ref=f5e292]: 3.25ms
+        - generic [ref=f5e293]:
+          - generic [ref=f5e294]:
+            - generic [ref=f5e295]:
+              - img [ref=f5e296]
+              - generic [ref=f5e298]: pgsql
+            - code [ref=f5e302]:
+              - generic [ref=f5e303]: select "prescription_item_id" from "prescription_item" where "prescription_item_id"::text like 'PI%' order by length(prescription_item_id) desc, "prescription_item_id" desc limit 1
+          - generic [ref=f5e304]: 2.12ms
+        - generic [ref=f5e305]:
+          - generic [ref=f5e306]:
+            - generic [ref=f5e307]:
+              - img [ref=f5e308]
+              - generic [ref=f5e310]: pgsql
+            - code [ref=f5e314]:
+              - generic [ref=f5e315]: insert into "prescription_item" ("prescription_id", "medicine_id", "dosage", "frequency", "duration", "quantity", "prescription_item_id") values ('PRS0306', 'MED0001', '500mg', '3x daily', NULL, NULL, 'PI0642')
+          - generic [ref=f5e316]: 0.79ms
+      - generic [ref=f5e317]:
+        - button [disabled] [ref=f5e318]:
+          - img [ref=f5e319]
+        - button [disabled] [ref=f5e322]:
+          - img [ref=f5e323]
+        - button "1" [ref=f5e326] [cursor=pointer]
+        - button "2" [ref=f5e328] [cursor=pointer]
+        - button [ref=f5e329] [cursor=pointer]:
+          - img [ref=f5e330]
+        - button [ref=f5e332] [cursor=pointer]:
+          - img [ref=f5e333]
+  - generic [ref=f5e337]:
+    - generic [ref=f5e338]:
+      - heading "Headers" [level=2] [ref=f5e339]
+      - generic [ref=f5e340]:
+        - generic [ref=f5e341]:
+          - generic [ref=f5e342]: host
+          - generic [ref=f5e344]: 127.0.0.1:8000
+        - generic [ref=f5e345]:
+          - generic [ref=f5e346]: connection
+          - generic [ref=f5e348]: keep-alive
+        - generic [ref=f5e349]:
+          - generic [ref=f5e350]: content-length
+          - generic [ref=f5e352]: "365"
+        - generic [ref=f5e353]:
+          - generic [ref=f5e354]: cache-control
+          - generic [ref=f5e356]: max-age=0
+        - generic [ref=f5e357]:
+          - generic [ref=f5e358]: sec-ch-ua
+          - generic [ref=f5e360]: "\"Google Chrome\";v=\"149\", \"Chromium\";v=\"149\", \"Not)A;Brand\";v=\"24\""
+        - generic [ref=f5e361]:
+          - generic [ref=f5e362]: sec-ch-ua-mobile
+          - generic [ref=f5e364]: "?0"
+        - generic [ref=f5e365]:
+          - generic [ref=f5e366]: sec-ch-ua-platform
+          - generic [ref=f5e368]: "\"macOS\""
+        - generic [ref=f5e369]:
+          - generic [ref=f5e370]: upgrade-insecure-requests
+          - generic [ref=f5e372]: "1"
+        - generic [ref=f5e373]:
+          - generic [ref=f5e374]: content-type
+          - generic [ref=f5e376]: application/x-www-form-urlencoded
+        - generic [ref=f5e377]:
+          - generic [ref=f5e378]: user-agent
+          - generic [ref=f5e380]: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36
+        - generic [ref=f5e381]:
+          - generic [ref=f5e382]: origin
+          - generic [ref=f5e384]: http://127.0.0.1:8000
+        - generic [ref=f5e385]:
+          - generic [ref=f5e386]: accept
+          - generic [ref=f5e388]: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+        - generic [ref=f5e389]:
+          - generic [ref=f5e390]: sec-fetch-site
+          - generic [ref=f5e392]: same-origin
+        - generic [ref=f5e393]:
+          - generic [ref=f5e394]: sec-fetch-mode
+          - generic [ref=f5e396]: navigate
+        - generic [ref=f5e397]:
+          - generic [ref=f5e398]: sec-fetch-user
+          - generic [ref=f5e400]: "?1"
+        - generic [ref=f5e401]:
+          - generic [ref=f5e402]: sec-fetch-dest
+          - generic [ref=f5e404]: document
+        - generic [ref=f5e405]:
+          - generic [ref=f5e406]: referer
+          - generic [ref=f5e408]: http://127.0.0.1:8000/medical-records?q=PAT0001
+        - generic [ref=f5e409]:
+          - generic [ref=f5e410]: accept-encoding
+          - generic [ref=f5e412]: gzip, deflate, br, zstd
+        - generic [ref=f5e413]:
+          - generic [ref=f5e414]: accept-language
+          - generic [ref=f5e416]: en-US,en;q=0.9
+        - generic [ref=f5e417]:
+          - generic [ref=f5e418]: cookie
+          - generic [ref=f5e420]: XSRF-TOKEN=eyJpdiI6ImxaR2MwL2owSWRremt1SXRQVkE2UEE9PSIsInZhbHVlIjoiSkpqNUNiZEo5aWtCRHpYQ05qeWxGUmpHakZrejV1SlhYa3g3aVg5YkNBcytBNlByQlN6cUlFOVR5R3hZdmg2YVRJNmppZ25DZ01pQ3hmcFExVHk5ZlhNNERJNE5Xb3lBM2RzMDJ5VmJvZTYrQzhpcHF0dVpMTkFFZHFHZnNqOGIiLCJtYWMiOiI4ZDQxMDU4MjdhNTcyNTY4N2FhMTM3YTM1OGNiMzUzNjk3ODdmZmNjMjdlZGJkYjBjNDRkODRiYmE2MWQzZTE5IiwidGFnIjoiIn0%3D; smart-hospital-management-system-session=eyJpdiI6Imw2TUp1VHRWMGtBS3g5WmNTU1BpL1E9PSIsInZhbHVlIjoiVTc0cHRrazVBQ1Y0Q1JsdGU2eUwrWUJQK2pkM1pWNG5lS2dQR09EVTlhUC9mTXdFZTJlYXFwblBpQjZiRnA5L1RpM2JJUGc0dkVtOW5VVEZXbGxKZ09SckY3MU1pNERtMEhXQ2VCdXlrdHVieExwMlA1UkVGZlh5VUQxb2hCY2IiLCJtYWMiOiIyOTQ2YzgyNjk3Y2M5NjI1M2U3ZTFkMGY2N2RiNDdjYWIzYTc4NmQxMWQ3N2Y4Zjk0NGU2MmFjNzVkOWI1MWFkIiwidGFnIjoiIn0%3D
+    - generic [ref=f5e421]:
+      - heading "Body" [level=2] [ref=f5e422]
+      - code [ref=f5e427]:
+        - generic [ref=f5e428]: "{"
+        - generic [ref=f5e429]: "\"_token\": \"DeMstHDFQfykehFszBMbHJOGNRWDUa7SGgreh8ub\","
+        - generic [ref=f5e430]: "\"items\": ["
+        - generic [ref=f5e431]: "{"
+        - generic [ref=f5e432]: "\"medicine_id\": \"MED0001\","
+        - generic [ref=f5e433]: "\"dosage\": \"500mg\","
+        - generic [ref=f5e434]: "\"frequency\": \"3x daily\","
+        - generic [ref=f5e435]: "\"duration\": null,"
+        - generic [ref=f5e436]: "\"quantity\": null"
+        - generic [ref=f5e437]: "},"
+        - generic [ref=f5e438]: "{"
+        - generic [ref=f5e439]: "\"medicine_id\": \"MED0003\","
+        - generic [ref=f5e440]: "\"dosage\": null,"
+        - generic [ref=f5e441]: "\"frequency\": null,"
+        - generic [ref=f5e442]: "\"duration\": null,"
+        - generic [ref=f5e443]: "\"quantity\": null"
+        - generic [ref=f5e444]: "}"
+        - generic [ref=f5e445]: "],"
+        - generic [ref=f5e446]: "\"notes\": null"
+        - generic [ref=f5e447]: "}"
+    - generic [ref=f5e448]:
+      - heading "Routing" [level=2] [ref=f5e449]
+      - generic [ref=f5e450]:
+        - generic [ref=f5e451]:
+          - generic [ref=f5e452]: controller
+          - generic [ref=f5e454]: App\Http\Controllers\PrescriptionController@store
+        - generic [ref=f5e455]:
+          - generic [ref=f5e456]: middleware
+          - generic [ref=f5e458]: web, auth, permission:prescription.create
+    - generic [ref=f5e459]:
+      - heading "Routing parameters" [level=2] [ref=f5e460]
+      - code [ref=f5e465]:
+        - generic [ref=f5e466]: "{"
+        - generic [ref=f5e467]: "\"id\": \"MR0002\""
+        - generic [ref=f5e468]: "}"
+  - generic [ref=f5e471]:
+    - img [ref=f5e473]
+    - img [ref=f5e3511]

@@ -1,0 +1,152 @@
+- generic [ref=f2e2]:
+  - complementary [ref=f2e3]:
+    - generic [ref=f2e4]:
+      - img [ref=f2e6]
+      - generic [ref=f2e8]:
+        - generic [ref=f2e9]: Smart Hospital
+        - generic [ref=f2e10]: Management System
+    - navigation [ref=f2e11]:
+      - generic [ref=f2e12]:
+        - paragraph [ref=f2e13]: Overview
+        - link "Dashboard" [ref=f2e14] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=f2e15]
+          - text: Dashboard
+      - generic [ref=f2e17]:
+        - paragraph [ref=f2e18]: Patient Care
+        - link "Patients" [ref=f2e19] [cursor=pointer]:
+          - /url: /patients
+          - img [ref=f2e20]
+          - text: Patients
+        - link "Medical Records" [ref=f2e22] [cursor=pointer]:
+          - /url: /medical-records
+          - img [ref=f2e23]
+          - text: Medical Records
+        - link "Treatments" [ref=f2e25] [cursor=pointer]:
+          - /url: /treatments
+          - img [ref=f2e26]
+          - text: Treatments
+    - generic [ref=f2e28]:
+      - link "Profile" [ref=f2e29] [cursor=pointer]:
+        - /url: /profile
+        - img [ref=f2e30]
+        - text: Profile
+      - link "Settings" [ref=f2e32] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=f2e33]
+        - text: Settings
+      - button "Logout" [ref=f2e36]:
+        - img [ref=f2e37]
+        - text: Logout
+  - generic [ref=f2e39]:
+    - banner [ref=f2e40]:
+      - generic [ref=f2e41]:
+        - img
+        - searchbox "Search..." [ref=f2e42]
+      - button "D Doctor doctor@hospital.test" [ref=f2e44]:
+        - generic [ref=f2e45]: D
+        - generic [ref=f2e46]:
+          - generic [ref=f2e47]: Doctor
+          - generic [ref=f2e48]: doctor@hospital.test
+        - img [ref=f2e49]
+    - main [ref=f2e51]:
+      - generic [ref=f2e52]:
+        - generic [ref=f2e53]:
+          - generic [ref=f2e54]:
+            - heading "Medical Records" [level=1] [ref=f2e55]
+            - paragraph [ref=f2e56]: 2 records total
+          - button "Add Medical Record" [ref=f2e58]:
+            - img [ref=f2e59]
+            - text: Add Medical Record
+        - generic [ref=f2e61]:
+          - generic [ref=f2e62]:
+            - img
+            - textbox "Search by medical record ID, patient ID, patient name, or doctor name..." [ref=f2e63]: PAT0001
+          - combobox [ref=f2e64]:
+            - option "All Doctors" [selected]
+            - option "David Heart"
+            - option "Emily Stone"
+        - table [ref=f2e66]:
+          - rowgroup [ref=f2e67]:
+            - row "Medical Record ID Patient ID Patient Name Doctor Diagnosis Date Version Actions" [ref=f2e68]:
+              - columnheader "Medical Record ID" [ref=f2e69]
+              - columnheader "Patient ID" [ref=f2e70]
+              - columnheader "Patient Name" [ref=f2e71]
+              - columnheader "Doctor" [ref=f2e72]
+              - columnheader "Diagnosis" [ref=f2e73]
+              - columnheader "Date" [ref=f2e74]
+              - columnheader "Version" [ref=f2e75]
+              - columnheader "Actions" [ref=f2e76]
+          - rowgroup [ref=f2e77]:
+            - row "MR0002 PAT0001 John Doe David Heart Routine checkup - all normal 2026-07-07 15:40:00 v1 — Original" [ref=f2e78]:
+              - cell "MR0002" [ref=f2e79]
+              - cell "PAT0001" [ref=f2e80]
+              - cell "John Doe" [ref=f2e81]
+              - cell "David Heart" [ref=f2e82]
+              - cell "Routine checkup - all normal" [ref=f2e83]
+              - cell "2026-07-07 15:40:00" [ref=f2e84]
+              - cell "v1 — Original" [ref=f2e85]
+              - cell [ref=f2e86]:
+                - button [active] [ref=f2e88]:
+                  - img [ref=f2e89]
+            - row "MR0001 PAT0001 John Doe David Heart dasd 2026-07-07 14:56:10 v2" [ref=f2e91]:
+              - cell "MR0001" [ref=f2e92]
+              - cell "PAT0001" [ref=f2e93]
+              - cell "John Doe" [ref=f2e94]
+              - cell "David Heart" [ref=f2e95]
+              - cell "dasd" [ref=f2e96]
+              - cell "2026-07-07 14:56:10" [ref=f2e97]
+              - cell "v2" [ref=f2e98]
+              - cell [ref=f2e99]:
+                - button [ref=f2e101]:
+                  - img [ref=f2e102]
+        - dialog [ref=f2e104]:
+          - generic [ref=f2e108]:
+            - generic [ref=f2e109]:
+              - generic [ref=f2e110]:
+                - heading "MR0002" [level=3] [ref=f2e111]
+                - paragraph [ref=f2e112]: "Patient: John Doe"
+              - button [ref=f2e113]:
+                - img [ref=f2e114]
+            - generic [ref=f2e116]:
+              - generic [ref=f2e117]:
+                - paragraph [ref=f2e118]: Patient Information
+                - generic [ref=f2e119]:
+                  - generic [ref=f2e120]: Patient ID
+                  - generic [ref=f2e121]: PAT0001
+                  - generic [ref=f2e122]: Patient Name
+                  - generic [ref=f2e123]: John Doe
+                  - generic [ref=f2e124]: Age
+                  - generic [ref=f2e125]: 38 yrs
+              - generic [ref=f2e126]:
+                - paragraph [ref=f2e127]: Record Information
+                - generic [ref=f2e128]:
+                  - generic [ref=f2e129]: Doctor
+                  - generic [ref=f2e130]: David Heart
+                  - generic [ref=f2e131]: Related Appointment
+                  - generic [ref=f2e132]: —
+                  - generic [ref=f2e133]: Created At
+                  - generic [ref=f2e134]: 2026-07-07 15:40:00
+                  - generic [ref=f2e135]: Latest Version
+                  - generic [ref=f2e136]: v1
+              - paragraph [ref=f2e137]: Symptoms
+              - paragraph [ref=f2e138]: —
+              - paragraph [ref=f2e139]: Diagnosis
+              - paragraph [ref=f2e140]: Routine checkup - all normal
+              - paragraph [ref=f2e141]: Treatment Notes
+              - paragraph [ref=f2e142]: —
+              - paragraph [ref=f2e143]: Adjustment History
+              - table [ref=f2e144]:
+                - rowgroup [ref=f2e145]:
+                  - row "Adjusted At By Diagnosis Reason" [ref=f2e146]:
+                    - columnheader "Adjusted At" [ref=f2e147]
+                    - columnheader "By" [ref=f2e148]
+                    - columnheader "Diagnosis" [ref=f2e149]
+                    - columnheader "Reason" [ref=f2e150]
+                - rowgroup [ref=f2e151]:
+                  - row "No adjustments — original preserved." [ref=f2e152]:
+                    - cell "No adjustments — original preserved." [ref=f2e153]
+              - paragraph [ref=f2e155]: Prescriptions
+              - paragraph [ref=f2e156]: No prescriptions for this record yet.
+              - button "Adjust Medical Record" [ref=f2e157]
+            - button "Close" [ref=f2e159]

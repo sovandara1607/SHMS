@@ -186,10 +186,15 @@ $age = $patient->date_of_birth ? \Carbon\Carbon::parse($patient->date_of_birth)-
 
         {{-- Room Assignments --}}
         <div x-show="tab === 'rooms'">
-            <p class="mb-3 text-xs text-slate-400">Room and bed assignment history. Manage room assignments on the Rooms page.</p>
+            <p class="mb-3 text-xs text-slate-400">
+                Room and bed assignment history.
+                @can('room.assign')
+                    Assign a bed from <a href="/rooms" class="font-medium text-blue-600 hover:underline">Rooms &amp; Beds</a>.
+                @endcan
+            </p>
             <table class="w-full text-sm">
                 <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
-                    <th class="pb-2">Room</th><th class="pb-2">Type</th><th class="pb-2">Bed</th><th class="pb-2">Admitted At</th><th class="pb-2">Discharged At</th><th class="pb-2">Status</th>
+                    <th class="pb-2">Room</th><th class="pb-2">Type</th><th class="pb-2">Bed</th><th class="pb-2">Admitted At</th><th class="pb-2">Discharged At</th><th class="pb-2">Status</th><th class="pb-2"></th>
                 </tr></thead>
                 <tbody>
                 @forelse($patient->roomAssignments as $ra)
@@ -200,9 +205,19 @@ $age = $patient->date_of_birth ? \Carbon\Carbon::parse($patient->date_of_birth)-
                         <td class="py-2">{{ $ra->assigned_at }}</td>
                         <td class="py-2">{{ $ra->released_at ?? '—' }}</td>
                         <td class="py-2"><x-badge :status="$ra->status" /></td>
+                        <td class="py-2 text-right">
+                            @can('room.assign')
+                                @if($ra->status === 'active')
+                                    <form method="post" action="/room-assignments/{{ $ra->room_assignment_id }}/release" onsubmit="return confirm('Release this bed?')">
+                                        @csrf
+                                        <button type="submit" class="text-sm font-medium text-red-600 hover:underline">Release</button>
+                                    </form>
+                                @endif
+                            @endcan
+                        </td>
                     </tr>
                 @empty
-                    <tr><td colspan="6" class="py-4 text-center text-slate-400">No room assignments.</td></tr>
+                    <tr><td colspan="7" class="py-4 text-center text-slate-400">No room assignments.</td></tr>
                 @endforelse
                 </tbody>
             </table>

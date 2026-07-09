@@ -12,7 +12,9 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\PatientAssignmentController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PharmacyController;
+use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\RolePermissionController;
+use App\Http\Controllers\RoomAssignmentController;
 use App\Http\Controllers\SettingsController;
 use Illuminate\Support\Facades\Route;
 
@@ -41,6 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/patients', [PatientController::class, 'index'])->middleware('permission:patient.view');
     Route::get('/patients/create', [PatientController::class, 'create'])->middleware('permission:patient.create');
     Route::post('/patients', [PatientController::class, 'store'])->middleware('permission:patient.create');
+    Route::get('/patients/search', [PatientController::class, 'search'])->middleware('permission:patient.view');
     Route::get('/patients/{id}', [PatientController::class, 'show'])->middleware('permission:patient.view');
     Route::get('/patients/{id}/edit', [PatientController::class, 'edit'])->middleware('permission:patient.update');
     Route::put('/patients/{id}', [PatientController::class, 'update'])->middleware('permission:patient.update');
@@ -66,6 +69,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/medical-records', [MedicalRecordController::class, 'store'])->middleware('permission:medical_record.create');
     Route::get('/medical-records/{id}', [MedicalRecordController::class, 'show'])->middleware('permission:medical_record.view');
     Route::post('/medical-records/{id}/adjust', [MedicalRecordController::class, 'adjust'])->middleware('permission:medical_record.adjust');
+    Route::post('/medical-records/{id}/prescriptions', [PrescriptionController::class, 'store'])->middleware('permission:prescription.create');
     Route::get('/treatments', [PageController::class, 'treatments'])->middleware('permission:treatment.view');
     Route::get('/prescriptions', [PageController::class, 'prescriptions'])->middleware('permission:prescription.view');
     Route::get('/procedures', [PageController::class, 'procedures'])->middleware('permission:procedure.view');
@@ -106,6 +110,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/lab-results/{id}', [LabController::class, 'updateResult'])->middleware('permission:lab_result.create');
     Route::get('/lab-equipment', [LabController::class, 'equipment'])->middleware('permission:lab_equipment.view');
     Route::get('/lab-reports', [PageController::class, 'labReports'])->middleware('permission:lab_report.view');
+    Route::get('/lab-reports/{id}/download', [LabController::class, 'downloadReport'])->middleware('permission:lab_report.view');
 
     // Billing
     Route::get('/bills', [BillingController::class, 'index'])->middleware('permission:bill.view');
@@ -130,11 +135,22 @@ Route::middleware('auth')->group(function () {
     Route::post('/rooms', [AdminController::class, 'storeRoom'])->middleware('permission:staff.manage');
     Route::get('/rooms/{id}/edit', [AdminController::class, 'editRoom'])->middleware('permission:staff.manage');
     Route::put('/rooms/{id}', [AdminController::class, 'updateRoom'])->middleware('permission:staff.manage');
+    Route::get('/rooms/{id}/beds', [RoomAssignmentController::class, 'beds'])->middleware('permission:room.view');
+    Route::post('/rooms/{id}/beds', [RoomAssignmentController::class, 'storeBed'])->middleware('permission:staff.manage');
+    Route::get('/beds/{id}/assign', [RoomAssignmentController::class, 'assignForm'])->middleware('permission:room.assign');
+    Route::post('/beds/{id}/assign', [RoomAssignmentController::class, 'assign'])->middleware('permission:room.assign');
+    Route::post('/room-assignments/{id}/release', [RoomAssignmentController::class, 'release'])->middleware('permission:room.assign');
 
     Route::get('/schedule', [PageController::class, 'schedule'])->middleware('permission:schedule.view');
 
     // Administration (admin only via '*')
     Route::get('/staff', [AdminController::class, 'staff'])->middleware('permission:staff.manage');
+    Route::get('/staff/create', [AdminController::class, 'createStaff'])->middleware('permission:staff.manage');
+    Route::post('/staff', [AdminController::class, 'storeStaff'])->middleware('permission:staff.manage');
+    Route::get('/staff/{id}/edit', [AdminController::class, 'editStaff'])->middleware('permission:staff.manage');
+    Route::put('/staff/{id}', [AdminController::class, 'updateStaff'])->middleware('permission:staff.manage');
+    Route::post('/staff/{id}/deactivate', [AdminController::class, 'deactivateStaff'])->middleware('permission:staff.manage');
+    Route::post('/staff/{id}/reactivate', [AdminController::class, 'reactivateStaff'])->middleware('permission:staff.manage');
     Route::get('/doctors', [AdminController::class, 'doctors'])->middleware('permission:staff.manage');
     Route::get('/reports', [AdminController::class, 'reports'])->middleware('permission:report.view');
 

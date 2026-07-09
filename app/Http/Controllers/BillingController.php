@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Bill;
 use App\Models\BillItem;
-use App\Models\Patient;
 use App\Models\Payment;
 use App\Services\AuditLogger;
 use Illuminate\Http\Request;
@@ -45,13 +44,12 @@ class BillingController extends Controller
 
         return view('billing.index', [
             'bills' => $bills, 'payments' => $payments, 'status' => $status, 'stats' => $stats,
-            'patients' => Patient::orderBy('last_name')->get(),
         ]);
     }
 
     public function create()
     {
-        return view('billing.form', ['patients' => Patient::orderBy('last_name')->get()]);
+        return view('billing.form');
     }
 
     public function store(Request $request)

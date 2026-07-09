@@ -1,0 +1,153 @@
+- generic [ref=f1e2]:
+  - complementary [ref=f1e3]:
+    - generic [ref=f1e4]:
+      - img [ref=f1e6]
+      - generic [ref=f1e8]:
+        - generic [ref=f1e9]: Smart Hospital
+        - generic [ref=f1e10]: Management System
+    - navigation [ref=f1e11]:
+      - generic [ref=f1e12]:
+        - paragraph [ref=f1e13]: Overview
+        - link "Dashboard" [ref=f1e14] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=f1e15]
+          - text: Dashboard
+      - generic [ref=f1e17]:
+        - paragraph [ref=f1e18]: Patient Care
+        - link "Patients" [ref=f1e19] [cursor=pointer]:
+          - /url: /patients
+          - img [ref=f1e20]
+          - text: Patients
+        - link "Medical Records" [ref=f1e22] [cursor=pointer]:
+          - /url: /medical-records
+          - img [ref=f1e23]
+          - text: Medical Records
+        - link "Treatments" [ref=f1e25] [cursor=pointer]:
+          - /url: /treatments
+          - img [ref=f1e26]
+          - text: Treatments
+    - generic [ref=f1e28]:
+      - link "Profile" [ref=f1e29] [cursor=pointer]:
+        - /url: /profile
+        - img [ref=f1e30]
+        - text: Profile
+      - link "Settings" [ref=f1e32] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=f1e33]
+        - text: Settings
+      - button "Logout" [ref=f1e36]:
+        - img [ref=f1e37]
+        - text: Logout
+  - generic [ref=f1e39]:
+    - banner [ref=f1e40]:
+      - generic [ref=f1e41]:
+        - img
+        - searchbox "Search..." [ref=f1e42]
+      - button "D Doctor doctor@hospital.test" [ref=f1e44]:
+        - generic [ref=f1e45]: D
+        - generic [ref=f1e46]:
+          - generic [ref=f1e47]: Doctor
+          - generic [ref=f1e48]: doctor@hospital.test
+        - img [ref=f1e49]
+    - main [ref=f1e51]:
+      - generic [ref=f1e52]:
+        - paragraph [ref=f1e53]: Welcome back
+        - generic [ref=f1e54]:
+          - generic [ref=f1e55]:
+            - heading "Doctor" [level=1] [ref=f1e56]
+            - paragraph [ref=f1e57]: Doctor Dashboard
+          - paragraph [ref=f1e58]:
+            - text: Thursday, July 9
+            - text: "2026"
+      - link "View Patients" [ref=f1e60] [cursor=pointer]:
+        - /url: /patients
+        - img [ref=f1e61]
+        - text: View Patients
+      - generic [ref=f1e63]:
+        - generic [ref=f1e65]:
+          - generic [ref=f1e66]:
+            - paragraph [ref=f1e67]: My Patients
+            - paragraph [ref=f1e68]: "182899"
+          - img [ref=f1e70]
+        - generic [ref=f1e73]:
+          - generic [ref=f1e74]:
+            - paragraph [ref=f1e75]: Today's Consults
+            - paragraph [ref=f1e76]: "495"
+          - img [ref=f1e78]
+        - generic [ref=f1e81]:
+          - generic [ref=f1e82]:
+            - paragraph [ref=f1e83]: Pending Reports
+            - paragraph [ref=f1e84]: "0"
+          - img [ref=f1e86]
+        - generic [ref=f1e89]:
+          - generic [ref=f1e90]:
+            - paragraph [ref=f1e91]: Critical Cases
+            - paragraph [ref=f1e92]: "124901"
+          - img [ref=f1e94]
+      - generic [ref=f1e96]:
+        - generic [ref=f1e97]:
+          - paragraph [ref=f1e98]: Today's Patients
+          - generic [ref=f1e99]:
+            - generic [ref=f1e100]:
+              - generic [ref=f1e101]:
+                - paragraph [ref=f1e102]: Marguerite Bechtelar
+                - paragraph [ref=f1e103]: Consultation · 00:01
+              - generic [ref=f1e104]: Icu
+            - generic [ref=f1e105]:
+              - generic [ref=f1e106]:
+                - paragraph [ref=f1e107]: Ronny Eichmann
+                - paragraph [ref=f1e108]: Post-op review · 00:02
+              - generic [ref=f1e109]: Admitted
+            - generic [ref=f1e110]:
+              - generic [ref=f1e111]:
+                - paragraph [ref=f1e112]: Wilhelm Jacobs
+                - paragraph [ref=f1e113]: Symptom review · 00:04
+              - generic [ref=f1e114]: Active
+            - generic [ref=f1e115]:
+              - generic [ref=f1e116]:
+                - paragraph [ref=f1e117]: Jasmin Crona
+                - paragraph [ref=f1e118]: Annual physical · 00:07
+              - generic [ref=f1e119]: Discharged
+            - generic [ref=f1e120]:
+              - generic [ref=f1e121]:
+                - paragraph [ref=f1e122]: Summer Hand
+                - paragraph [ref=f1e123]: Consultation · 00:08
+              - generic [ref=f1e124]: Active
+            - generic [ref=f1e125]:
+              - generic [ref=f1e126]:
+                - paragraph [ref=f1e127]: Luisa Kerluke
+                - paragraph [ref=f1e128]: Routine checkup · 00:09
+              - generic [ref=f1e129]: Inactive
+        - generic [ref=f1e130]:
+          - paragraph [ref=f1e131]: Pending Lab Results
+          - generic [ref=f1e132]:
+            - generic [ref=f1e133]:
+              - generic [ref=f1e134]:
+                - paragraph [ref=f1e135]: Blood Culture
+                - paragraph [ref=f1e136]: Mina Witting
+              - generic [ref=f1e137]: In Progress
+            - generic [ref=f1e138]:
+              - generic [ref=f1e139]:
+                - paragraph [ref=f1e140]: Blood Test
+                - paragraph [ref=f1e141]: Anika Fisher
+              - generic [ref=f1e142]: Pending
+            - generic [ref=f1e143]:
+              - generic [ref=f1e144]:
+                - paragraph [ref=f1e145]: Blood Culture
+                - paragraph [ref=f1e146]: Desiree Brekke
+              - generic [ref=f1e147]: Pending
+            - generic [ref=f1e148]:
+              - generic [ref=f1e149]:
+                - paragraph [ref=f1e150]: Blood Test
+                - paragraph [ref=f1e151]: Viola Daniel
+              - generic [ref=f1e152]: In Progress
+            - generic [ref=f1e153]:
+              - generic [ref=f1e154]:
+                - paragraph [ref=f1e155]: CT Scan
+                - paragraph [ref=f1e156]: Rebeca Boyle
+              - generic [ref=f1e157]: In Progress
+            - generic [ref=f1e158]:
+              - generic [ref=f1e159]:
+                - paragraph [ref=f1e160]: Lipid Panel
+                - paragraph [ref=f1e161]: Neoma Kutch
+              - generic [ref=f1e162]: In Progress

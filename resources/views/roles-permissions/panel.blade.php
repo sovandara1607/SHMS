@@ -22,6 +22,10 @@ $totalGranted = $isProtected ? collect($catalog)->flatMap(fn ($c) => array_keys(
                 <div class="flex items-center gap-2">
                     <button type="button" class="text-xs font-medium text-blue-600 hover:underline" onclick="this.closest('form').querySelectorAll('input[type=checkbox]').forEach(c => c.checked = true)">Select All</button>
                     <button type="button" class="text-xs font-medium text-slate-500 hover:underline" onclick="this.closest('form').querySelectorAll('input[type=checkbox]').forEach(c => c.checked = false)">Clear</button>
+                    <button type="button" class="text-xs font-medium text-slate-500 hover:underline"
+                            title="Re-check the documented default permissions for this role. Review, then Save Changes to apply."
+                            data-defaults="{{ json_encode(array_values($configDefaults)) }}"
+                            onclick="const d = JSON.parse(this.dataset.defaults); this.closest('form').querySelectorAll('input[type=checkbox]').forEach(c => c.checked = d.includes(c.value))">Restore Defaults</button>
                     <x-button variant="primary" type="submit">Save Changes</x-button>
                 </div>
             @endunless

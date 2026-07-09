@@ -1,0 +1,154 @@
+- generic [ref=f1e2]:
+  - complementary [ref=f1e3]:
+    - generic [ref=f1e4]:
+      - img [ref=f1e6]
+      - generic [ref=f1e8]:
+        - generic [ref=f1e9]: Smart Hospital
+        - generic [ref=f1e10]: Management System
+    - navigation [ref=f1e11]:
+      - generic [ref=f1e12]:
+        - paragraph [ref=f1e13]: Overview
+        - link "Dashboard" [ref=f1e14] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=f1e15]
+          - text: Dashboard
+      - generic [ref=f1e17]:
+        - paragraph [ref=f1e18]: Patient Care
+        - link "Patients" [ref=f1e19] [cursor=pointer]:
+          - /url: /patients
+          - img [ref=f1e20]
+          - text: Patients
+        - link "Appointments" [ref=f1e22] [cursor=pointer]:
+          - /url: /appointments
+          - img [ref=f1e23]
+          - text: Appointments
+      - generic [ref=f1e25]:
+        - paragraph [ref=f1e26]: Hospital
+        - link "Rooms & Beds" [ref=f1e27] [cursor=pointer]:
+          - /url: /rooms
+          - img [ref=f1e28]
+          - text: Rooms & Beds
+      - generic [ref=f1e30]:
+        - paragraph [ref=f1e31]: Services
+        - link "Billing & Payments" [ref=f1e32] [cursor=pointer]:
+          - /url: /bills
+          - img [ref=f1e33]
+          - text: Billing & Payments
+    - generic [ref=f1e35]:
+      - link "Profile" [ref=f1e36] [cursor=pointer]:
+        - /url: /profile
+        - img [ref=f1e37]
+        - text: Profile
+      - link "Settings" [ref=f1e39] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=f1e40]
+        - text: Settings
+      - button "Logout" [ref=f1e43]:
+        - img [ref=f1e44]
+        - text: Logout
+  - generic [ref=f1e46]:
+    - banner [ref=f1e47]:
+      - generic [ref=f1e48]:
+        - img
+        - searchbox "Search..." [ref=f1e49]
+      - button "R Receptionist reception@hospital.test" [ref=f1e51]:
+        - generic [ref=f1e52]: R
+        - generic [ref=f1e53]:
+          - generic [ref=f1e54]: Receptionist
+          - generic [ref=f1e55]: reception@hospital.test
+        - img [ref=f1e56]
+    - main [ref=f1e58]:
+      - generic [ref=f1e59]:
+        - paragraph [ref=f1e60]: Welcome back
+        - generic [ref=f1e61]:
+          - generic [ref=f1e62]:
+            - heading "Receptionist" [level=1] [ref=f1e63]
+            - paragraph [ref=f1e64]: Receptionist Dashboard
+          - paragraph [ref=f1e65]:
+            - text: Wednesday, July 8
+            - text: "2026"
+      - generic [ref=f1e66]:
+        - link "Register Patient" [ref=f1e67] [cursor=pointer]:
+          - /url: /patients
+          - img [ref=f1e68]
+          - text: Register Patient
+        - link "Book Appointment" [ref=f1e70] [cursor=pointer]:
+          - /url: /appointments
+          - img [ref=f1e71]
+          - text: Book Appointment
+        - link "Assign Room" [ref=f1e73] [cursor=pointer]:
+          - /url: /rooms
+          - img [ref=f1e74]
+          - text: Assign Room
+        - link "Create Bill" [ref=f1e76] [cursor=pointer]:
+          - /url: /bills
+          - img [ref=f1e77]
+          - text: Create Bill
+      - generic [ref=f1e79]:
+        - generic [ref=f1e81]:
+          - generic [ref=f1e82]:
+            - paragraph [ref=f1e83]: Today's Check-ins
+            - paragraph [ref=f1e84]: "471"
+          - img [ref=f1e86]
+        - generic [ref=f1e89]:
+          - generic [ref=f1e90]:
+            - paragraph [ref=f1e91]: Pending Appointments
+            - paragraph [ref=f1e92]: "67303"
+          - img [ref=f1e94]
+        - generic [ref=f1e97]:
+          - generic [ref=f1e98]:
+            - paragraph [ref=f1e99]: Available Rooms
+            - paragraph [ref=f1e100]: "0"
+          - img [ref=f1e102]
+        - generic [ref=f1e105]:
+          - generic [ref=f1e106]:
+            - paragraph [ref=f1e107]: Unpaid Bills
+            - paragraph [ref=f1e108]: "139964"
+          - img [ref=f1e110]
+      - generic [ref=f1e112]:
+        - generic [ref=f1e113]:
+          - paragraph [ref=f1e114]: Upcoming Appointments
+          - generic [ref=f1e115]:
+            - generic [ref=f1e116]:
+              - generic [ref=f1e117]:
+                - paragraph [ref=f1e118]: Zula Douglas
+                - paragraph [ref=f1e119]: David Heart · 2026-07-08
+              - generic [ref=f1e120]: Scheduled
+            - generic [ref=f1e121]:
+              - generic [ref=f1e122]:
+                - paragraph [ref=f1e123]: Maegan McCullough
+                - paragraph [ref=f1e124]: David Heart · 2026-07-08
+              - generic [ref=f1e125]: Scheduled
+            - generic [ref=f1e126]:
+              - generic [ref=f1e127]:
+                - paragraph [ref=f1e128]: Terrill Ratke
+                - paragraph [ref=f1e129]: David Heart · 2026-07-08
+              - generic [ref=f1e130]: Scheduled
+            - generic [ref=f1e131]:
+              - generic [ref=f1e132]:
+                - paragraph [ref=f1e133]: Reta Heaney
+                - paragraph [ref=f1e134]: David Heart · 2026-07-08
+              - generic [ref=f1e135]: Scheduled
+            - generic [ref=f1e136]:
+              - generic [ref=f1e137]:
+                - paragraph [ref=f1e138]: Efren Predovic
+                - paragraph [ref=f1e139]: David Heart · 2026-07-08
+              - generic [ref=f1e140]: Scheduled
+        - generic [ref=f1e141]:
+          - paragraph [ref=f1e142]: Outstanding Bills
+          - generic [ref=f1e143]:
+            - generic [ref=f1e144]:
+              - paragraph [ref=f1e145]: Destany Kreiger · $6,968.49
+              - generic [ref=f1e146]: Unpaid
+            - generic [ref=f1e147]:
+              - paragraph [ref=f1e148]: Sammy Keebler · $6,938.97
+              - generic [ref=f1e149]: Partially Paid
+            - generic [ref=f1e150]:
+              - paragraph [ref=f1e151]: Wendy Kub · $6,895.83
+              - generic [ref=f1e152]: Partially Paid
+            - generic [ref=f1e153]:
+              - paragraph [ref=f1e154]: Emie Parisian · $6,887.79
+              - generic [ref=f1e155]: Partially Paid
+            - generic [ref=f1e156]:
+              - paragraph [ref=f1e157]: Marcelino Daugherty · $6,812.97
+              - generic [ref=f1e158]: Unpaid

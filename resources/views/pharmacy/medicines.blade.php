@@ -13,7 +13,7 @@
      }"
      x-init="@if($errors->any() && old('_modal_target'))openModal(@js(old('_modal_target')))@endif"
 >
-    <x-page-header title="Pharmacy &amp; Inventory">
+    <x-page-header title="Pharmacy & Inventory">
         <x-slot:actions>
             <template x-if="tab === 'inventory'">
                 @can('medicine.create')

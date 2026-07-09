@@ -1,0 +1,323 @@
+- generic [ref=e2]:
+  - complementary [ref=e3]:
+    - generic [ref=e4]:
+      - img [ref=e6]
+      - generic [ref=e8]:
+        - generic [ref=e9]: Smart Hospital
+        - generic [ref=e10]: Management System
+    - navigation [ref=e11]:
+      - generic [ref=e12]:
+        - paragraph [ref=e13]: Overview
+        - link "Dashboard" [ref=e14] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e15]
+          - text: Dashboard
+      - generic [ref=e17]:
+        - paragraph [ref=e18]: Patient Care
+        - link "Patients" [ref=e19] [cursor=pointer]:
+          - /url: /patients
+          - img [ref=e20]
+          - text: Patients
+        - link "Appointments" [ref=e22] [cursor=pointer]:
+          - /url: /appointments
+          - img [ref=e23]
+          - text: Appointments
+        - link "Medical Records" [ref=e25] [cursor=pointer]:
+          - /url: /medical-records
+          - img [ref=e26]
+          - text: Medical Records
+        - link "Treatments" [ref=e28] [cursor=pointer]:
+          - /url: /treatments
+          - img [ref=e29]
+          - text: Treatments
+      - generic [ref=e31]:
+        - paragraph [ref=e32]: Hospital
+        - link "Staff" [ref=e33] [cursor=pointer]:
+          - /url: /staff
+          - img [ref=e34]
+          - text: Staff
+        - link "Departments" [ref=e36] [cursor=pointer]:
+          - /url: /departments
+          - img [ref=e37]
+          - text: Departments
+        - link "Rooms & Beds" [ref=e39] [cursor=pointer]:
+          - /url: /rooms
+          - img [ref=e40]
+          - text: Rooms & Beds
+      - generic [ref=e42]:
+        - paragraph [ref=e43]: Services
+        - link "Pharmacy" [ref=e44] [cursor=pointer]:
+          - /url: /medicines
+          - img [ref=e45]
+          - text: Pharmacy
+        - link "Laboratory" [ref=e47] [cursor=pointer]:
+          - /url: /lab-orders
+          - img [ref=e48]
+          - text: Laboratory
+        - link "Billing & Payments" [ref=e50] [cursor=pointer]:
+          - /url: /bills
+          - img [ref=e51]
+          - text: Billing & Payments
+      - generic [ref=e53]:
+        - paragraph [ref=e54]: Administration
+        - link "Roles & Permissions" [ref=e55] [cursor=pointer]:
+          - /url: /roles-permissions
+          - img [ref=e56]
+          - text: Roles & Permissions
+        - link "Settings" [ref=e58] [cursor=pointer]:
+          - /url: /hospital-settings
+          - img [ref=e59]
+          - text: Settings
+    - generic [ref=e61]:
+      - link "Profile" [ref=e62] [cursor=pointer]:
+        - /url: /profile
+        - img [ref=e63]
+        - text: Profile
+      - link "Settings" [ref=e65] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e66]
+        - text: Settings
+      - button "Logout" [ref=e69]:
+        - img [ref=e70]
+        - text: Logout
+  - generic [ref=e72]:
+    - banner [ref=e73]:
+      - generic [ref=e74]:
+        - img
+        - searchbox "Search..." [ref=e75]
+      - button "A Admin admin@hospital.test" [ref=e77]:
+        - generic [ref=e78]: A
+        - generic [ref=e79]:
+          - generic [ref=e80]: Admin
+          - generic [ref=e81]: admin@hospital.test
+        - img [ref=e82]
+    - main [ref=e84]:
+      - generic [ref=e85]:
+        - heading "Roles & Permissions" [level=1] [ref=e88]
+        - generic [ref=e89]:
+          - generic [ref=e90]:
+            - paragraph [ref=e91]: System Roles
+            - paragraph [ref=e92]: 7 roles defined
+            - generic [ref=e93]:
+              - button "Super Admin Full system access Protected" [ref=e94]:
+                - generic [ref=e95]:
+                  - generic [ref=e96]: Super Admin
+                  - generic [ref=e97]: Full system access
+                - generic [ref=e98]: Protected
+              - button "Admin Full system access" [ref=e99]:
+                - generic [ref=e100]:
+                  - generic [ref=e101]: Admin
+                  - generic [ref=e102]: Full system access
+              - button "Doctor Doctor" [ref=e103]:
+                - generic [ref=e104]:
+                  - generic [ref=e105]: Doctor
+                  - generic [ref=e106]: Doctor
+              - button "Nurse Nurse" [ref=e107]:
+                - generic [ref=e108]:
+                  - generic [ref=e109]: Nurse
+                  - generic [ref=e110]: Nurse
+              - button "Receptionist Receptionist" [ref=e111]:
+                - generic [ref=e112]:
+                  - generic [ref=e113]: Receptionist
+                  - generic [ref=e114]: Receptionist
+              - button "Pharmacist Pharmacist" [ref=e115]:
+                - generic [ref=e116]:
+                  - generic [ref=e117]: Pharmacist
+                  - generic [ref=e118]: Pharmacist
+              - button "Lab Technician Lab Technician" [ref=e119]:
+                - generic [ref=e120]:
+                  - generic [ref=e121]: Lab Technician
+                  - generic [ref=e122]: Lab Technician
+          - generic [ref=e125]:
+            - generic [ref=e126]:
+              - generic [ref=e127]:
+                - paragraph [ref=e128]: Permissions — Doctor
+                - paragraph [ref=e129]: 26 permissions granted
+              - generic [ref=e130]:
+                - button "Select All" [ref=e131]
+                - button "Clear" [ref=e132]
+                - button "Restore Defaults" [ref=e133]
+                - button "Save Changes" [ref=e134]
+            - generic [ref=e135]:
+              - generic [ref=e136]:
+                - paragraph [ref=e137]: Patient Management
+                - generic [ref=e138]:
+                  - generic [ref=e139]:
+                    - checkbox "View Patients" [checked] [ref=e140]
+                    - text: View Patients
+                  - generic [ref=e141]:
+                    - checkbox "Add Patients" [checked] [ref=e142]
+                    - text: Add Patients
+                  - generic [ref=e143]:
+                    - checkbox "Edit Patients" [checked] [ref=e144]
+                    - text: Edit Patients
+                  - generic [ref=e145]:
+                    - checkbox "Discharge Patients" [checked] [ref=e146]
+                    - text: Discharge Patients
+              - generic [ref=e147]:
+                - paragraph [ref=e148]: Appointments
+                - generic [ref=e149]:
+                  - generic [ref=e150]:
+                    - checkbox "View Appointments" [checked] [ref=e151]
+                    - text: View Appointments
+                  - generic [ref=e152]:
+                    - checkbox "Book Appointments" [ref=e153]
+                    - text: Book Appointments
+                  - generic [ref=e154]:
+                    - checkbox "Manage Appointments" [ref=e155]
+                    - text: Manage Appointments
+                  - generic [ref=e156]:
+                    - checkbox "Cancel Appointments" [ref=e157]
+                    - text: Cancel Appointments
+              - generic [ref=e158]:
+                - paragraph [ref=e159]: Medical Records & Treatment
+                - generic [ref=e160]:
+                  - generic [ref=e161]:
+                    - checkbox "View Medical Records" [checked] [ref=e162]
+                    - text: View Medical Records
+                  - generic [ref=e163]:
+                    - checkbox "Create Medical Records" [checked] [ref=e164]
+                    - text: Create Medical Records
+                  - generic [ref=e165]:
+                    - checkbox "Adjust Medical Records" [checked] [ref=e166]
+                    - text: Adjust Medical Records
+                  - generic [ref=e167]:
+                    - checkbox "View Treatments" [checked] [ref=e168]
+                    - text: View Treatments
+                  - generic [ref=e169]:
+                    - checkbox "Create Treatments" [checked] [ref=e170]
+                    - text: Create Treatments
+                  - generic [ref=e171]:
+                    - checkbox "View Prescriptions" [checked] [ref=e172]
+                    - text: View Prescriptions
+                  - generic [ref=e173]:
+                    - checkbox "Create Prescriptions" [checked] [ref=e174]
+                    - text: Create Prescriptions
+                  - generic [ref=e175]:
+                    - checkbox "View Procedures" [checked] [ref=e176]
+                    - text: View Procedures
+                  - generic [ref=e177]:
+                    - checkbox "Create Procedures" [checked] [ref=e178]
+                    - text: Create Procedures
+                  - generic [ref=e179]:
+                    - checkbox "View Medical Reports" [checked] [ref=e180]
+                    - text: View Medical Reports
+                  - generic [ref=e181]:
+                    - checkbox "Generate Medical Reports" [checked] [ref=e182]
+                    - text: Generate Medical Reports
+                  - generic [ref=e183]:
+                    - checkbox "View Vital Signs" [checked] [ref=e184]
+                    - text: View Vital Signs
+                  - generic [ref=e185]:
+                    - checkbox "Record Vital Signs" [ref=e186]
+                    - text: Record Vital Signs
+              - generic [ref=e187]:
+                - paragraph [ref=e188]: Pharmacy
+                - generic [ref=e189]:
+                  - generic [ref=e190]:
+                    - checkbox "View Pharmacy" [ref=e191]
+                    - text: View Pharmacy
+                  - generic [ref=e192]:
+                    - checkbox "Add Medicines" [ref=e193]
+                    - text: Add Medicines
+                  - generic [ref=e194]:
+                    - checkbox "Update Medicines" [ref=e195]
+                    - text: Update Medicines
+                  - generic [ref=e196]:
+                    - checkbox "View Batches" [ref=e197]
+                    - text: View Batches
+                  - generic [ref=e198]:
+                    - checkbox "Add Batches" [ref=e199]
+                    - text: Add Batches
+                  - generic [ref=e200]:
+                    - checkbox "Update Batches" [ref=e201]
+                    - text: Update Batches
+                  - generic [ref=e202]:
+                    - checkbox "View Drug Interactions" [ref=e203]
+                    - text: View Drug Interactions
+                  - generic [ref=e204]:
+                    - checkbox "Manage Drug Interactions" [ref=e205]
+                    - text: Manage Drug Interactions
+                  - generic [ref=e206]:
+                    - checkbox "View Drug Substitutions" [ref=e207]
+                    - text: View Drug Substitutions
+                  - generic [ref=e208]:
+                    - checkbox "Manage Drug Substitutions" [ref=e209]
+                    - text: Manage Drug Substitutions
+                  - generic [ref=e210]:
+                    - checkbox "View Dispensing Records" [ref=e211]
+                    - text: View Dispensing Records
+                  - generic [ref=e212]:
+                    - checkbox "Dispense Medicine" [ref=e213]
+                    - text: Dispense Medicine
+              - generic [ref=e214]:
+                - paragraph [ref=e215]: Laboratory
+                - generic [ref=e216]:
+                  - generic [ref=e217]:
+                    - checkbox "View Lab Orders" [checked] [ref=e218]
+                    - text: View Lab Orders
+                  - generic [ref=e219]:
+                    - checkbox "Create Lab Orders" [checked] [ref=e220]
+                    - text: Create Lab Orders
+                  - generic [ref=e221]:
+                    - checkbox "Update Lab Orders" [checked] [ref=e222]
+                    - text: Update Lab Orders
+                  - generic [ref=e223]:
+                    - checkbox "View Lab Results" [checked] [ref=e224]
+                    - text: View Lab Results
+                  - generic [ref=e225]:
+                    - checkbox "Enter Lab Results" [checked] [ref=e226]
+                    - text: Enter Lab Results
+                  - generic [ref=e227]:
+                    - checkbox "View Lab Equipment" [checked] [ref=e228]
+                    - text: View Lab Equipment
+                  - generic [ref=e229]:
+                    - checkbox "Manage Lab Equipment" [checked] [ref=e230]
+                    - text: Manage Lab Equipment
+                  - generic [ref=e231]:
+                    - checkbox "View Lab Reports" [checked] [ref=e232]
+                    - text: View Lab Reports
+                  - generic [ref=e233]:
+                    - checkbox "Generate Lab Reports" [checked] [ref=e234]
+                    - text: Generate Lab Reports
+              - generic [ref=e235]:
+                - paragraph [ref=e236]: Billing
+                - generic [ref=e237]:
+                  - generic [ref=e238]:
+                    - checkbox "View Billing" [ref=e239]
+                    - text: View Billing
+                  - generic [ref=e240]:
+                    - checkbox "Create Bills" [ref=e241]
+                    - text: Create Bills
+                  - generic [ref=e242]:
+                    - checkbox "Manage Billing" [ref=e243]
+                    - text: Manage Billing
+                  - generic [ref=e244]:
+                    - checkbox "View Payments" [ref=e245]
+                    - text: View Payments
+                  - generic [ref=e246]:
+                    - checkbox "Process Payment" [ref=e247]
+                    - text: Process Payment
+              - generic [ref=e248]:
+                - paragraph [ref=e249]: Rooms & Schedule
+                - generic [ref=e250]:
+                  - generic [ref=e251]:
+                    - checkbox "View Rooms & Beds" [ref=e252]
+                    - text: View Rooms & Beds
+                  - generic [ref=e253]:
+                    - checkbox "Assign Rooms & Beds" [ref=e254]
+                    - text: Assign Rooms & Beds
+                  - generic [ref=e255]:
+                    - checkbox "View Schedules" [ref=e256]
+                    - text: View Schedules
+              - generic [ref=e257]:
+                - paragraph [ref=e258]: Staff & System
+                - generic [ref=e259]:
+                  - generic [ref=e260]:
+                    - checkbox "Manage Staff & Departments" [ref=e261]
+                    - text: Manage Staff & Departments
+                  - generic [ref=e262]:
+                    - checkbox "View Reports" [ref=e263]
+                    - text: View Reports
+            - paragraph [ref=e264]: Changes apply immediately after saving. Users with this role will be affected.
+            - button "Save Changes" [ref=e266]

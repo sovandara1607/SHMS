@@ -60,7 +60,37 @@ return [
             'report' => false,
         ],
 
+        // Cloudflare R2 (S3-compatible) — secure document upload for PDFs /
+        // lab reports, per the system architecture diagram's "Central
+        // Service" box. Falls back to the local disk (see 'documents'
+        // below) until real R2 credentials are supplied.
+        'r2' => [
+            'driver' => 's3',
+            'key' => env('R2_ACCESS_KEY_ID'),
+            'secret' => env('R2_SECRET_ACCESS_KEY'),
+            'region' => 'auto',
+            'bucket' => env('R2_BUCKET'),
+            'url' => env('R2_URL'),
+            'endpoint' => env('R2_ENDPOINT'),
+            'use_path_style_endpoint' => true,
+            'throw' => false,
+            'report' => false,
+        ],
+
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Documents Disk
+    |--------------------------------------------------------------------------
+    |
+    | Where generated lab report / medical report PDFs are stored. Defaults
+    | to R2 in any environment where R2 credentials are configured, and to
+    | the local disk otherwise (local dev without R2 creds, tests).
+    |
+    */
+
+    'documents' => env('DOCUMENTS_DISK', env('R2_ACCESS_KEY_ID') ? 'r2' : 'local'),
 
     /*
     |--------------------------------------------------------------------------

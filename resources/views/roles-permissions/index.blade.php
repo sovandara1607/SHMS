@@ -12,7 +12,7 @@
         }
      }"
 >
-    <x-page-header title="Roles &amp; Permissions" />
+    <x-page-header title="Roles & Permissions" />
 
     <div class="grid grid-cols-1 gap-5 lg:grid-cols-[280px_1fr]">
         <div class="rounded-xl border border-slate-200 bg-white p-3">

@@ -1,0 +1,155 @@
+- generic [ref=f118e2]:
+  - complementary [ref=f118e3]:
+    - generic [ref=f118e4]:
+      - img [ref=f118e6]
+      - generic [ref=f118e8]:
+        - generic [ref=f118e9]: Smart Hospital
+        - generic [ref=f118e10]: Management System
+    - navigation [ref=f118e11]:
+      - generic [ref=f118e12]:
+        - paragraph [ref=f118e13]: Overview
+        - link "Dashboard" [ref=f118e14] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=f118e15]
+          - text: Dashboard
+      - generic [ref=f118e17]:
+        - paragraph [ref=f118e18]: Patient Care
+        - link "Patients" [ref=f118e19] [cursor=pointer]:
+          - /url: /patients
+          - img [ref=f118e20]
+          - text: Patients
+        - link "Appointments" [ref=f118e22] [cursor=pointer]:
+          - /url: /appointments
+          - img [ref=f118e23]
+          - text: Appointments
+        - link "Medical Records" [ref=f118e25] [cursor=pointer]:
+          - /url: /medical-records
+          - img [ref=f118e26]
+          - text: Medical Records
+        - link "Treatments" [ref=f118e28] [cursor=pointer]:
+          - /url: /treatments
+          - img [ref=f118e29]
+          - text: Treatments
+      - generic [ref=f118e31]:
+        - paragraph [ref=f118e32]: Hospital
+        - link "Staff" [ref=f118e33] [cursor=pointer]:
+          - /url: /staff
+          - img [ref=f118e34]
+          - text: Staff
+        - link "Departments" [ref=f118e36] [cursor=pointer]:
+          - /url: /departments
+          - img [ref=f118e37]
+          - text: Departments
+        - link "Rooms & Beds" [ref=f118e39] [cursor=pointer]:
+          - /url: /rooms
+          - img [ref=f118e40]
+          - text: Rooms & Beds
+      - generic [ref=f118e42]:
+        - paragraph [ref=f118e43]: Services
+        - link "Pharmacy" [ref=f118e44] [cursor=pointer]:
+          - /url: /medicines
+          - img [ref=f118e45]
+          - text: Pharmacy
+        - link "Laboratory" [ref=f118e47] [cursor=pointer]:
+          - /url: /lab-orders
+          - img [ref=f118e48]
+          - text: Laboratory
+        - link "Billing & Payments" [ref=f118e50] [cursor=pointer]:
+          - /url: /bills
+          - img [ref=f118e51]
+          - text: Billing & Payments
+      - generic [ref=f118e53]:
+        - paragraph [ref=f118e54]: Administration
+        - link "Roles & Permissions" [ref=f118e55] [cursor=pointer]:
+          - /url: /roles-permissions
+          - img [ref=f118e56]
+          - text: Roles & Permissions
+        - link "Settings" [ref=f118e58] [cursor=pointer]:
+          - /url: /hospital-settings
+          - img [ref=f118e59]
+          - text: Settings
+    - generic [ref=f118e61]:
+      - link "Profile" [ref=f118e62] [cursor=pointer]:
+        - /url: /profile
+        - img [ref=f118e63]
+        - text: Profile
+      - link "Settings" [ref=f118e65] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=f118e66]
+        - text: Settings
+      - button "Logout" [ref=f118e69]:
+        - img [ref=f118e70]
+        - text: Logout
+  - generic [ref=f118e72]:
+    - banner [ref=f118e73]:
+      - generic [ref=f118e74]:
+        - img
+        - searchbox "Search..." [ref=f118e75]
+      - button "A Admin admin@hospital.test" [ref=f118e77]:
+        - generic [ref=f118e78]: A
+        - generic [ref=f118e79]:
+          - generic [ref=f118e80]: Admin
+          - generic [ref=f118e81]: admin@hospital.test
+        - img [ref=f118e82]
+    - main [ref=f118e84]:
+      - generic [ref=f118e85]:
+        - generic [ref=f118e86]:
+          - generic [ref=f118e87]:
+            - heading "Patient Management" [level=1] [ref=f118e88]
+            - paragraph [ref=f118e89]: 1 total patients registered
+          - generic [ref=f118e90]:
+            - button "Export" [ref=f118e91]:
+              - img [ref=f118e92]
+              - text: Export
+            - button "Add Patient" [ref=f118e94]:
+              - img [ref=f118e95]
+              - text: Add Patient
+        - generic [ref=f118e97]:
+          - generic [ref=f118e98]:
+            - img
+            - textbox "Search by name or patient ID..." [ref=f118e99]: PAT0001
+          - generic [ref=f118e100]:
+            - link "All" [ref=f118e101] [cursor=pointer]:
+              - /url: /patients?status=all&q=PAT0001
+            - link "Active" [ref=f118e102] [cursor=pointer]:
+              - /url: /patients?status=active&q=PAT0001
+            - link "Admitted" [ref=f118e103] [cursor=pointer]:
+              - /url: /patients?status=admitted&q=PAT0001
+            - link "ICU" [ref=f118e104] [cursor=pointer]:
+              - /url: /patients?status=icu&q=PAT0001
+            - link "Discharged" [ref=f118e105] [cursor=pointer]:
+              - /url: /patients?status=discharged&q=PAT0001
+            - link "Inactive" [ref=f118e106] [cursor=pointer]:
+              - /url: /patients?status=inactive&q=PAT0001
+        - table [ref=f118e108]:
+          - rowgroup [ref=f118e109]:
+            - row "Patient ID Patient Name Gender Date of Birth / Age Phone Blood Status Actions" [ref=f118e110]:
+              - columnheader "Patient ID" [ref=f118e111]
+              - columnheader "Patient Name" [ref=f118e112]
+              - columnheader "Gender" [ref=f118e113]
+              - columnheader "Date of Birth / Age" [ref=f118e114]
+              - columnheader "Phone" [ref=f118e115]
+              - columnheader "Blood" [ref=f118e116]
+              - columnheader "Status" [ref=f118e117]
+              - columnheader "Actions" [ref=f118e118]
+          - rowgroup [ref=f118e119]:
+            - row "PAT0001 JD John Doe john@example.test Male 1988-04-12 (38 yrs) 0123456789 O+ Active" [ref=f118e120]:
+              - cell "PAT0001" [ref=f118e121]
+              - cell "JD John Doe john@example.test" [ref=f118e122]:
+                - generic [ref=f118e123]:
+                  - generic [ref=f118e124]: JD
+                  - generic [ref=f118e125]:
+                    - generic [ref=f118e126]: John Doe
+                    - generic [ref=f118e127]: john@example.test
+              - cell "Male" [ref=f118e128]
+              - cell "1988-04-12 (38 yrs)" [ref=f118e129]
+              - cell "0123456789" [ref=f118e130]
+              - cell "O+" [ref=f118e131]
+              - cell "Active" [ref=f118e132]:
+                - generic [ref=f118e133]: Active
+              - cell [ref=f118e134]:
+                - generic [ref=f118e135]:
+                  - button [ref=f118e136]:
+                    - img [ref=f118e137]
+                  - button [ref=f118e139]:
+                    - img [ref=f118e140]

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Patient;
 use App\Models\VitalSign;
 use App\Services\AuditLogger;
 use Illuminate\Http\Request;
@@ -22,7 +21,7 @@ class ClinicalController extends Controller
             ->selectRaw("v.*, (p.first_name||' '||p.last_name) as patient_name")
             ->limit(100)->get();
 
-        return view('medical.vitals', ['vitals' => $vitals, 'patients' => Patient::orderBy('last_name')->get()]);
+        return view('medical.vitals', ['vitals' => $vitals]);
     }
 
     public function storeVitals(Request $request)

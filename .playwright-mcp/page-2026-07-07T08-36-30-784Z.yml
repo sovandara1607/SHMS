@@ -1,0 +1,147 @@
+- generic [ref=f5e2]:
+  - complementary [ref=f5e3]:
+    - generic [ref=f5e4]:
+      - img [ref=f5e6]
+      - generic [ref=f5e8]:
+        - generic [ref=f5e9]: Smart Hospital
+        - generic [ref=f5e10]: Management System
+    - navigation [ref=f5e11]:
+      - generic [ref=f5e12]:
+        - paragraph [ref=f5e13]: Overview
+        - link "Dashboard" [ref=f5e14] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=f5e15]
+          - text: Dashboard
+      - generic [ref=f5e17]:
+        - paragraph [ref=f5e18]: Patient Care
+        - link "Patients" [ref=f5e19] [cursor=pointer]:
+          - /url: /patients
+          - img [ref=f5e20]
+          - text: Patients
+        - link "Appointments" [ref=f5e22] [cursor=pointer]:
+          - /url: /appointments
+          - img [ref=f5e23]
+          - text: Appointments
+        - link "Medical Records" [ref=f5e25] [cursor=pointer]:
+          - /url: /medical-records
+          - img [ref=f5e26]
+          - text: Medical Records
+        - link "Treatments" [ref=f5e28] [cursor=pointer]:
+          - /url: /treatments
+          - img [ref=f5e29]
+          - text: Treatments
+      - generic [ref=f5e31]:
+        - paragraph [ref=f5e32]: Hospital
+        - link "Staff" [ref=f5e33] [cursor=pointer]:
+          - /url: /staff
+          - img [ref=f5e34]
+          - text: Staff
+        - link "Departments" [ref=f5e36] [cursor=pointer]:
+          - /url: /departments
+          - img [ref=f5e37]
+          - text: Departments
+        - link "Rooms & Beds" [ref=f5e39] [cursor=pointer]:
+          - /url: /rooms
+          - img [ref=f5e40]
+          - text: Rooms & Beds
+      - generic [ref=f5e42]:
+        - paragraph [ref=f5e43]: Services
+        - link "Pharmacy" [ref=f5e44] [cursor=pointer]:
+          - /url: /medicines
+          - img [ref=f5e45]
+          - text: Pharmacy
+        - link "Laboratory" [ref=f5e47] [cursor=pointer]:
+          - /url: /lab-orders
+          - img [ref=f5e48]
+          - text: Laboratory
+        - link "Billing & Payments" [ref=f5e50] [cursor=pointer]:
+          - /url: /bills
+          - img [ref=f5e51]
+          - text: Billing & Payments
+      - generic [ref=f5e53]:
+        - paragraph [ref=f5e54]: Administration
+        - link "Roles & Permissions" [ref=f5e55] [cursor=pointer]:
+          - /url: /roles-permissions
+          - img [ref=f5e56]
+          - text: Roles & Permissions
+        - link "Settings" [ref=f5e58] [cursor=pointer]:
+          - /url: /hospital-settings
+          - img [ref=f5e59]
+          - text: Settings
+    - generic [ref=f5e61]:
+      - link "Profile" [ref=f5e62] [cursor=pointer]:
+        - /url: /profile
+        - img [ref=f5e63]
+        - text: Profile
+      - link "Settings" [ref=f5e65] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=f5e66]
+        - text: Settings
+      - button "Logout" [ref=f5e69]:
+        - img [ref=f5e70]
+        - text: Logout
+  - generic [ref=f5e72]:
+    - banner [ref=f5e73]:
+      - generic [ref=f5e74]:
+        - img
+        - searchbox "Search..." [ref=f5e75]
+      - button "S Super Admin superadmin@hospital.test" [ref=f5e77]:
+        - generic [ref=f5e78]: S
+        - generic [ref=f5e79]:
+          - generic [ref=f5e80]: Super Admin
+          - generic [ref=f5e81]: superadmin@hospital.test
+        - img [ref=f5e82]
+    - main [ref=f5e84]:
+      - generic [ref=f5e85]:
+        - generic [ref=f5e86]:
+          - heading "Laboratory &amp; Diagnostics" [level=1] [ref=f5e88]
+          - button "Order Lab Test" [ref=f5e90]:
+            - img [ref=f5e91]
+            - text: Order Lab Test
+        - generic [ref=f5e93]:
+          - generic [ref=f5e95]:
+            - generic [ref=f5e96]:
+              - paragraph [ref=f5e97]: Pending Test Orders
+              - paragraph [ref=f5e98]: "0"
+            - img [ref=f5e100]
+          - generic [ref=f5e103]:
+            - generic [ref=f5e104]:
+              - paragraph [ref=f5e105]: In Progress Tests
+              - paragraph [ref=f5e106]: "0"
+            - img [ref=f5e108]
+          - generic [ref=f5e111]:
+            - generic [ref=f5e112]:
+              - paragraph [ref=f5e113]: Completed Tests
+              - paragraph [ref=f5e114]: "1"
+            - img [ref=f5e116]
+          - generic [ref=f5e119]:
+            - generic [ref=f5e120]:
+              - paragraph [ref=f5e121]: Pending Result Entry
+              - paragraph [ref=f5e122]: "1"
+            - img [ref=f5e124]
+        - generic [ref=f5e126]:
+          - button "Lab Test Orders" [ref=f5e127]
+          - button "Test Results" [ref=f5e128]
+          - button "Lab Reports" [ref=f5e129]
+        - table [ref=f5e132]:
+          - rowgroup [ref=f5e133]:
+            - row "Order ID Patient Test Type Ordered By Technician Status Actions" [ref=f5e134]:
+              - columnheader "Order ID" [ref=f5e135]
+              - columnheader "Patient" [ref=f5e136]
+              - columnheader "Test Type" [ref=f5e137]
+              - columnheader "Ordered By" [ref=f5e138]
+              - columnheader "Technician" [ref=f5e139]
+              - columnheader "Status" [ref=f5e140]
+              - columnheader "Actions" [ref=f5e141]
+          - rowgroup [ref=f5e142]:
+            - row "LAB0001 John Doe Blood Test David Heart Lara Tech Completed" [ref=f5e143]:
+              - cell "LAB0001" [ref=f5e144]
+              - cell "John Doe" [ref=f5e145]
+              - cell "Blood Test" [ref=f5e146]
+              - cell "David Heart" [ref=f5e147]
+              - cell "Lara Tech" [ref=f5e148]
+              - cell "Completed" [ref=f5e149]:
+                - generic [ref=f5e150]: Completed
+              - cell [ref=f5e151]:
+                - button [ref=f5e153]:
+                  - img [ref=f5e154]

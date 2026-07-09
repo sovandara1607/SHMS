@@ -253,7 +253,7 @@ class PharmacyController extends Controller
                         continue;
                     }
                     if ($med->stock_quantity < $qty) {
-                        throw new \RuntimeException("Insufficient stock for {$med->medicine_name}.");
+                        throw new \RuntimeException("Insufficient stock for {$med->medicine_name}." . $this->substitutionSuggestion($med->medicine_id, $qty));
                     }
 
                     // FEFO: earliest-expiry valid batch with enough quantity.
@@ -282,6 +282,23 @@ class PharmacyController extends Controller
         } catch (\Throwable $e) {
             return redirect('/medicines')->with('error', $e->getMessage());
         }
+    }
+
+    /** Suggests a substitute with enough stock, from drug_substitution, when the original is short. */
+    private function substitutionSuggestion(string $medicineId, int $neededQty): string
+    {
+        $alt = DB::table('drug_substitution as ds')
+            ->join('medicine as m', 'm.medicine_id', '=', 'ds.alternative_medicine_id')
+            ->where('ds.original_medicine_id', $medicineId)
+            ->where('m.stock_quantity', '>=', $neededQty)
+            ->selectRaw('m.medicine_name, ds.reason')
+            ->first();
+
+        if (! $alt) {
+            return '';
+        }
+
+        return " Suggested substitute: {$alt->medicine_name}" . ($alt->reason ? " ({$alt->reason})" : '') . '.';
     }
 
     public function interactions()

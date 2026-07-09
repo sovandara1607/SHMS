@@ -10,9 +10,9 @@
             window.dispatchEvent(new CustomEvent('open-modal', { detail: 'room-modal' }));
         }
      }"
-     x-init="@if($errors->any() && old('_modal_target'))openModal(@js(old('_modal_target')))@endif"
+     x-init="@if($errors->any() && old('_modal_target'))openModal(@js(old('_modal_target')))@elseif(session('reopen_room_beds'))openModal(@js('/rooms/' . session('reopen_room_beds') . '/beds'))@endif"
 >
-    <x-page-header title="Room &amp; Bed Management">
+    <x-page-header title="Room & Bed Management">
         <x-slot:actions>
             @can('staff.manage')
                 <x-button variant="primary" x-on:click="openModal('/rooms/create')"><x-icon name="plus" class="h-4 w-4" /> Add Room</x-button>
@@ -43,8 +43,11 @@
                     <td class="px-4 py-3 text-slate-600">{{ $r->beds_available }}</td>
                     <td class="px-4 py-3"><x-badge :status="$r->status" /></td>
                     <td class="px-4 py-3 text-right">
+                        @can('room.assign')
+                            <button type="button" x-on:click="openModal('/rooms/{{ $r->room_id }}/beds')" class="text-sm font-medium text-blue-600 hover:underline">Beds</button>
+                        @endcan
                         @can('staff.manage')
-                            <button type="button" x-on:click="openModal('/rooms/{{ $r->room_id }}/edit')" class="text-slate-400 hover:text-blue-600"><x-icon name="pencil" class="h-4 w-4" /></button>
+                            <button type="button" x-on:click="openModal('/rooms/{{ $r->room_id }}/edit')" class="ml-2 text-slate-400 hover:text-blue-600"><x-icon name="pencil" class="h-4 w-4" /></button>
                         @endcan
                     </td>
                 </tr>

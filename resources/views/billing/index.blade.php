@@ -16,7 +16,7 @@ $filters = ['all' => 'All', 'unpaid' => 'Unpaid', 'partially_paid' => 'Partially
      }"
      x-init="@if($errors->any() && old('_modal_target'))openModal(@js(old('_modal_target')))@elseif(session('reopen_bill'))openModal(@js('/bills/' . session('reopen_bill')))@endif"
 >
-    <x-page-header title="Billing &amp; Payments">
+    <x-page-header title="Billing & Payments">
         <x-slot:actions>
             @can('bill.create')
                 <x-button variant="primary" x-on:click="openModal('/bills/create')"><x-icon name="plus" class="h-4 w-4" /> Create Bill</x-button>

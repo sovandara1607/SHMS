@@ -14,4 +14,14 @@ class PrescriptionItem extends Model
     public string $idPrefix = 'PI';
     public $timestamps = false;
     protected $guarded = [];
+
+    public function prescription()
+    {
+        return $this->belongsTo(Prescription::class, 'prescription_id', 'prescription_id');
+    }
+
+    public function medicine()
+    {
+        return $this->belongsTo(Medicine::class, 'medicine_id', 'medicine_id');
+    }
 }

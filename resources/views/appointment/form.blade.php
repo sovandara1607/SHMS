@@ -12,12 +12,7 @@ $target = $mode === 'create' ? '/appointments/create' : '/appointments/' . $appo
 
     <div>
         <label class="mb-1.5 block text-sm font-medium text-slate-700">Patient *</label>
-        <select name="patient_id" required class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
-            <option value="">— select —</option>
-            @foreach($patients as $p)
-                <option value="{{ $p->patient_id }}" @selected(old('patient_id', $appointment->patient_id) === $p->patient_id)>{{ $p->fullName() }} ({{ $p->patient_id }})</option>
-            @endforeach
-        </select>
+        <x-patient-picker name="patient_id" :selected="$selectedPatient" required />
     </div>
     <div>
         <label class="mb-1.5 block text-sm font-medium text-slate-700">Doctor *</label>

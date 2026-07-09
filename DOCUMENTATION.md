@@ -559,15 +559,37 @@ production add-ons, not part of this build).
   production): `public/index.php` → HTTP Kernel → middleware → **Router**
   (`routes/web.php`) → **12 Controllers** → **39 Eloquent models** / **Services**
   (`OtpService`, `AuditLogger`) → **25 Blade views** with `@can` role-filtered nav.
-  Gates are built from `config/permissions.php` (admin = `*`).
-- **Data stores** — the three databases the app connects to:
+  Gates are built from `config/permissions.php` (admin = `*`) and, for the
+  non-protected roles, the DB-backed `role_permissions` table (editable from
+  the Roles & Permissions screen).
+- **Central Service** (`app/Jobs/`, run via `php artisan queue:work`) — the
+  data-sync/document-processing box in the architecture diagram, implemented
+  as Redis-backed **queued jobs** in this same codebase rather than a second
+  deployable service: `LogAuditEventJob` (audit trail), `SyncMedicalRecordVersionJob`
+  (Mongo version snapshots), `GenerateLabReportDocumentJob` (Mongo snapshot +
+  PDF render + upload). Postgres writes stay synchronous/immediately
+  consistent; the Mongo mirror and generated documents are eventually
+  consistent once the worker picks the job up.
+- **Data stores** — the three databases the app connects to, plus document storage:
   - **🛢 PostgreSQL** (`pgsql`, default) — relational source of truth: 39 tables, FKs, transactions, via Eloquent.
-  - **⚡ Redis** (`phpredis`) — session store, cache (`dashboard:summary`, `medicine:lowstock`, `patient:viewed:*`, `mr:viewed:*`), queue, and OTP codes.
+  - **⚡ Redis** (`phpredis`) — session store, cache (`dashboard:summary`, `medicine:lowstock`, `patient:viewed:*`, `mr:viewed:*`), the job queue, and OTP codes.
   - **🛢 MongoDB** (`mongodb/laravel-mongodb`) — documents: `audit_log_documents`, `medical_record_versions`, `lab_report_documents`.
+  - **📄 Cloudflare R2** (S3-compatible, `config/filesystems.php`'s `documents` disk) — generated lab-report PDFs; falls back to the local disk when R2 credentials aren't configured.
 
 The application is stateless (session in Redis), so it can be horizontally scaled
 behind a load balancer in production — but the current system is a single Laravel
-instance talking to the three data services.
+instance (plus its queue worker process) talking to the three data services.
+
+**Search at scale.** Every search box filters with `ILIKE '%term%'`, which
+can't use a plain B-tree index (leading wildcard). Migration
+`2026_01_02_000005_add_trigram_search_indexes` adds Postgres `pg_trgm` + GIN
+indexes on the searched columns (patient name/phone/email, staff name,
+doctor specialization, department/room/medicine name) — the same `ILIKE`
+queries stay index-backed at any row count, no application code changes
+needed. Verified with `php artisan seed:large` (bulk business-key generation,
+bypassing Eloquent's per-row lookup): at 1,000,002 patients, patient search
+runs in ~3ms via a GIN bitmap index scan (`EXPLAIN ANALYZE`), vs. ~104ms for
+the equivalent sequential scan.
 
 ---
 
@@ -613,18 +635,22 @@ Requires PostgreSQL, MongoDB and Redis running locally (e.g.
 ```bash
 # 1. Dependencies
 composer install
+npm install && npm run build  # or `npm run dev` while developing
 
 # 2. Configure
-cp .env.example .env          # set DB_*, MONGODB_*, REDIS_* credentials
+cp .env.example .env          # set DB_*, MONGODB_*, REDIS_*, R2_* credentials
 php artisan key:generate
 
 # 3. Database (PostgreSQL must exist: createdb smart_hospital)
-php artisan migrate           # creates all 39 tables
+php artisan migrate           # creates all tables
 php artisan db:seed           # demo data + 7 role logins
 mongosh smart_hospital_docs database/mongodb/collections.js   # (optional) sample docs
 
 # 4. Serve
 php artisan serve             # http://127.0.0.1:8000/login
+php artisan queue:work        # separate process — Central Service (§17), required
+                               # for audit logging, medical record versioning,
+                               # and lab report PDF generation to complete
 ```
 
 **Demo logins** (password `Password123!`): `superadmin@hospital.test`,

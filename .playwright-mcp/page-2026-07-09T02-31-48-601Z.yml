@@ -1,0 +1,112 @@
+- generic [ref=f4e2]:
+  - complementary [ref=f4e3]:
+    - generic [ref=f4e4]:
+      - img [ref=f4e6]
+      - generic [ref=f4e8]:
+        - generic [ref=f4e9]: Smart Hospital
+        - generic [ref=f4e10]: Management System
+    - navigation [ref=f4e11]:
+      - generic [ref=f4e12]:
+        - paragraph [ref=f4e13]: Overview
+        - link "Dashboard" [ref=f4e14] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=f4e15]
+          - text: Dashboard
+      - generic [ref=f4e17]:
+        - paragraph [ref=f4e18]: Patient Care
+        - link "Patients" [ref=f4e19] [cursor=pointer]:
+          - /url: /patients
+          - img [ref=f4e20]
+          - text: Patients
+        - link "Appointments" [ref=f4e22] [cursor=pointer]:
+          - /url: /appointments
+          - img [ref=f4e23]
+          - text: Appointments
+        - link "Medical Records" [ref=f4e25] [cursor=pointer]:
+          - /url: /medical-records
+          - img [ref=f4e26]
+          - text: Medical Records
+        - link "Treatments" [ref=f4e28] [cursor=pointer]:
+          - /url: /treatments
+          - img [ref=f4e29]
+          - text: Treatments
+      - generic [ref=f4e31]:
+        - paragraph [ref=f4e32]: Services
+        - link "Laboratory" [ref=f4e33] [cursor=pointer]:
+          - /url: /lab-orders
+          - img [ref=f4e34]
+          - text: Laboratory
+    - generic [ref=f4e36]:
+      - link "Profile" [ref=f4e37] [cursor=pointer]:
+        - /url: /profile
+        - img [ref=f4e38]
+        - text: Profile
+      - link "Settings" [ref=f4e40] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=f4e41]
+        - text: Settings
+      - button "Logout" [ref=f4e44]:
+        - img [ref=f4e45]
+        - text: Logout
+  - generic [ref=f4e47]:
+    - banner [ref=f4e48]:
+      - generic [ref=f4e49]:
+        - img
+        - searchbox "Search..." [ref=f4e50]
+      - button "D Doctor doctor@hospital.test" [ref=f4e52]:
+        - generic [ref=f4e53]: D
+        - generic [ref=f4e54]:
+          - generic [ref=f4e55]: Doctor
+          - generic [ref=f4e56]: doctor@hospital.test
+        - img [ref=f4e57]
+    - main [ref=f4e59]:
+      - generic [ref=f4e60]:
+        - generic [ref=f4e61]:
+          - generic [ref=f4e62]:
+            - heading "Medical Records" [level=1] [ref=f4e63]
+            - paragraph [ref=f4e64]: 2 records total
+          - button "Add Medical Record" [ref=f4e66]:
+            - img [ref=f4e67]
+            - text: Add Medical Record
+        - generic [ref=f4e69]:
+          - generic [ref=f4e70]:
+            - img
+            - textbox "Search by medical record ID, patient ID, patient name, or doctor name..." [ref=f4e71]: PAT0001
+          - combobox [ref=f4e72]:
+            - option "All Doctors" [selected]
+            - option "David Heart"
+            - option "Emily Stone"
+        - table [ref=f4e74]:
+          - rowgroup [ref=f4e75]:
+            - row "Medical Record ID Patient ID Patient Name Doctor Diagnosis Date Version Actions" [ref=f4e76]:
+              - columnheader "Medical Record ID" [ref=f4e77]
+              - columnheader "Patient ID" [ref=f4e78]
+              - columnheader "Patient Name" [ref=f4e79]
+              - columnheader "Doctor" [ref=f4e80]
+              - columnheader "Diagnosis" [ref=f4e81]
+              - columnheader "Date" [ref=f4e82]
+              - columnheader "Version" [ref=f4e83]
+              - columnheader "Actions" [ref=f4e84]
+          - rowgroup [ref=f4e85]:
+            - row "MR0002 PAT0001 John Doe David Heart Routine checkup - all normal 2026-07-07 15:40:00 v1 — Original" [ref=f4e86]:
+              - cell "MR0002" [ref=f4e87]
+              - cell "PAT0001" [ref=f4e88]
+              - cell "John Doe" [ref=f4e89]
+              - cell "David Heart" [ref=f4e90]
+              - cell "Routine checkup - all normal" [ref=f4e91]
+              - cell "2026-07-07 15:40:00" [ref=f4e92]
+              - cell "v1 — Original" [ref=f4e93]
+              - cell [ref=f4e94]:
+                - button [ref=f4e96]:
+                  - img [ref=f4e97]
+            - row "MR0001 PAT0001 John Doe David Heart dasd 2026-07-07 14:56:10 v2" [ref=f4e99]:
+              - cell "MR0001" [ref=f4e100]
+              - cell "PAT0001" [ref=f4e101]
+              - cell "John Doe" [ref=f4e102]
+              - cell "David Heart" [ref=f4e103]
+              - cell "dasd" [ref=f4e104]
+              - cell "2026-07-07 14:56:10" [ref=f4e105]
+              - cell "v2" [ref=f4e106]
+              - cell [ref=f4e107]:
+                - button [ref=f4e109]:
+                  - img [ref=f4e110]

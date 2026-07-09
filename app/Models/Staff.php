@@ -24,6 +24,26 @@ class Staff extends Model
         return $this->hasOne(Doctor::class, 'staff_id', 'staff_id');
     }
 
+    public function nurse()
+    {
+        return $this->hasOne(Nurse::class, 'staff_id', 'staff_id');
+    }
+
+    public function receptionist()
+    {
+        return $this->hasOne(Receptionist::class, 'staff_id', 'staff_id');
+    }
+
+    public function pharmacist()
+    {
+        return $this->hasOne(Pharmacist::class, 'staff_id', 'staff_id');
+    }
+
+    public function labTechnician()
+    {
+        return $this->hasOne(LabTechnician::class, 'staff_id', 'staff_id');
+    }
+
     public function fullName(): string
     {
         return trim($this->first_name . ' ' . $this->last_name);

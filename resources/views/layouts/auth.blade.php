@@ -7,6 +7,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-screen bg-white font-sans text-slate-900 antialiased">
+<x-loading-overlay />
 @yield('content')
 </body>
 </html>

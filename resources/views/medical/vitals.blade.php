@@ -6,10 +6,8 @@
     <h3>Record vital signs</h3>
     <form method="post" action="/vital-signs">
         @csrf
-        <label>Patient *</label><select name="patient_id" required>
-            <option value="">— select —</option>
-            @foreach($patients as $p)<option value="{{ $p->patient_id }}">{{ $p->fullName() }}</option>@endforeach
-        </select>
+        <label>Patient *</label>
+        <x-patient-picker name="patient_id" required />
         <div class="row">
             <div><label>Temperature (°C)</label><input class="input" type="number" step="0.1" name="temperature"></div>
             <div><label>Blood pressure</label><input class="input" name="blood_pressure" placeholder="120/80"></div>

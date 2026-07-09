@@ -1,0 +1,256 @@
+- generic [ref=f112e2]:
+  - complementary [ref=f112e3]:
+    - generic [ref=f112e4]:
+      - img [ref=f112e6]
+      - generic [ref=f112e8]:
+        - generic [ref=f112e9]: Smart Hospital
+        - generic [ref=f112e10]: Management System
+    - navigation [ref=f112e11]:
+      - generic [ref=f112e12]:
+        - paragraph [ref=f112e13]: Overview
+        - link "Dashboard" [ref=f112e14] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=f112e15]
+          - text: Dashboard
+      - generic [ref=f112e17]:
+        - paragraph [ref=f112e18]: Patient Care
+        - link "Patients" [ref=f112e19] [cursor=pointer]:
+          - /url: /patients
+          - img [ref=f112e20]
+          - text: Patients
+        - link "Appointments" [ref=f112e22] [cursor=pointer]:
+          - /url: /appointments
+          - img [ref=f112e23]
+          - text: Appointments
+        - link "Medical Records" [ref=f112e25] [cursor=pointer]:
+          - /url: /medical-records
+          - img [ref=f112e26]
+          - text: Medical Records
+        - link "Treatments" [ref=f112e28] [cursor=pointer]:
+          - /url: /treatments
+          - img [ref=f112e29]
+          - text: Treatments
+      - generic [ref=f112e31]:
+        - paragraph [ref=f112e32]: Hospital
+        - link "Staff" [ref=f112e33] [cursor=pointer]:
+          - /url: /staff
+          - img [ref=f112e34]
+          - text: Staff
+        - link "Departments" [ref=f112e36] [cursor=pointer]:
+          - /url: /departments
+          - img [ref=f112e37]
+          - text: Departments
+        - link "Rooms & Beds" [ref=f112e39] [cursor=pointer]:
+          - /url: /rooms
+          - img [ref=f112e40]
+          - text: Rooms & Beds
+      - generic [ref=f112e42]:
+        - paragraph [ref=f112e43]: Services
+        - link "Pharmacy" [ref=f112e44] [cursor=pointer]:
+          - /url: /medicines
+          - img [ref=f112e45]
+          - text: Pharmacy
+        - link "Laboratory" [ref=f112e47] [cursor=pointer]:
+          - /url: /lab-orders
+          - img [ref=f112e48]
+          - text: Laboratory
+        - link "Billing & Payments" [ref=f112e50] [cursor=pointer]:
+          - /url: /bills
+          - img [ref=f112e51]
+          - text: Billing & Payments
+      - generic [ref=f112e53]:
+        - paragraph [ref=f112e54]: Administration
+        - link "Roles & Permissions" [ref=f112e55] [cursor=pointer]:
+          - /url: /roles-permissions
+          - img [ref=f112e56]
+          - text: Roles & Permissions
+        - link "Settings" [ref=f112e58] [cursor=pointer]:
+          - /url: /hospital-settings
+          - img [ref=f112e59]
+          - text: Settings
+    - generic [ref=f112e61]:
+      - link "Profile" [ref=f112e62] [cursor=pointer]:
+        - /url: /profile
+        - img [ref=f112e63]
+        - text: Profile
+      - link "Settings" [ref=f112e65] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=f112e66]
+        - text: Settings
+      - button "Logout" [ref=f112e69]:
+        - img [ref=f112e70]
+        - text: Logout
+  - generic [ref=f112e72]:
+    - banner [ref=f112e73]:
+      - generic [ref=f112e74]:
+        - img
+        - searchbox "Search..." [ref=f112e75]
+      - button "A Admin admin@hospital.test" [ref=f112e77]:
+        - generic [ref=f112e78]: A
+        - generic [ref=f112e79]:
+          - generic [ref=f112e80]: Admin
+          - generic [ref=f112e81]: admin@hospital.test
+        - img [ref=f112e82]
+    - main [ref=f112e84]:
+      - generic [ref=f112e85]:
+        - generic [ref=f112e86]:
+          - heading "Room & Bed Management" [level=1] [ref=f112e88]
+          - button "Add Room" [ref=f112e90]:
+            - img [ref=f112e91]
+            - text: Add Room
+        - generic [ref=f112e93]:
+          - img
+          - textbox "Search by room ID or number..." [ref=f112e94]
+        - table [ref=f112e96]:
+          - rowgroup [ref=f112e97]:
+            - row "Room No. Type Floor Department Beds Free Status Actions" [ref=f112e98]:
+              - columnheader "Room" [ref=f112e99]
+              - columnheader "No." [ref=f112e100]
+              - columnheader "Type" [ref=f112e101]
+              - columnheader "Floor" [ref=f112e102]
+              - columnheader "Department" [ref=f112e103]
+              - columnheader "Beds" [ref=f112e104]
+              - columnheader "Free" [ref=f112e105]
+              - columnheader "Status" [ref=f112e106]
+              - columnheader "Actions" [ref=f112e107]
+          - rowgroup [ref=f112e108]:
+            - row "RM0001 101 General 1 General Medicine 4 4 Available Beds" [ref=f112e109]:
+              - cell "RM0001" [ref=f112e110]
+              - cell "101" [ref=f112e111]
+              - cell "General" [ref=f112e112]
+              - cell "1" [ref=f112e113]
+              - cell "General Medicine" [ref=f112e114]
+              - cell "4" [ref=f112e115]
+              - cell "4" [ref=f112e116]
+              - cell "Available" [ref=f112e117]:
+                - generic [ref=f112e118]: Available
+              - cell "Beds" [ref=f112e119]:
+                - button "Beds" [active] [ref=f112e120]
+                - button [ref=f112e121]:
+                  - img [ref=f112e122]
+            - row "RM0002 102 General 1 General Medicine 4 4 Available Beds" [ref=f112e124]:
+              - cell "RM0002" [ref=f112e125]
+              - cell "102" [ref=f112e126]
+              - cell "General" [ref=f112e127]
+              - cell "1" [ref=f112e128]
+              - cell "General Medicine" [ref=f112e129]
+              - cell "4" [ref=f112e130]
+              - cell "4" [ref=f112e131]
+              - cell "Available" [ref=f112e132]:
+                - generic [ref=f112e133]: Available
+              - cell "Beds" [ref=f112e134]:
+                - button "Beds" [ref=f112e135]
+                - button [ref=f112e136]:
+                  - img [ref=f112e137]
+            - row "RM0003 103 Private 1 General Medicine 1 1 Available Beds" [ref=f112e139]:
+              - cell "RM0003" [ref=f112e140]
+              - cell "103" [ref=f112e141]
+              - cell "Private" [ref=f112e142]
+              - cell "1" [ref=f112e143]
+              - cell "General Medicine" [ref=f112e144]
+              - cell "1" [ref=f112e145]
+              - cell "1" [ref=f112e146]
+              - cell "Available" [ref=f112e147]:
+                - generic [ref=f112e148]: Available
+              - cell "Beds" [ref=f112e149]:
+                - button "Beds" [ref=f112e150]
+                - button [ref=f112e151]:
+                  - img [ref=f112e152]
+            - row "RM0004 201 Private 2 Cardiology 1 1 Available Beds" [ref=f112e154]:
+              - cell "RM0004" [ref=f112e155]
+              - cell "201" [ref=f112e156]
+              - cell "Private" [ref=f112e157]
+              - cell "2" [ref=f112e158]
+              - cell "Cardiology" [ref=f112e159]
+              - cell "1" [ref=f112e160]
+              - cell "1" [ref=f112e161]
+              - cell "Available" [ref=f112e162]:
+                - generic [ref=f112e163]: Available
+              - cell "Beds" [ref=f112e164]:
+                - button "Beds" [ref=f112e165]
+                - button [ref=f112e166]:
+                  - img [ref=f112e167]
+            - row "RM0005 202 Icu 2 Cardiology 2 2 Available Beds" [ref=f112e169]:
+              - cell "RM0005" [ref=f112e170]
+              - cell "202" [ref=f112e171]
+              - cell "Icu" [ref=f112e172]
+              - cell "2" [ref=f112e173]
+              - cell "Cardiology" [ref=f112e174]
+              - cell "2" [ref=f112e175]
+              - cell "2" [ref=f112e176]
+              - cell "Available" [ref=f112e177]:
+                - generic [ref=f112e178]: Available
+              - cell "Beds" [ref=f112e179]:
+                - button "Beds" [ref=f112e180]
+                - button [ref=f112e181]:
+                  - img [ref=f112e182]
+            - row "RM0006 301 Emergency 3 — 3 3 Available Beds" [ref=f112e184]:
+              - cell "RM0006" [ref=f112e185]
+              - cell "301" [ref=f112e186]
+              - cell "Emergency" [ref=f112e187]
+              - cell "3" [ref=f112e188]
+              - cell "—" [ref=f112e189]
+              - cell "3" [ref=f112e190]
+              - cell "3" [ref=f112e191]
+              - cell "Available" [ref=f112e192]:
+                - generic [ref=f112e193]: Available
+              - cell "Beds" [ref=f112e194]:
+                - button "Beds" [ref=f112e195]
+                - button [ref=f112e196]:
+                  - img [ref=f112e197]
+        - dialog [ref=f112e199]:
+          - generic [ref=f112e203]:
+            - generic [ref=f112e275]:
+              - generic [ref=f112e276]:
+                - heading "Beds — Room 101" [level=3] [ref=f112e277]
+                - paragraph [ref=f112e278]: General Medicine · General
+              - button [ref=f112e279]:
+                - img [ref=f112e280]
+            - generic [ref=f112e282]:
+              - table [ref=f112e283]:
+                - rowgroup [ref=f112e284]:
+                  - row "Bed Status Patient Since Action" [ref=f112e285]:
+                    - columnheader "Bed" [ref=f112e286]
+                    - columnheader "Status" [ref=f112e287]
+                    - columnheader "Patient" [ref=f112e288]
+                    - columnheader "Since" [ref=f112e289]
+                    - columnheader "Action" [ref=f112e290]
+                - rowgroup [ref=f112e291]:
+                  - row "1 Available — — Assign Patient" [ref=f112e292]:
+                    - cell "1" [ref=f112e293]
+                    - cell "Available" [ref=f112e294]:
+                      - generic [ref=f112e295]: Available
+                    - cell "—" [ref=f112e296]
+                    - cell "—" [ref=f112e297]
+                    - cell "Assign Patient" [ref=f112e298]:
+                      - button "Assign Patient" [ref=f112e299]
+                  - row "2 Available — — Assign Patient" [ref=f112e300]:
+                    - cell "2" [ref=f112e301]
+                    - cell "Available" [ref=f112e302]:
+                      - generic [ref=f112e303]: Available
+                    - cell "—" [ref=f112e304]
+                    - cell "—" [ref=f112e305]
+                    - cell "Assign Patient" [ref=f112e306]:
+                      - button "Assign Patient" [ref=f112e307]
+                  - row "3 Available — — Assign Patient" [ref=f112e308]:
+                    - cell "3" [ref=f112e309]
+                    - cell "Available" [ref=f112e310]:
+                      - generic [ref=f112e311]: Available
+                    - cell "—" [ref=f112e312]
+                    - cell "—" [ref=f112e313]
+                    - cell "Assign Patient" [ref=f112e314]:
+                      - button "Assign Patient" [ref=f112e315]
+                  - row "4 Available — — Assign Patient" [ref=f112e316]:
+                    - cell "4" [ref=f112e317]
+                    - cell "Available" [ref=f112e318]:
+                      - generic [ref=f112e319]: Available
+                    - cell "—" [ref=f112e320]
+                    - cell "—" [ref=f112e321]
+                    - cell "Assign Patient" [ref=f112e322]:
+                      - button "Assign Patient" [ref=f112e323]
+              - generic [ref=f112e324]:
+                - generic [ref=f112e325]:
+                  - generic [ref=f112e326]: Add Bed — Bed Number
+                  - textbox "e.g. 5" [ref=f112e327]
+                - button "Add Bed" [ref=f112e328]
+            - button "Close" [ref=f112e330]

@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SyncMedicalRecordVersionJob;
 use App\Models\Doctor;
 use App\Models\MedicalRecord;
 use App\Models\MedicalRecordAdjustment;
+use App\Models\Medicine;
 use App\Models\Patient;
 use App\Models\VitalSign;
 use App\Services\AuditLogger;
@@ -61,6 +63,8 @@ class MedicalRecordController extends Controller
             'record' => $record,
             'adjustments' => $record->adjustments()->orderByDesc('adjusted_at')->get(),
             'versions' => $versions,
+            'prescriptions' => $record->prescriptions()->with('items.medicine')->orderByDesc('prescription_date')->get(),
+            'medicines' => Medicine::orderBy('medicine_name')->get(),
         ]);
     }
 
@@ -70,7 +74,6 @@ class MedicalRecordController extends Controller
 
         return view('medical.create', [
             'patient' => $patient,
-            'patients' => Patient::orderBy('last_name')->get(),
             'doctors'  => Doctor::with('staff')->get(),
         ]);
     }
@@ -104,13 +107,11 @@ class MedicalRecordController extends Controller
             ]);
         }
 
-        // Immutable original version stored in MongoDB.
-        DB::connection('mongodb')->table('medical_record_versions')->insert([
-            'medical_record_id' => $record->medical_record_id,
-            'version' => 1, 'type' => 'original',
-            'snapshot' => $recordData, 'created_by' => Auth::user()->staff_id,
-            'created_at' => now()->toIso8601String(),
-        ]);
+        // Immutable original version mirrored to MongoDB via the Central Service.
+        SyncMedicalRecordVersionJob::dispatch(
+            $record->medical_record_id, 1, 'original', $recordData,
+            Auth::user()->staff_id, null, now()->toIso8601String(),
+        );
         $this->audit->log('medical_record.create', 'medical_record', $record->medical_record_id);
 
         return redirect('/medical-records')->with('success', "Medical record {$record->medical_record_id} created.");
@@ -139,12 +140,10 @@ class MedicalRecordController extends Controller
 
         $version = DB::connection('mongodb')->table('medical_record_versions')
             ->where('medical_record_id', $record->medical_record_id)->count() + 1;
-        DB::connection('mongodb')->table('medical_record_versions')->insert([
-            'medical_record_id' => $record->medical_record_id,
-            'version' => $version, 'type' => 'adjustment',
-            'reason' => $data['reason'], 'snapshot' => $data,
-            'adjusted_by' => Auth::user()->staff_id, 'created_at' => now()->toIso8601String(),
-        ]);
+        SyncMedicalRecordVersionJob::dispatch(
+            $record->medical_record_id, $version, 'adjustment', $data,
+            Auth::user()->staff_id, $data['reason'], now()->toIso8601String(),
+        );
         $this->audit->log('medical_record.adjust', 'medical_record', $record->medical_record_id, ['reason' => $data['reason']]);
 
         return redirect('/medical-records')->with('success', 'Adjustment recorded; original version preserved.')->with('reopen_record', $record->medical_record_id);

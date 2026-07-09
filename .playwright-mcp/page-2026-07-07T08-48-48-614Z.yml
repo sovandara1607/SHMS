@@ -1,0 +1,195 @@
+- generic [ref=e2]:
+  - complementary [ref=e3]:
+    - generic [ref=e4]:
+      - img [ref=e6]
+      - generic [ref=e8]:
+        - generic [ref=e9]: Smart Hospital
+        - generic [ref=e10]: Management System
+    - navigation [ref=e11]:
+      - generic [ref=e12]:
+        - paragraph [ref=e13]: Overview
+        - link "Dashboard" [ref=e14] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e15]
+          - text: Dashboard
+      - generic [ref=e17]:
+        - paragraph [ref=e18]: Patient Care
+        - link "Patients" [ref=e19] [cursor=pointer]:
+          - /url: /patients
+          - img [ref=e20]
+          - text: Patients
+        - link "Appointments" [ref=e22] [cursor=pointer]:
+          - /url: /appointments
+          - img [ref=e23]
+          - text: Appointments
+        - link "Medical Records" [ref=e25] [cursor=pointer]:
+          - /url: /medical-records
+          - img [ref=e26]
+          - text: Medical Records
+        - link "Treatments" [ref=e28] [cursor=pointer]:
+          - /url: /treatments
+          - img [ref=e29]
+          - text: Treatments
+      - generic [ref=e31]:
+        - paragraph [ref=e32]: Hospital
+        - link "Staff" [ref=e33] [cursor=pointer]:
+          - /url: /staff
+          - img [ref=e34]
+          - text: Staff
+        - link "Departments" [ref=e36] [cursor=pointer]:
+          - /url: /departments
+          - img [ref=e37]
+          - text: Departments
+        - link "Rooms & Beds" [ref=e39] [cursor=pointer]:
+          - /url: /rooms
+          - img [ref=e40]
+          - text: Rooms & Beds
+      - generic [ref=e42]:
+        - paragraph [ref=e43]: Services
+        - link "Pharmacy" [ref=e44] [cursor=pointer]:
+          - /url: /medicines
+          - img [ref=e45]
+          - text: Pharmacy
+        - link "Laboratory" [ref=e47] [cursor=pointer]:
+          - /url: /lab-orders
+          - img [ref=e48]
+          - text: Laboratory
+        - link "Billing & Payments" [ref=e50] [cursor=pointer]:
+          - /url: /bills
+          - img [ref=e51]
+          - text: Billing & Payments
+      - generic [ref=e53]:
+        - paragraph [ref=e54]: Administration
+        - link "Roles & Permissions" [ref=e55] [cursor=pointer]:
+          - /url: /roles-permissions
+          - img [ref=e56]
+          - text: Roles & Permissions
+        - link "Settings" [ref=e58] [cursor=pointer]:
+          - /url: /hospital-settings
+          - img [ref=e59]
+          - text: Settings
+    - generic [ref=e61]:
+      - link "Profile" [ref=e62] [cursor=pointer]:
+        - /url: /profile
+        - img [ref=e63]
+        - text: Profile
+      - link "Settings" [ref=e65] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e66]
+        - text: Settings
+      - button "Logout" [ref=e69]:
+        - img [ref=e70]
+        - text: Logout
+  - generic [ref=e72]:
+    - banner [ref=e73]:
+      - generic [ref=e74]:
+        - img
+        - searchbox "Search..." [ref=e75]
+      - button "S Super Admin superadmin@hospital.test" [ref=e77]:
+        - generic [ref=e78]: S
+        - generic [ref=e79]:
+          - generic [ref=e80]: Super Admin
+          - generic [ref=e81]: superadmin@hospital.test
+        - img [ref=e82]
+    - main [ref=e84]:
+      - generic [ref=e85]:
+        - paragraph [ref=e86]: Welcome back
+        - generic [ref=e87]:
+          - generic [ref=e88]:
+            - heading "Super Admin" [level=1] [ref=e89]
+            - paragraph [ref=e90]: Super Admin Dashboard
+          - paragraph [ref=e91]:
+            - text: Tuesday, July 7
+            - text: "2026"
+      - link "Add Staff" [ref=e93] [cursor=pointer]:
+        - /url: /staff
+        - img [ref=e94]
+        - text: Add Staff
+      - generic [ref=e96]:
+        - generic [ref=e98]:
+          - generic [ref=e99]:
+            - paragraph [ref=e100]: Total Patients
+            - paragraph [ref=e101]: "2"
+          - img [ref=e103]
+        - generic [ref=e106]:
+          - generic [ref=e107]:
+            - paragraph [ref=e108]: Total Staff
+            - paragraph [ref=e109]: "7"
+          - img [ref=e111]
+        - generic [ref=e114]:
+          - generic [ref=e115]:
+            - paragraph [ref=e116]: Today's Appointments
+            - paragraph [ref=e117]: "1"
+          - img [ref=e119]
+        - generic [ref=e122]:
+          - generic [ref=e123]:
+            - paragraph [ref=e124]: Available Rooms
+            - paragraph [ref=e125]: "0"
+          - img [ref=e127]
+        - generic [ref=e130]:
+          - generic [ref=e131]:
+            - paragraph [ref=e132]: Pending Lab Tests
+            - paragraph [ref=e133]: "0"
+          - img [ref=e135]
+        - generic [ref=e138]:
+          - generic [ref=e139]:
+            - paragraph [ref=e140]: Monthly Revenue
+            - paragraph [ref=e141]: $0
+          - img [ref=e143]
+      - generic [ref=e145]:
+        - paragraph [ref=e146]: Department Overview
+        - table [ref=e147]:
+          - rowgroup [ref=e148]:
+            - row "Department Name Staff Count Available Rooms" [ref=e149]:
+              - columnheader "Department Name" [ref=e150]
+              - columnheader "Staff Count" [ref=e151]
+              - columnheader "Available Rooms" [ref=e152]
+          - rowgroup [ref=e153]:
+            - row "Cardiology 1 0" [ref=e154]:
+              - cell "Cardiology" [ref=e155]
+              - cell "1" [ref=e156]
+              - cell "0" [ref=e157]
+            - row "General Medicine 1 0" [ref=e158]:
+              - cell "General Medicine" [ref=e159]
+              - cell "1" [ref=e160]
+              - cell "0" [ref=e161]
+            - row "Laboratory Services 0 0" [ref=e162]:
+              - cell "Laboratory Services" [ref=e163]
+              - cell "0" [ref=e164]
+              - cell "0" [ref=e165]
+            - row "Pharmacy 0 0" [ref=e166]:
+              - cell "Pharmacy" [ref=e167]
+              - cell "0" [ref=e168]
+              - cell "0" [ref=e169]
+      - generic [ref=e170]:
+        - generic [ref=e171]:
+          - paragraph [ref=e172]: Today's Hospital Schedule
+          - table [ref=e173]:
+            - rowgroup [ref=e174]:
+              - row "Time Doctor Reason Status" [ref=e175]:
+                - columnheader "Time" [ref=e176]
+                - columnheader "Doctor" [ref=e177]
+                - columnheader "Reason" [ref=e178]
+                - columnheader "Status" [ref=e179]
+            - rowgroup [ref=e180]:
+              - row "09:30 David Heart Chest pain follow-up Scheduled" [ref=e181]:
+                - cell "09:30" [ref=e182]
+                - cell "David Heart" [ref=e183]
+                - cell "Chest pain follow-up" [ref=e184]
+                - cell "Scheduled" [ref=e185]:
+                  - generic [ref=e186]: Scheduled
+        - generic [ref=e187]:
+          - paragraph [ref=e188]: Operations Summary
+          - generic [ref=e189]:
+            - generic [ref=e190]:
+              - term [ref=e191]: Active Doctors Today
+              - definition [ref=e192]: "1"
+            - generic [ref=e193]:
+              - term [ref=e194]: Occupied Beds
+              - definition [ref=e195]: "0"
+            - generic [ref=e196]:
+              - term [ref=e197]: Pending Lab Tests
+              - definition [ref=e198]: "0"
+            - generic [ref=e199]:
+              - term [ref=e200]: Pending Payments
+              - definition [ref=e201]: "1"

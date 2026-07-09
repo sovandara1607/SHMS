@@ -3,10 +3,13 @@
 namespace Database\Seeders;
 
 use App\Models\Appointment;
+use App\Models\Bed;
 use App\Models\Bill;
 use App\Models\BillItem;
 use App\Models\Department;
 use App\Models\Doctor;
+use App\Models\DrugInteraction;
+use App\Models\DrugSubstitution;
 use App\Models\Laboratory;
 use App\Models\LabTechnician;
 use App\Models\Medicine;
@@ -15,6 +18,7 @@ use App\Models\Nurse;
 use App\Models\Patient;
 use App\Models\Pharmacist;
 use App\Models\Receptionist;
+use App\Models\Room;
 use App\Models\Staff;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -41,6 +45,21 @@ class DatabaseSeeder extends Seeder
         }
 
         Laboratory::create(['laboratory_id' => 'LABO001', 'laboratory_name' => 'Central Lab', 'location' => 'Ground Floor, Block B']);
+
+        // room_id, department_id, room_number, room_type, floor, bed count
+        foreach ([
+            ['RM0001', 'DEP0001', '101', 'general', 1, 4],
+            ['RM0002', 'DEP0001', '102', 'general', 1, 4],
+            ['RM0003', 'DEP0001', '103', 'private', 1, 1],
+            ['RM0004', 'DEP0002', '201', 'private', 2, 1],
+            ['RM0005', 'DEP0002', '202', 'icu', 2, 2],
+            ['RM0006', null, '301', 'emergency', 3, 3],
+        ] as [$roomId, $deptId, $number, $type, $floor, $bedCount]) {
+            Room::create(['room_id' => $roomId, 'department_id' => $deptId, 'room_number' => $number, 'room_type' => $type, 'floor_number' => $floor]);
+            for ($b = 1; $b <= $bedCount; $b++) {
+                Bed::create(['room_id' => $roomId, 'bed_number' => (string) $b]);
+            }
+        }
 
         // staff_id, first, last, role, email
         $people = [
@@ -76,7 +95,12 @@ class DatabaseSeeder extends Seeder
 
         Medicine::create(['medicine_id' => 'MED0001', 'medicine_name' => 'Paracetamol 500mg', 'medicine_type' => 'Tablet', 'manufacturer' => 'Acme Pharma', 'unit_price' => 0.10, 'stock_quantity' => 500]);
         Medicine::create(['medicine_id' => 'MED0002', 'medicine_name' => 'Amoxicillin 250mg', 'medicine_type' => 'Capsule', 'manufacturer' => 'Beta Labs', 'unit_price' => 0.25, 'stock_quantity' => 15]);
+        Medicine::create(['medicine_id' => 'MED0003', 'medicine_name' => 'Warfarin 5mg', 'medicine_type' => 'Tablet', 'manufacturer' => 'Acme Pharma', 'unit_price' => 0.30, 'stock_quantity' => 200]);
+        Medicine::create(['medicine_id' => 'MED0004', 'medicine_name' => 'Cephalexin 500mg', 'medicine_type' => 'Capsule', 'manufacturer' => 'Beta Labs', 'unit_price' => 0.28, 'stock_quantity' => 300]);
         MedicineBatch::create(['batch_id' => 'BAT0001', 'medicine_id' => 'MED0001', 'batch_number' => 'B-2024-01', 'manufacture_date' => '2024-01-01', 'expiry_date' => now()->addDays(20)->toDateString(), 'quantity' => 500]);
+
+        DrugInteraction::create(['interaction_id' => 'DRI0001', 'medicine_id_1' => 'MED0001', 'medicine_id_2' => 'MED0003', 'interaction_effect' => 'Increased risk of bleeding with prolonged concurrent use', 'severity' => 'medium']);
+        DrugSubstitution::create(['substitution_id' => 'DRS0001', 'original_medicine_id' => 'MED0002', 'alternative_medicine_id' => 'MED0004', 'reason' => 'Alternative antibiotic when out of stock or contraindicated (penicillin allergy)']);
 
         Appointment::create(['appointment_id' => 'APT0001', 'patient_id' => 'PAT0001', 'doctor_id' => 'DOC0001', 'booked_by' => 'STF0004', 'appointment_date' => now()->addDay()->toDateString(), 'appointment_time' => '09:30', 'reason' => 'Chest pain follow-up']);
 

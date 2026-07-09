@@ -100,6 +100,7 @@ class RolePermissionController extends Controller
             'selected' => $selected,
             'catalog' => self::catalog(),
             'granted' => RolePermission::where('role', $selected)->pluck('capability')->all(),
+            'configDefaults' => config("permissions.permissions.{$selected}", []),
         ]);
     }
 
@@ -112,6 +113,7 @@ class RolePermissionController extends Controller
             'granted' => in_array($role, ['super_admin', 'admin'], true)
                 ? ['*']
                 : RolePermission::where('role', $role)->pluck('capability')->all(),
+            'configDefaults' => config("permissions.permissions.{$role}", []),
         ]);
     }
 
