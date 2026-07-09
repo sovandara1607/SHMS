@@ -91,9 +91,9 @@
             </tr></thead>
             <tbody>
             @forelse($rows as $r)
-                <tr class="border-b border-slate-50 last:border-0" x-show="rowVisible({{ Js::from($r->role) }}, {{ Js::from($r->status) }})">
+                <tr class="border-b border-slate-50 last:border-0" x-show="rowVisible(@js($r->role), @js($r->status))">
                     <td class="px-4 py-3">
-                        <input type="checkbox" :checked="selected.includes({{ Js::from($r->staff_id) }})" x-on:change="toggleRow({{ Js::from($r->staff_id) }})" class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                        <input type="checkbox" :checked="selected.includes(@js($r->staff_id))" x-on:change="toggleRow(@js($r->staff_id))" class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
                     </td>
                     <td class="px-4 py-3 font-medium text-blue-600">{{ $r->staff_id }}</td>
                     <td class="px-4 py-3 text-slate-900">{{ $r->full_name }}</td>
