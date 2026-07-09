@@ -34,16 +34,14 @@ FROM php:8.4-cli-alpine
 WORKDIR /var/www/html
 
 # mongodb/laravel-mongodb needs the native mongodb extension; REDIS_CLIENT=phpredis
-# needs the native redis extension; pdo_pgsql needs libpq. All compiled here so
-# nothing falls back to a broken/missing-extension state at runtime.
-RUN apk add --no-cache libpq libzip icu-libs oniguruma \
-    && apk add --no-cache --virtual .build-deps \
-        $PHPIZE_DEPS postgresql-dev libzip-dev icu-dev oniguruma-dev \
-    && docker-php-ext-install pdo pdo_pgsql zip intl bcmath opcache \
-    && pecl install mongodb redis \
-    && docker-php-ext-enable mongodb redis \
-    && apk del .build-deps \
-    && rm -rf /tmp/pear
+# needs the native redis extension; pdo_pgsql needs libpq. Installed via
+# mlocati/php-extension-installer instead of raw docker-php-ext-install/pecl:
+# it grabs prebuilt binaries when one matches this exact PHP/OS/arch combo and
+# only falls back to compiling from source when it must, which is what made the
+# plain `pecl install mongodb redis` step (compiling libmongoc/libmongocrypt/
+# libbson from scratch every build) take so long on Dokploy.
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+RUN install-php-extensions pdo pdo_pgsql zip intl bcmath opcache mongodb redis
 
 COPY --from=vendor /app /var/www/html
 COPY --from=assets /app/public/build /var/www/html/public/build
