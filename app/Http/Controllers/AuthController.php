@@ -2,19 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Services\AuditLogger;
-use App\Services\OtpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function __construct(
-        private OtpService $otp,
-        private AuditLogger $audit,
-    ) {}
+    public function __construct(private AuditLogger $audit) {}
 
     public function showLogin()
     {
@@ -48,50 +42,5 @@ class AuthController extends Controller
             $this->audit->log('auth.logout', 'users', $id);
         }
         return redirect('/login');
-    }
-
-    public function showForgot()
-    {
-        return view('auth.forgot');
-    }
-
-    public function forgot(Request $request)
-    {
-        $data = $request->validate(['email' => 'required|email']);
-        // Behave the same whether or not the account exists (no enumeration).
-        if (User::where('email', $data['email'])->where('status', 'active')->exists()) {
-            $this->otp->issue($data['email']);
-            $request->session()->put('reset_email', $data['email']);
-        }
-        return redirect('/reset-password')
-            ->with('success', 'If the account exists, a reset code was sent. (Demo: see storage/logs/otp.log)');
-    }
-
-    public function showReset(Request $request)
-    {
-        return view('auth.reset', ['email' => $request->session()->get('reset_email', '')]);
-    }
-
-    public function reset(Request $request)
-    {
-        $data = $request->validate([
-            'email'    => 'required|email',
-            'otp'      => 'required',
-            'password' => 'required|min:8|confirmed',
-        ]);
-
-        if (! $this->otp->verify($data['email'], $data['otp'])) {
-            return back()->withErrors(['otp' => 'Invalid or expired reset code.'])->onlyInput('email');
-        }
-
-        $user = User::where('email', $data['email'])->first();
-        if ($user) {
-            $user->password_hash = Hash::make($data['password']);
-            $user->save();
-            $this->otp->consume($data['email']);
-            $this->audit->log('auth.password_reset', 'users', $user->user_id);
-        }
-        $request->session()->forget('reset_email');
-        return redirect('/login')->with('success', 'Password updated. Please log in.');
     }
 }

@@ -21,8 +21,8 @@
     </form>
 </div>
 @endcan
-<div class="card">
-    <table>
+<div class="card overflow-x-auto">
+    <table class="min-w-[640px]">
         <thead><tr><th>Patient</th><th>Temp</th><th>BP</th><th>HR</th><th>Height</th><th>Weight</th><th>Recorded</th></tr></thead>
         <tbody>
         @forelse($vitals as $v)

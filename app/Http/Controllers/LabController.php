@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\GenerateLabReportDocumentJob;
 use App\Models\LabReport;
 use App\Models\LabTestOrder;
 use App\Models\LabTestResult;
@@ -10,6 +9,8 @@ use App\Models\Doctor;
 use App\Models\LabTechnician;
 use App\Models\Patient;
 use App\Services\AuditLogger;
+use App\Services\CentralServiceBus;
+use App\Services\CentralServiceClient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -19,7 +20,11 @@ use Illuminate\Support\Str;
 
 class LabController extends Controller
 {
-    public function __construct(private AuditLogger $audit) {}
+    public function __construct(
+        private AuditLogger $audit,
+        private CentralServiceBus $bus,
+        private CentralServiceClient $centralService,
+    ) {}
 
     public function orders(Request $request)
     {
@@ -176,8 +181,10 @@ class LabController extends Controller
             ->join('patient as p', 'p.patient_id', '=', 'o.patient_id')
             ->join('doctor as d', 'd.doctor_id', '=', 'o.doctor_id')
             ->join('staff as s', 's.staff_id', '=', 'd.staff_id')
+            ->leftJoin('lab_technician as t', 't.technician_id', '=', 'o.technician_id')
+            ->leftJoin('staff as ts', 'ts.staff_id', '=', 't.staff_id')
             ->where('o.test_order_id', $result->test_order_id)
-            ->selectRaw("o.*, (p.first_name||' '||p.last_name) as patient_name, (s.first_name||' '||s.last_name) as doctor_name")
+            ->selectRaw("o.*, (p.first_name||' '||p.last_name) as patient_name, (s.first_name||' '||s.last_name) as doctor_name, (ts.first_name||' '||ts.last_name) as technician_name")
             ->firstOrFail();
 
         return view('lab.result-form', ['order' => $order, 'result' => $result, 'mode' => 'edit']);
@@ -219,8 +226,8 @@ class LabController extends Controller
 
         // The report row itself is created synchronously (Postgres stays the
         // immediately-consistent source of truth for the Lab Reports tab).
-        // The MongoDB snapshot and PDF generation/upload are handled by the
-        // Central Service's queue worker — see GenerateLabReportDocumentJob.
+        // The MongoDB snapshot and PDF generation/upload are handled by
+        // central-service, published here over the shared Redis bus.
         $labReport = LabReport::create([
             'test_order_id' => $data['test_order_id'],
             'patient_id' => LabTestOrder::where('test_order_id', $data['test_order_id'])->value('patient_id'),
@@ -228,15 +235,15 @@ class LabController extends Controller
             'generated_by' => Auth::user()->staff_id,
         ]);
 
-        GenerateLabReportDocumentJob::dispatch(
-            $labReport->lab_report_id,
-            $data['test_order_id'],
-            $data['result_value'],
-            $data['result_status'],
-            $data['remarks'] ?? null,
-            Auth::user()->staff_id,
-            now()->toIso8601String(),
-        );
+        $this->bus->publish('generate_lab_report_document', [
+            'labReportId' => $labReport->lab_report_id,
+            'testOrderId' => $data['test_order_id'],
+            'resultValue' => $data['result_value'],
+            'resultStatus' => $data['result_status'],
+            'remarks' => $data['remarks'] ?? null,
+            'enteredByStaffId' => Auth::user()->staff_id,
+            'createdAt' => now()->toIso8601String(),
+        ]);
 
         $this->audit->log('lab_result.create', 'lab_test_result', $data['test_order_id']);
 
@@ -252,6 +259,27 @@ class LabController extends Controller
         abort_if(! $disk->exists($report->report_file_path), 404, 'Report PDF not found.');
 
         return $disk->download($report->report_file_path, "{$report->test_order_id}-lab-report.pdf");
+    }
+
+    /**
+     * Synchronous fallback for when the async PDF generation over the bus
+     * failed or was never picked up (e.g. central-service was down): calls
+     * central-service's REST API directly so the staff member gets an
+     * immediate result instead of waiting on the queue.
+     */
+    public function regenerateReport(string $id)
+    {
+        LabReport::findOrFail($id);
+
+        $response = $this->centralService->regenerateLabReport($id);
+
+        if ($response->failed()) {
+            return back()->with('error', 'Could not regenerate report: '.($response->json('message') ?? $response->status()));
+        }
+
+        $this->audit->log('lab_report.regenerate', 'lab_report', $id);
+
+        return back()->with('success', 'Report PDF regenerated.');
     }
 
     public function equipment()

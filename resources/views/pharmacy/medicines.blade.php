@@ -42,7 +42,7 @@
         <button type="button" @click="tab = 'dispensing'" :class="tab === 'dispensing' ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 border border-slate-200'" class="rounded-lg px-3.5 py-2 text-sm font-medium">Dispensing Records</button>
     </div>
 
-    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
+    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
         {{-- Medicine Inventory --}}
         <div x-show="tab === 'inventory'">
             <table class="w-full text-sm">

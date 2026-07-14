@@ -80,7 +80,7 @@
         @endcan
     </div>
 
-    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
+    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
         <table class="w-full text-sm">
             <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
                 <th class="w-10 px-4 py-3">

@@ -1,7 +1,7 @@
 <x-modal-header :title="'Beds — Room ' . ($room->room_number ?: $room->room_id)" :subtitle="($room->department?->department_name ?: 'No department') . ' · ' . ucfirst($room->room_type ?: 'general')" />
 
-<div class="max-h-[65vh] overflow-y-auto px-6 py-5">
-    <table class="w-full text-sm">
+<div class="max-h-[65vh] overflow-auto px-6 py-5">
+    <table class="w-full min-w-[480px] text-sm">
         <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
             <th class="pb-2">Bed</th><th class="pb-2">Status</th><th class="pb-2">Patient</th><th class="pb-2">Since</th><th class="pb-2 text-right">Action</th>
         </tr></thead>

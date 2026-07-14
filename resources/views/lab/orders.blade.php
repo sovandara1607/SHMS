@@ -36,7 +36,7 @@
         <button type="button" @click="tab = 'reports'" :class="tab === 'reports' ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 border border-slate-200'" class="rounded-lg px-3.5 py-2 text-sm font-medium">Lab Reports</button>
     </div>
 
-    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
+    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
         {{-- Lab Test Orders --}}
         <div x-show="tab === 'orders'">
             <table class="w-full text-sm">
@@ -128,6 +128,12 @@
                             @else
                                 <span class="text-xs text-slate-400">Processing…</span>
                             @endif
+                            @can('lab_result.create')
+                                <form action="/lab-reports/{{ $r->lab_report_id }}/regenerate" method="POST" class="inline">
+                                    @csrf
+                                    <button type="submit" class="ml-2 text-xs font-medium text-slate-500 hover:underline">Regenerate</button>
+                                </form>
+                            @endcan
                         </td>
                     </tr>
                 @empty

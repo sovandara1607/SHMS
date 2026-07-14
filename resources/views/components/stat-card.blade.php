@@ -13,12 +13,12 @@ $trendNegative = is_string($trend) && str_starts_with($trend, '-');
 @endphp
 
 <div {{ $attributes->merge(['class' => 'rounded-xl border border-slate-200 bg-white p-4']) }}>
-    <div class="flex items-start justify-between">
-        <div>
-            <p class="text-sm text-slate-500">{{ $label }}</p>
-            <p class="mt-1 text-2xl font-bold text-slate-900">{{ $value }}</p>
+    <div class="flex items-start justify-between gap-2">
+        <div class="min-w-0 flex-1">
+            <p class="truncate text-sm text-slate-500">{{ $label }}</p>
+            <p class="mt-1 break-words text-xl font-bold text-slate-900 sm:text-2xl">{{ $value }}</p>
         </div>
-        <div class="flex h-9 w-9 items-center justify-center rounded-lg {{ $iconColors[$iconColor] ?? $iconColors['blue'] }}">
+        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $iconColors[$iconColor] ?? $iconColors['blue'] }}">
             <x-icon :name="$icon" class="h-5 w-5" />
         </div>
     </div>

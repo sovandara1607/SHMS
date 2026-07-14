@@ -19,6 +19,7 @@ class PatientController extends Controller
     {
         $q = trim((string) $request->query('q', ''));
         $status = $request->query('status', 'all');
+        $user = $request->user();
 
         $patients = Patient::query()
             ->when($q !== '', function ($query) use ($q) {
@@ -29,6 +30,12 @@ class PatientController extends Controller
                     ->orWhere('email', 'ilike', $like);
             })
             ->when($status !== 'all', fn ($query) => $query->where('patient_status', $status))
+            ->when($user->role === 'doctor', function ($query) use ($user) {
+                $doctorId = $user->staff?->doctor?->doctor_id;
+                $query->whereHas('doctorAssignments', fn ($q) => $q
+                    ->where('doctor_id', $doctorId)
+                    ->where('status', 'active'));
+            })
             ->orderByDesc('created_at')
             ->limit(200)->get();
 
@@ -74,6 +81,15 @@ class PatientController extends Controller
             'medicalRecords' => fn ($q) => $q->with('doctor.staff')->orderByDesc('created_at'),
             'bills' => fn ($q) => $q->orderByDesc('bill_date'),
         ])->findOrFail($id);
+
+        $user = request()->user();
+        if ($user->role === 'doctor') {
+            $doctorId = $user->staff?->doctor?->doctor_id;
+            $isAssigned = $patient->doctorAssignments->contains(
+                fn ($a) => $a->doctor_id === $doctorId && $a->status === 'active'
+            );
+            abort_unless($isAssigned, 403, 'You are not assigned to this patient.');
+        }
 
         // Frequently-viewed patient cache (Redis, 5 min).
         cache()->put('patient:viewed:' . $patient->patient_id, $patient->toJson(), 300);

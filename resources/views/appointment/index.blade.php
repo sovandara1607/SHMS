@@ -50,7 +50,7 @@ $filters = ['all' => 'All', 'scheduled' => 'Scheduled', 'completed' => 'Complete
                class="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
     </div>
 
-    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
+    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
         <table class="w-full text-sm">
             <thead>
                 <tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">

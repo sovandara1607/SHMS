@@ -12,6 +12,6 @@
         <div class="flex justify-between"><dt class="text-slate-500">Phone</dt><dd class="text-slate-900">{{ $profile->phone_number ?? '—' }}</dd></div>
         <div class="flex justify-between"><dt class="text-slate-500">Hire Date</dt><dd class="text-slate-900">{{ $profile->hire_date ?? '—' }}</dd></div>
     </dl>
-    <p class="mt-4 text-xs text-slate-400">To change your password use the "Forgot password" flow from the login screen.</p>
+    <p class="mt-4 text-xs text-slate-400">To change your password, contact an administrator.</p>
 </div>
 @endsection

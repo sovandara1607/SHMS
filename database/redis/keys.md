@@ -7,8 +7,6 @@ TTL so stale data self-expires.
 | Purpose | Key pattern | Type | TTL | Set by |
 |---|---|---|---|---|
 | Login session mirror | `session:{php_session_id}` | string (JSON user) | `SESSION_TTL` (3600s) | `Auth::login()` |
-| Password-reset OTP | `otp:{email}` | string (hashed code) | `OTP_TTL` (300s) | `OtpService::issue()` |
-| Password-reset ticket | `pwreset:{ticket}` | string (email) | `PASSWORD_RESET_TTL` (900s) | `OtpService::issueResetTicket()` |
 | Dashboard summary | `dashboard:summary` | string (JSON stats) | 60s | `DashboardController` |
 | Doctor availability | `availability:{doctor_id}:{date}` | string (JSON slots) | 120s | Appointment module |
 | Staff schedule cache | `schedule:{staff_id}:{date}` | string (JSON) | 300s | Schedule module |

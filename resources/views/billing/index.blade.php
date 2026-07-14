@@ -41,7 +41,7 @@ $filters = ['all' => 'All', 'unpaid' => 'Unpaid', 'partially_paid' => 'Partially
     </div>
 
     <p class="mb-2 text-sm font-semibold text-slate-700">Billing Records</p>
-    <div class="mb-6 overflow-hidden rounded-xl border border-slate-200 bg-white">
+    <div class="mb-6 overflow-x-auto rounded-xl border border-slate-200 bg-white">
         <table class="w-full text-sm">
             <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
                 <th class="px-4 py-3">Bill ID</th><th class="px-4 py-3">Patient</th><th class="px-4 py-3">Bill Date</th><th class="px-4 py-3">Total Amount</th><th class="px-4 py-3">Paid Amount</th><th class="px-4 py-3">Status</th><th class="px-4 py-3 text-right">Actions</th>
@@ -72,7 +72,7 @@ $filters = ['all' => 'All', 'unpaid' => 'Unpaid', 'partially_paid' => 'Partially
     </div>
 
     <p class="mb-2 text-sm font-semibold text-slate-700">Payment History</p>
-    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
+    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
         <table class="w-full text-sm">
             <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
                 <th class="px-4 py-3">Payment ID</th><th class="px-4 py-3">Bill ID</th><th class="px-4 py-3">Patient</th><th class="px-4 py-3">Method</th><th class="px-4 py-3">Amount</th><th class="px-4 py-3">Date</th><th class="px-4 py-3">Reference</th>

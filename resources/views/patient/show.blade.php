@@ -92,24 +92,26 @@ $age = $patient->date_of_birth ? \Carbon\Carbon::parse($patient->date_of_birth)-
         {{-- Appointments --}}
         <div x-show="tab === 'appointments'">
             <p class="mb-3 text-xs text-slate-400">Outpatient and consultant visits. Manage appointments on the Appointments page.</p>
-            <table class="w-full text-sm">
-                <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
-                    <th class="pb-2">Doctor</th><th class="pb-2">Date</th><th class="pb-2">Time</th><th class="pb-2">Reason</th><th class="pb-2">Status</th>
-                </tr></thead>
-                <tbody>
-                @forelse($patient->appointments as $a)
-                    <tr class="border-b border-slate-50">
-                        <td class="py-2">{{ $a->doctor?->name() ?? '—' }}</td>
-                        <td class="py-2">{{ $a->appointment_date }}</td>
-                        <td class="py-2">{{ $a->appointment_time }}</td>
-                        <td class="py-2">{{ $a->reason ?: '—' }}</td>
-                        <td class="py-2"><x-badge :status="$a->status" /></td>
-                    </tr>
-                @empty
-                    <tr><td colspan="5" class="py-4 text-center text-slate-400">No appointments.</td></tr>
-                @endforelse
-                </tbody>
-            </table>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
+                        <th class="pb-2">Doctor</th><th class="pb-2">Date</th><th class="pb-2">Time</th><th class="pb-2">Reason</th><th class="pb-2">Status</th>
+                    </tr></thead>
+                    <tbody>
+                    @forelse($patient->appointments as $a)
+                        <tr class="border-b border-slate-50">
+                            <td class="py-2">{{ $a->doctor?->name() ?? '—' }}</td>
+                            <td class="py-2">{{ $a->appointment_date }}</td>
+                            <td class="py-2">{{ $a->appointment_time }}</td>
+                            <td class="py-2">{{ $a->reason ?: '—' }}</td>
+                            <td class="py-2"><x-badge :status="$a->status" /></td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="5" class="py-4 text-center text-slate-400">No appointments.</td></tr>
+                    @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         {{-- Doctor Assignments --}}
@@ -120,32 +122,34 @@ $age = $patient->date_of_birth ? \Carbon\Carbon::parse($patient->date_of_birth)-
                     <x-button variant="primary" x-on:click="window.dispatchEvent(new CustomEvent('open-modal', { detail: 'add-doctor-assignment' }))">+ Add Doctor Assignment</x-button>
                 @endcan
             </div>
-            <table class="w-full text-sm">
-                <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
-                    <th class="pb-2">Doctor</th><th class="pb-2">Role</th><th class="pb-2">Assigned By</th><th class="pb-2">Assigned At</th><th class="pb-2">Status</th><th class="pb-2"></th>
-                </tr></thead>
-                <tbody>
-                @forelse($patient->doctorAssignments as $da)
-                    <tr class="border-b border-slate-50">
-                        <td class="py-2">{{ $da->doctor?->name() ?? '—' }}</td>
-                        <td class="py-2"><x-badge :status="$da->role" /></td>
-                        <td class="py-2">{{ $da->assignedByStaff?->fullName() ?? '—' }}</td>
-                        <td class="py-2">{{ $da->assigned_at }}</td>
-                        <td class="py-2"><x-badge :status="$da->status" /></td>
-                        <td class="py-2 text-right">
-                            @if($da->status === 'active')
-                                <form method="post" action="/doctor-assignments/{{ $da->assignment_id }}/end" onsubmit="return confirm('End this assignment?')">
-                                    @csrf
-                                    <button class="text-xs font-medium text-red-600 hover:underline">End</button>
-                                </form>
-                            @endif
-                        </td>
-                    </tr>
-                @empty
-                    <tr><td colspan="6" class="py-4 text-center text-slate-400">No doctor assignments.</td></tr>
-                @endforelse
-                </tbody>
-            </table>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
+                        <th class="pb-2">Doctor</th><th class="pb-2">Role</th><th class="pb-2">Assigned By</th><th class="pb-2">Assigned At</th><th class="pb-2">Status</th><th class="pb-2"></th>
+                    </tr></thead>
+                    <tbody>
+                    @forelse($patient->doctorAssignments as $da)
+                        <tr class="border-b border-slate-50">
+                            <td class="py-2">{{ $da->doctor?->name() ?? '—' }}</td>
+                            <td class="py-2"><x-badge :status="$da->role" /></td>
+                            <td class="py-2">{{ $da->assignedByStaff?->fullName() ?? '—' }}</td>
+                            <td class="py-2">{{ $da->assigned_at }}</td>
+                            <td class="py-2"><x-badge :status="$da->status" /></td>
+                            <td class="py-2 text-right">
+                                @if($da->status === 'active')
+                                    <form method="post" action="/doctor-assignments/{{ $da->assignment_id }}/end" onsubmit="return confirm('End this assignment?')">
+                                        @csrf
+                                        <button class="text-xs font-medium text-red-600 hover:underline">End</button>
+                                    </form>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="6" class="py-4 text-center text-slate-400">No doctor assignments.</td></tr>
+                    @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         {{-- Nurse Assignments --}}
@@ -156,32 +160,34 @@ $age = $patient->date_of_birth ? \Carbon\Carbon::parse($patient->date_of_birth)-
                     <x-button variant="primary" x-on:click="window.dispatchEvent(new CustomEvent('open-modal', { detail: 'add-nurse-assignment' }))">+ Add Nurse Assignment</x-button>
                 @endcan
             </div>
-            <table class="w-full text-sm">
-                <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
-                    <th class="pb-2">Nurse</th><th class="pb-2">Shift</th><th class="pb-2">Assigned By</th><th class="pb-2">Assigned At</th><th class="pb-2">Status</th><th class="pb-2"></th>
-                </tr></thead>
-                <tbody>
-                @forelse($patient->nurseAssignments as $na)
-                    <tr class="border-b border-slate-50">
-                        <td class="py-2">{{ $na->nurse?->name() ?? '—' }}</td>
-                        <td class="py-2">{{ $na->shift ? "{$na->shift->shift_type} ({$na->shift->start_time}-{$na->shift->end_time})" : '—' }}</td>
-                        <td class="py-2">{{ $na->assignedByStaff?->fullName() ?? '—' }}</td>
-                        <td class="py-2">{{ $na->assigned_at }}</td>
-                        <td class="py-2"><x-badge :status="$na->status" /></td>
-                        <td class="py-2 text-right">
-                            @if($na->status === 'active')
-                                <form method="post" action="/nurse-assignments/{{ $na->assignment_id }}/end" onsubmit="return confirm('End this assignment?')">
-                                    @csrf
-                                    <button class="text-xs font-medium text-red-600 hover:underline">End</button>
-                                </form>
-                            @endif
-                        </td>
-                    </tr>
-                @empty
-                    <tr><td colspan="6" class="py-4 text-center text-slate-400">No nurse assignments.</td></tr>
-                @endforelse
-                </tbody>
-            </table>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
+                        <th class="pb-2">Nurse</th><th class="pb-2">Shift</th><th class="pb-2">Assigned By</th><th class="pb-2">Assigned At</th><th class="pb-2">Status</th><th class="pb-2"></th>
+                    </tr></thead>
+                    <tbody>
+                    @forelse($patient->nurseAssignments as $na)
+                        <tr class="border-b border-slate-50">
+                            <td class="py-2">{{ $na->nurse?->name() ?? '—' }}</td>
+                            <td class="py-2">{{ $na->shift ? "{$na->shift->shift_type} ({$na->shift->start_time}-{$na->shift->end_time})" : '—' }}</td>
+                            <td class="py-2">{{ $na->assignedByStaff?->fullName() ?? '—' }}</td>
+                            <td class="py-2">{{ $na->assigned_at }}</td>
+                            <td class="py-2"><x-badge :status="$na->status" /></td>
+                            <td class="py-2 text-right">
+                                @if($na->status === 'active')
+                                    <form method="post" action="/nurse-assignments/{{ $na->assignment_id }}/end" onsubmit="return confirm('End this assignment?')">
+                                        @csrf
+                                        <button class="text-xs font-medium text-red-600 hover:underline">End</button>
+                                    </form>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="6" class="py-4 text-center text-slate-400">No nurse assignments.</td></tr>
+                    @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         {{-- Room Assignments --}}
@@ -192,79 +198,85 @@ $age = $patient->date_of_birth ? \Carbon\Carbon::parse($patient->date_of_birth)-
                     Assign a bed from <a href="/rooms" class="font-medium text-blue-600 hover:underline">Rooms &amp; Beds</a>.
                 @endcan
             </p>
-            <table class="w-full text-sm">
-                <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
-                    <th class="pb-2">Room</th><th class="pb-2">Type</th><th class="pb-2">Bed</th><th class="pb-2">Admitted At</th><th class="pb-2">Discharged At</th><th class="pb-2">Status</th><th class="pb-2"></th>
-                </tr></thead>
-                <tbody>
-                @forelse($patient->roomAssignments as $ra)
-                    <tr class="border-b border-slate-50">
-                        <td class="py-2">{{ $ra->room?->room_number ?? '—' }}</td>
-                        <td class="py-2">{{ $ra->room?->room_type ?? '—' }}</td>
-                        <td class="py-2">{{ $ra->bed?->bed_number ?? '—' }}</td>
-                        <td class="py-2">{{ $ra->assigned_at }}</td>
-                        <td class="py-2">{{ $ra->released_at ?? '—' }}</td>
-                        <td class="py-2"><x-badge :status="$ra->status" /></td>
-                        <td class="py-2 text-right">
-                            @can('room.assign')
-                                @if($ra->status === 'active')
-                                    <form method="post" action="/room-assignments/{{ $ra->room_assignment_id }}/release" onsubmit="return confirm('Release this bed?')">
-                                        @csrf
-                                        <button type="submit" class="text-sm font-medium text-red-600 hover:underline">Release</button>
-                                    </form>
-                                @endif
-                            @endcan
-                        </td>
-                    </tr>
-                @empty
-                    <tr><td colspan="7" class="py-4 text-center text-slate-400">No room assignments.</td></tr>
-                @endforelse
-                </tbody>
-            </table>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
+                        <th class="pb-2">Room</th><th class="pb-2">Type</th><th class="pb-2">Bed</th><th class="pb-2">Admitted At</th><th class="pb-2">Discharged At</th><th class="pb-2">Status</th><th class="pb-2"></th>
+                    </tr></thead>
+                    <tbody>
+                    @forelse($patient->roomAssignments as $ra)
+                        <tr class="border-b border-slate-50">
+                            <td class="py-2">{{ $ra->room?->room_number ?? '—' }}</td>
+                            <td class="py-2">{{ $ra->room?->room_type ?? '—' }}</td>
+                            <td class="py-2">{{ $ra->bed?->bed_number ?? '—' }}</td>
+                            <td class="py-2">{{ $ra->assigned_at }}</td>
+                            <td class="py-2">{{ $ra->released_at ?? '—' }}</td>
+                            <td class="py-2"><x-badge :status="$ra->status" /></td>
+                            <td class="py-2 text-right">
+                                @can('room.assign')
+                                    @if($ra->status === 'active')
+                                        <form method="post" action="/room-assignments/{{ $ra->room_assignment_id }}/release" onsubmit="return confirm('Release this bed?')">
+                                            @csrf
+                                            <button type="submit" class="text-sm font-medium text-red-600 hover:underline">Release</button>
+                                        </form>
+                                    @endif
+                                @endcan
+                            </td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="7" class="py-4 text-center text-slate-400">No room assignments.</td></tr>
+                    @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         {{-- Medical Records --}}
         <div x-show="tab === 'records'">
             <p class="mb-3 text-xs text-slate-400">Medical records linked to this patient. Manage records on the Medical Records page.</p>
-            <table class="w-full text-sm">
-                <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
-                    <th class="pb-2">Record</th><th class="pb-2">Doctor</th><th class="pb-2">Date</th><th class="pb-2">Diagnosis</th>
-                </tr></thead>
-                <tbody>
-                @forelse($patient->medicalRecords as $mr)
-                    <tr class="border-b border-slate-50">
-                        <td class="py-2 font-medium text-blue-600">{{ $mr->medical_record_id }}</td>
-                        <td class="py-2">{{ $mr->doctor?->name() ?? '—' }}</td>
-                        <td class="py-2">{{ $mr->created_at }}</td>
-                        <td class="py-2">{{ $mr->diagnosis ?: '—' }}</td>
-                    </tr>
-                @empty
-                    <tr><td colspan="4" class="py-4 text-center text-slate-400">No medical records.</td></tr>
-                @endforelse
-                </tbody>
-            </table>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
+                        <th class="pb-2">Record</th><th class="pb-2">Doctor</th><th class="pb-2">Date</th><th class="pb-2">Diagnosis</th>
+                    </tr></thead>
+                    <tbody>
+                    @forelse($patient->medicalRecords as $mr)
+                        <tr class="border-b border-slate-50">
+                            <td class="py-2 font-medium text-blue-600">{{ $mr->medical_record_id }}</td>
+                            <td class="py-2">{{ $mr->doctor?->name() ?? '—' }}</td>
+                            <td class="py-2">{{ $mr->created_at }}</td>
+                            <td class="py-2">{{ $mr->diagnosis ?: '—' }}</td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="4" class="py-4 text-center text-slate-400">No medical records.</td></tr>
+                    @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         {{-- Billing History --}}
         <div x-show="tab === 'billing'">
             <p class="mb-3 text-xs text-slate-400">Billing records for this patient. Manage billing on the Billing &amp; Payments page.</p>
-            <table class="w-full text-sm">
-                <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
-                    <th class="pb-2">Bill</th><th class="pb-2">Date</th><th class="pb-2">Amount</th><th class="pb-2">Status</th>
-                </tr></thead>
-                <tbody>
-                @forelse($patient->bills as $bill)
-                    <tr class="border-b border-slate-50">
-                        <td class="py-2 font-medium text-blue-600">{{ $bill->bill_id }}</td>
-                        <td class="py-2">{{ $bill->bill_date }}</td>
-                        <td class="py-2">${{ number_format($bill->total_amount, 2) }}</td>
-                        <td class="py-2"><x-badge :status="$bill->status" /></td>
-                    </tr>
-                @empty
-                    <tr><td colspan="4" class="py-4 text-center text-slate-400">No billing history.</td></tr>
-                @endforelse
-                </tbody>
-            </table>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
+                        <th class="pb-2">Bill</th><th class="pb-2">Date</th><th class="pb-2">Amount</th><th class="pb-2">Status</th>
+                    </tr></thead>
+                    <tbody>
+                    @forelse($patient->bills as $bill)
+                        <tr class="border-b border-slate-50">
+                            <td class="py-2 font-medium text-blue-600">{{ $bill->bill_id }}</td>
+                            <td class="py-2">{{ $bill->bill_date }}</td>
+                            <td class="py-2">${{ number_format($bill->total_amount, 2) }}</td>
+                            <td class="py-2"><x-badge :status="$bill->status" /></td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="4" class="py-4 text-center text-slate-400">No billing history.</td></tr>
+                    @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

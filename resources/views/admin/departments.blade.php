@@ -24,7 +24,7 @@
                class="w-full rounded-lg border border-slate-200 bg-white py-2.5 pl-9 pr-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
     </form>
 
-    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
+    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
         <table class="w-full text-sm">
             <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
                 <th class="px-4 py-3">ID</th><th class="px-4 py-3">Name</th><th class="px-4 py-3">Description</th><th class="px-4 py-3">Capacity</th><th class="px-4 py-3">Status</th><th class="px-4 py-3 text-right">Actions</th>

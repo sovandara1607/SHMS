@@ -3,7 +3,7 @@
 A **staff-only** hospital management system built with **Laravel 13 (PHP 8.3+)**
 on three data stores: **PostgreSQL** (core relational, 39 tables), **MongoDB**
 (document / versioning / audit, via `mongodb/laravel-mongodb`), and **Redis**
-(sessions, cache, OTP). No page is reachable before login; every page is gated by
+(sessions, cache). No page is reachable before login; every page is gated by
 role-based access control implemented with Laravel **Gates** and a `permission:`
 route middleware.
 
@@ -328,8 +328,6 @@ only temporary data; PostgreSQL is the source of truth.
 | Purpose | Key pattern | TTL |
 |---|---|---|
 | Login session mirror | `session:{php_session_id}` | 3600s |
-| Password-reset OTP | `otp:{email}` | 300s |
-| Password-reset ticket | `pwreset:{ticket}` | 900s |
 | Dashboard summary | `dashboard:summary` | 60s |
 | Doctor availability | `availability:{doctor_id}:{date}` | 120s |
 | Staff schedule | `schedule:{staff_id}:{date}` | 300s |
@@ -373,7 +371,7 @@ redis-cli DEL medicine:lowstock     # bust after stock change
 ## 11. Use case list
 
 - UC-01 Staff login / logout
-- UC-02 Forgot & reset password via OTP
+- ~~UC-02 Forgot & reset password via OTP~~ (removed — self-service reset descoped; admins reset passwords via staff management instead)
 - UC-03 Register / search / update / discharge patient
 - UC-04 Manage patient insurance
 - UC-05 Assign patient to room/bed; release on discharge
@@ -402,7 +400,7 @@ redis-cli DEL medicine:lowstock     # bust after stock change
 
 - FR-01 The system shall require login before any page is accessible.
 - FR-02 The system shall authenticate staff against hashed passwords.
-- FR-03 The system shall support password reset via time-limited OTP.
+- ~~FR-03 The system shall support password reset via time-limited OTP.~~ (removed — see UC-02)
 - FR-04 The system shall enforce role-based access on every route.
 - FR-05 The system shall manage patients (register, search, view, update, discharge).
 - FR-06 The system shall manage staff and the 5 staff sub-roles.
@@ -448,7 +446,7 @@ Database-Midterm/
 │   │   └── Middleware/
 │   │       └── EnsurePermission.php   # RBAC route guard (alias: permission:)
 │   ├── Models/                   # 39 Eloquent models + Concerns/HasBusinessKey
-│   ├── Services/                 # OtpService (Redis), AuditLogger (MongoDB)
+│   ├── Services/                 # AuditLogger (MongoDB), CentralServiceBus/Client
 │   └── Providers/
 │       └── AppServiceProvider.php     # registers Gates from permissions config
 ├── bootstrap/app.php             # app bootstrap (middleware alias, 403→Unauthorized)
@@ -468,7 +466,7 @@ Database-Midterm/
 │                                #   appointment/, medical/, pharmacy/, lab/,
 │                                #   billing/, misc/, errors/
 ├── routes/web.php                # route table (auth + permission middleware)
-├── storage/logs/                 # laravel.log, otp.log
+├── storage/logs/                 # laravel.log
 ├── docs/                         # erd.drawio, system_architecture.drawio, data_flow_diagram.drawio
 └── _legacy_custom_php/           # earlier from-scratch build (superseded)
 ```
@@ -542,7 +540,7 @@ production add-ons, not part of this build).
  ─────────────             ───────                 ───────────                  ───────────
  Admin ┄┄┄┄┄┄┄┄┄┄┄┄▶ security  ────▶ ┌──────────────────────────┐ ──▶ 🛢 PostgreSQL (39 tables, pgsql)
  Hospital Staff ────▶ Laravel        │ Laravel Application       │
- Mobile Browser ────▶ middleware:    │ index.php → Kernel → MW   │ ──▶ ⚡ Redis  (session·cache·queue·OTP)
+ Mobile Browser ────▶ middleware:    │ index.php → Kernel → MW   │ ──▶ ⚡ Redis  (session·cache)
  Desktop Browser ───▶ auth · Gate    │ Router → Controllers ×12  │
                       RBAC · CSRF ───▶│ Eloquent ×39 · Services   │ ──▶ 🛢 MongoDB (audit·versions·lab reports)
                       · session       └──────────────────────────┘
@@ -558,21 +556,27 @@ production add-ons, not part of this build).
 - **Laravel application** (`php artisan serve` locally; Nginx + PHP-FPM in
   production): `public/index.php` → HTTP Kernel → middleware → **Router**
   (`routes/web.php`) → **12 Controllers** → **39 Eloquent models** / **Services**
-  (`OtpService`, `AuditLogger`) → **25 Blade views** with `@can` role-filtered nav.
+  (`AuditLogger`, `CentralServiceBus`/`CentralServiceClient`) → **25 Blade views**
+  with `@can` role-filtered nav.
   Gates are built from `config/permissions.php` (admin = `*`) and, for the
   non-protected roles, the DB-backed `role_permissions` table (editable from
   the Roles & Permissions screen).
-- **Central Service** (`app/Jobs/`, run via `php artisan queue:work`) — the
-  data-sync/document-processing box in the architecture diagram, implemented
-  as Redis-backed **queued jobs** in this same codebase rather than a second
-  deployable service: `LogAuditEventJob` (audit trail), `SyncMedicalRecordVersionJob`
-  (Mongo version snapshots), `GenerateLabReportDocumentJob` (Mongo snapshot +
-  PDF render + upload). Postgres writes stay synchronous/immediately
-  consistent; the Mongo mirror and generated documents are eventually
-  consistent once the worker picks the job up.
+- **Central Service** (separate repo, `central-service`) — the data-sync/
+  document-processing box in the architecture diagram, run as its own
+  deployable Laravel app sharing this app's Postgres/MongoDB/Redis. This app
+  publishes work onto a shared, unprefixed Redis list (`central-service:jobs`,
+  connection `bus`) via `App\Services\CentralServiceBus`; central-service
+  relays each message (`php artisan bus:relay`) into its own queued jobs:
+  `LogAuditEventJob` (audit trail), `SyncMedicalRecordVersionJob` (Mongo
+  version snapshots), `GenerateLabReportDocumentJob` (Mongo snapshot + PDF
+  render + upload). For synchronous needs (e.g. "Regenerate PDF"), this app
+  calls central-service's REST API directly via `App\Services\CentralServiceClient`
+  (shared-secret `X-Central-Service-Key` header). Postgres writes stay
+  synchronous/immediately consistent; the Mongo mirror and generated
+  documents are eventually consistent once central-service picks the job up.
 - **Data stores** — the three databases the app connects to, plus document storage:
   - **🛢 PostgreSQL** (`pgsql`, default) — relational source of truth: 39 tables, FKs, transactions, via Eloquent.
-  - **⚡ Redis** (`phpredis`) — session store, cache (`dashboard:summary`, `medicine:lowstock`, `patient:viewed:*`, `mr:viewed:*`), the job queue, and OTP codes.
+  - **⚡ Redis** (`phpredis`) — session store, cache (`dashboard:summary`, `medicine:lowstock`, `patient:viewed:*`, `mr:viewed:*`), and the shared `bus` connection to central-service.
   - **🛢 MongoDB** (`mongodb/laravel-mongodb`) — documents: `audit_log_documents`, `medical_record_versions`, `lab_report_documents`.
   - **📄 Cloudflare R2** (S3-compatible, `config/filesystems.php`'s `documents` disk) — generated lab-report PDFs; falls back to the local disk when R2 credentials aren't configured.
 
@@ -603,7 +607,7 @@ stores (D1 PostgreSQL, D2 MongoDB, D3 Redis).
 **Processes**
 | # | Process | Reads / writes |
 |---|---------|----------------|
-| 1.0 | Authentication & Access Control | D3 (session, OTP) · D2 (audit log) |
+| 1.0 | Authentication & Access Control | D3 (session) · D2 (audit log) |
 | 2.0 | Patient Management | D1 |
 | 3.0 | Appointment Management | D1 · D3 (availability cache) |
 | 4.0 | Medical Record & Treatment | D1 · D2 (record versions) |
@@ -612,7 +616,7 @@ stores (D1 PostgreSQL, D2 MongoDB, D3 Redis).
 | 7.0 | Billing & Payment | D1 |
 
 **Key data flows**
-- Every staff member submits **login credentials** to *1.0*, which validates against D1, writes the **session/OTP** to D3 (Redis) and an **audit entry** to D2 (MongoDB); a session token flows back to the entity.
+- Every staff member submits **login credentials** to *1.0*, which validates against D1, writes the **session** to D3 (Redis) and an **audit entry** to D2 (MongoDB); a session token flows back to the entity.
 - **Receptionist** → *2.0* (register/search patient) and *3.0* (book appointment). *3.0* checks/updates the **doctor-availability cache** in D3.
 - **Doctor** → *4.0* (diagnose, prescribe) and *6.0* (order lab test). *4.0* persists to D1 and writes an immutable **version snapshot** to D2.
 - **Nurse** → *4.0* (record vital signs → D1).
@@ -648,9 +652,11 @@ mongosh smart_hospital_docs database/mongodb/collections.js   # (optional) sampl
 
 # 4. Serve
 php artisan serve             # http://127.0.0.1:8000/login
-php artisan queue:work        # separate process — Central Service (§17), required
-                               # for audit logging, medical record versioning,
-                               # and lab report PDF generation to complete
+
+# 5. Central Service (§17) — separate repo, required for audit logging,
+#    medical record versioning, and lab report PDF generation to complete.
+#    cd ../central-service && php artisan serve --port=8100 && php artisan
+#    bus:relay && php artisan queue:work --tries=3 (see its README)
 ```
 
 **Demo logins** (password `Password123!`): `superadmin@hospital.test`,

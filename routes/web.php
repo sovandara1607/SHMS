@@ -27,10 +27,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [AuthController::class, 'showLogin']);
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
-Route::get('/forgot-password', [AuthController::class, 'showForgot']);
-Route::post('/forgot-password', [AuthController::class, 'forgot']);
-Route::get('/reset-password', [AuthController::class, 'showReset']);
-Route::post('/reset-password', [AuthController::class, 'reset']);
 
 // ---------- Authenticated ----------
 Route::middleware('auth')->group(function () {
@@ -111,6 +107,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/lab-equipment', [LabController::class, 'equipment'])->middleware('permission:lab_equipment.view');
     Route::get('/lab-reports', [PageController::class, 'labReports'])->middleware('permission:lab_report.view');
     Route::get('/lab-reports/{id}/download', [LabController::class, 'downloadReport'])->middleware('permission:lab_report.view');
+    Route::post('/lab-reports/{id}/regenerate', [LabController::class, 'regenerateReport'])->middleware('permission:lab_result.create');
 
     // Billing
     Route::get('/bills', [BillingController::class, 'index'])->middleware('permission:bill.view');

@@ -3,7 +3,7 @@
 Staff-only hospital management platform built with **Laravel 13** on three data
 stores: **PostgreSQL** (core relational, 39 tables), **MongoDB** (document /
 versioning / audit, via `mongodb/laravel-mongodb`), and **Redis** (sessions,
-cache, queue, OTP). No page is accessible before login; every page is gated by
+cache). No page is accessible before login; every page is gated by
 role-based access control (Laravel **Gates** + a `permission:` middleware).
 
 - Full system documentation: **[DOCUMENTATION.md](DOCUMENTATION.md)** (all deliverables)
@@ -17,8 +17,8 @@ role-based access control (Laravel **Gates** + a `permission:` middleware).
 | Framework | Laravel 13 (PHP 8.3+) |
 | Relational DB | PostgreSQL — 39 tables (Eloquent models + migrations) |
 | Document DB | MongoDB — `mongodb/laravel-mongodb` |
-| Cache / session / queue / OTP | Redis (`phpredis`) |
-| Central Service (async) | Laravel queued jobs — see below |
+| Cache / session | Redis (`phpredis`) |
+| Central Service | separate repo/app (`central-service`) — see below |
 | Document storage | Cloudflare R2 (S3-compatible), falls back to local disk |
 | Auth | Laravel session guard (hashed passwords) |
 | RBAC | Gates from `config/permissions.php` (+ DB-backed `role_permissions` for editable roles) + `permission:` middleware |
@@ -32,8 +32,10 @@ docker compose up -d          # Postgres + Redis + MongoDB — see below
 php artisan migrate           # creates all tables
 php artisan db:seed           # demo data + 7 role logins
 php artisan serve             # http://127.0.0.1:8000/login
-php artisan queue:work        # separate process — see Central Service below
 ```
+Audit logging, medical record version sync, and lab report PDF generation
+run in the separate `central-service` app, not here — see Central Service
+below for how to run it alongside this one.
 
 ## Local data stores (Docker)
 `docker-compose.yml` runs Postgres 18, Redis 7 and MongoDB 7 with the same
@@ -55,27 +57,36 @@ Data lives in Docker-managed volumes (`smart_hospital_pgdata`,
 brew-managed data directories — migrating existing data across the two setups
 requires `pg_dump`/`pg_restore` and `mongodump`/`mongorestore` once, by hand.
 
-## Central Service (async processing)
-The architecture diagram's "Central Service" (data sync + document
-processing) is implemented as Laravel **queued jobs** running on Redis, in
-this same codebase — not a separate deployable service. It needs its own
-long-running process alongside the web server:
+## Central Service (separate app)
+The architecture diagram's "Central Service" (data sync engine + file/
+document processor) is a **separate Laravel app and repo**, `central-service`
+(sibling directory to this one), not code in this codebase. It shares this
+app's Postgres, MongoDB, and Redis instances, and is wired in two ways:
+
+- **Async** — this app publishes plain JSON messages onto a shared,
+  unprefixed Redis list (`central-service:jobs`, connection `bus` in
+  `config/database.php`) via `App\Services\CentralServiceBus`. central-service
+  consumes them (`php artisan bus:relay`) and processes them on its own
+  queue with retries/backoff.
+- **Sync** — for cases where the caller is waiting on a result (e.g. staff
+  clicking "Regenerate PDF" on the Lab Reports tab), this app calls
+  central-service's REST API directly via `App\Services\CentralServiceClient`,
+  authenticated with a shared secret (`CENTRAL_SERVICE_API_KEY`, sent as the
+  `X-Central-Service-Key` header).
+
+To run the full stack locally, alongside this app:
 ```bash
-php artisan queue:work --tries=3
+cd ../central-service
+php artisan serve --port=8100    # REST API
+php artisan bus:relay            # drains the shared Redis bus
+php artisan queue:work --tries=3 # processes central-service's own queue
 ```
-Three jobs currently run through it (`app/Jobs/`):
-- `LogAuditEventJob` — writes the tamper-evident audit trail to MongoDB.
-- `SyncMedicalRecordVersionJob` — mirrors medical record create/adjust events
-  into MongoDB version snapshots (Postgres stays the immediately-consistent
-  source of truth; Mongo history is eventually consistent).
-- `GenerateLabReportDocumentJob` — snapshots the result to MongoDB, renders a
-  PDF (`barryvdh/laravel-dompdf`), and uploads it to the documents disk.
+See `central-service/README.md` for the full integration contract (message
+shape, dispatch mapping, endpoints).
 
 Documents (generated lab report PDFs) are stored via the `documents` disk in
-`config/filesystems.php`, which resolves to Cloudflare R2 (`R2_*` env vars) if
-credentials are set, or the local disk otherwise — safe to develop against
-without real R2 credentials. If a queue job fails, it retries up to 3 times
-and then lands in the `failed_jobs` table (`php artisan queue:failed`).
+`config/filesystems.php` — resolved identically in both apps, to Cloudflare R2
+(`R2_*` env vars) if credentials are set, or the local disk otherwise.
 
 Demo logins (password `Password123!`): `superadmin@hospital.test`, `admin@hospital.test`,
 `doctor@hospital.test`, `nurse@hospital.test`, `reception@hospital.test`,

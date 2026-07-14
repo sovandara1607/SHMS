@@ -14,6 +14,7 @@ use App\Models\Patient;
 use App\Models\PatientNurseAssignment;
 use App\Models\Room;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -38,42 +39,47 @@ class DashboardController extends Controller
 
     private function adminData(): array
     {
-        $today = now()->toDateString();
+        // The heaviest dashboard (cross-department aggregates + several
+        // joined lists), so it's the one cached; AppointmentController and
+        // LabController bust this key when appointments/lab results change.
+        return Cache::remember('dashboard:summary', 60, function () {
+            $today = now()->toDateString();
 
-        $stats = [
-            'patients'     => Patient::where('patient_status', '<>', 'discharged')->count(),
-            'staff'        => DB::table('staff')->where('status', 'active')->count(),
-            'appointments' => Appointment::where('appointment_date', $today)->count(),
-            'rooms'        => Room::where('status', 'available')->count(),
-            'lab_pending'  => LabTestOrder::where('status', 'pending')->count(),
-            'revenue'      => (float) DB::table('payment')->whereMonth('payment_date', now()->month)->sum('amount_paid'),
-        ];
+            $stats = [
+                'patients'     => Patient::where('patient_status', '<>', 'discharged')->count(),
+                'staff'        => DB::table('staff')->where('status', 'active')->count(),
+                'appointments' => Appointment::where('appointment_date', $today)->count(),
+                'rooms'        => Room::where('status', 'available')->count(),
+                'lab_pending'  => LabTestOrder::where('status', 'pending')->count(),
+                'revenue'      => (float) DB::table('payment')->whereMonth('payment_date', now()->month)->sum('amount_paid'),
+            ];
 
-        $departments = DB::table('department as d')
-            ->leftJoin('room as r', 'r.department_id', '=', 'd.department_id')
-            ->selectRaw("d.department_name,
-                (select count(*) from doctor where department_id = d.department_id) +
-                (select count(*) from nurse where department_id = d.department_id) as staff_count,
-                count(distinct r.room_id) filter (where r.status = 'available') as available_rooms")
-            ->groupBy('d.department_id', 'd.department_name')
-            ->orderBy('d.department_name')->limit(6)->get();
+            $departments = DB::table('department as d')
+                ->leftJoin('room as r', 'r.department_id', '=', 'd.department_id')
+                ->selectRaw("d.department_name,
+                    (select count(*) from doctor where department_id = d.department_id) +
+                    (select count(*) from nurse where department_id = d.department_id) as staff_count,
+                    count(distinct r.room_id) filter (where r.status = 'available') as available_rooms")
+                ->groupBy('d.department_id', 'd.department_name')
+                ->orderBy('d.department_name')->limit(6)->get();
 
-        $todaySchedule = DB::table('appointment as a')
-            ->join('doctor as d', 'd.doctor_id', '=', 'a.doctor_id')
-            ->join('staff as s', 's.staff_id', '=', 'd.staff_id')
-            ->where('a.appointment_date', $today)
-            ->orderBy('a.appointment_time')
-            ->selectRaw("a.appointment_time, (s.first_name||' '||s.last_name) as doctor_name, a.reason, a.status")
-            ->limit(6)->get();
+            $todaySchedule = DB::table('appointment as a')
+                ->join('doctor as d', 'd.doctor_id', '=', 'a.doctor_id')
+                ->join('staff as s', 's.staff_id', '=', 'd.staff_id')
+                ->where('a.appointment_date', $today)
+                ->orderBy('a.appointment_time')
+                ->selectRaw("a.appointment_time, (s.first_name||' '||s.last_name) as doctor_name, a.reason, a.status")
+                ->limit(6)->get();
 
-        $operations = [
-            'active_doctors'   => DB::table('doctor as d')->join('staff as s', 's.staff_id', '=', 'd.staff_id')->where('s.status', 'active')->count(),
-            'occupied_beds'    => DB::table('bed')->where('status', 'occupied')->count(),
-            'pending_labs'     => LabTestOrder::whereIn('status', ['pending', 'in_progress'])->count(),
-            'unpaid_bills'     => Bill::where('status', '<>', 'paid')->count(),
-        ];
+            $operations = [
+                'active_doctors'   => DB::table('doctor as d')->join('staff as s', 's.staff_id', '=', 'd.staff_id')->where('s.status', 'active')->count(),
+                'occupied_beds'    => DB::table('bed')->where('status', 'occupied')->count(),
+                'pending_labs'     => LabTestOrder::whereIn('status', ['pending', 'in_progress'])->count(),
+                'unpaid_bills'     => Bill::where('status', '<>', 'paid')->count(),
+            ];
 
-        return compact('stats', 'departments', 'todaySchedule', 'operations');
+            return compact('stats', 'departments', 'todaySchedule', 'operations');
+        });
     }
 
     private function doctorData($user): array

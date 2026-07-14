@@ -16,31 +16,33 @@
         <input type="text" x-model="query" @input.debounce.300ms="search()" autocomplete="off"
                placeholder="Search by patient name or patient ID..."
                class="mb-4 w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
-        <table class="w-full text-sm">
-            <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
-                <th class="pb-2">Patient ID</th><th class="pb-2">Patient Name</th><th class="pb-2">Status</th><th class="pb-2"></th>
-            </tr></thead>
-            <tbody>
-            <template x-for="p in results" :key="p.id">
-                <tr class="border-b border-slate-50">
-                    <td class="py-2 font-medium text-blue-600" x-text="p.id"></td>
-                    <td class="py-2 text-slate-900" x-text="p.name"></td>
-                    <td class="py-2">
-                        <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold"
-                              :class="({active: 'bg-green-50 text-green-700', admitted: 'bg-blue-50 text-blue-700', icu: 'bg-red-50 text-red-700', discharged: 'bg-purple-50 text-purple-700', inactive: 'bg-slate-100 text-slate-500'})[p.status] || 'bg-slate-100 text-slate-600'"
-                              x-text="p.status.charAt(0).toUpperCase() + p.status.slice(1)"></span>
-                    </td>
-                    <td class="py-2 text-right">
-                        <button type="button" class="text-sm font-medium text-blue-600 hover:underline"
-                                x-on:click="openModal('/medical-records/create?patient_id=' + p.id)">Select &rarr;</button>
-                    </td>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
+                    <th class="pb-2">Patient ID</th><th class="pb-2">Patient Name</th><th class="pb-2">Status</th><th class="pb-2"></th>
+                </tr></thead>
+                <tbody>
+                <template x-for="p in results" :key="p.id">
+                    <tr class="border-b border-slate-50">
+                        <td class="py-2 font-medium text-blue-600" x-text="p.id"></td>
+                        <td class="py-2 text-slate-900" x-text="p.name"></td>
+                        <td class="py-2">
+                            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold"
+                                  :class="({active: 'bg-green-50 text-green-700', admitted: 'bg-blue-50 text-blue-700', icu: 'bg-red-50 text-red-700', discharged: 'bg-purple-50 text-purple-700', inactive: 'bg-slate-100 text-slate-500'})[p.status] || 'bg-slate-100 text-slate-600'"
+                                  x-text="p.status.charAt(0).toUpperCase() + p.status.slice(1)"></span>
+                        </td>
+                        <td class="py-2 text-right">
+                            <button type="button" class="text-sm font-medium text-blue-600 hover:underline"
+                                    x-on:click="openModal('/medical-records/create?patient_id=' + p.id)">Select &rarr;</button>
+                        </td>
+                    </tr>
+                </template>
+                <tr x-show="query.length >= 2 && results.length === 0" style="display: none;">
+                    <td colspan="4" class="py-4 text-center text-slate-400">No patients found.</td>
                 </tr>
-            </template>
-            <tr x-show="query.length >= 2 && results.length === 0" style="display: none;">
-                <td colspan="4" class="py-4 text-center text-slate-400">No patients found.</td>
-            </tr>
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 @else
     <x-modal-header title="Add Medical Record" :subtitle="'Patient: ' . $patient->fullName()" />

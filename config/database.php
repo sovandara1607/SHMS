@@ -187,6 +187,21 @@ return [
             'backoff_cap' => env('REDIS_BACKOFF_CAP', 1000),
         ],
 
+        // Shared handoff point with the separate central-service repo. See
+        // App\Services\CentralServiceBus and central-service's RelayBusJobs
+        // command. Deliberately unprefixed and on its own logical DB so both
+        // codebases agree on raw key names regardless of their own
+        // APP_NAME-derived cache/session/queue prefixes.
+        'bus' => [
+            'url' => env('REDIS_URL'),
+            'host' => env('REDIS_HOST', '127.0.0.1'),
+            'username' => env('REDIS_USERNAME'),
+            'password' => env('REDIS_PASSWORD'),
+            'port' => env('REDIS_PORT', '6379'),
+            'database' => env('REDIS_BUS_DB', '2'),
+            'prefix' => '',
+        ],
+
     ],
 
 ];

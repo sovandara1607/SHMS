@@ -57,7 +57,6 @@
                 <div>
                     <div class="mb-1.5 flex items-center justify-between">
                         <label for="password" class="block text-sm font-medium text-slate-700">Password</label>
-                        <a href="/forgot-password" class="text-sm font-medium text-blue-600 hover:text-blue-700">Forgot password?</a>
                     </div>
                     <div class="relative">
                         <input :type="showPassword ? 'text' : 'password'" id="password" name="password" required

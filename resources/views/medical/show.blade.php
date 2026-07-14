@@ -31,23 +31,25 @@
     <p class="mb-4 rounded-lg bg-green-50 px-4 py-3 text-sm text-slate-800">{{ $record->treatment_notes ?: '—' }}</p>
 
     <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Adjustment History</p>
-    <table class="mb-4 w-full text-sm">
-        <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
-            <th class="pb-2">Adjusted At</th><th class="pb-2">By</th><th class="pb-2">Diagnosis</th><th class="pb-2">Reason</th>
-        </tr></thead>
-        <tbody>
-        @forelse($adjustments as $a)
-            <tr class="border-b border-slate-50">
-                <td class="py-2">{{ $a->adjusted_at }}</td>
-                <td class="py-2">{{ $a->adjusted_by }}</td>
-                <td class="py-2">{{ $a->diagnosis ?: '—' }}</td>
-                <td class="py-2">{{ $a->reason }}</td>
-            </tr>
-        @empty
-            <tr><td colspan="4" class="py-3 text-center text-slate-400">No adjustments — original preserved.</td></tr>
-        @endforelse
-        </tbody>
-    </table>
+    <div class="overflow-x-auto">
+        <table class="mb-4 w-full text-sm">
+            <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
+                <th class="pb-2">Adjusted At</th><th class="pb-2">By</th><th class="pb-2">Diagnosis</th><th class="pb-2">Reason</th>
+            </tr></thead>
+            <tbody>
+            @forelse($adjustments as $a)
+                <tr class="border-b border-slate-50">
+                    <td class="py-2">{{ $a->adjusted_at }}</td>
+                    <td class="py-2">{{ $a->adjusted_by }}</td>
+                    <td class="py-2">{{ $a->diagnosis ?: '—' }}</td>
+                    <td class="py-2">{{ $a->reason }}</td>
+                </tr>
+            @empty
+                <tr><td colspan="4" class="py-3 text-center text-slate-400">No adjustments — original preserved.</td></tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
 
     <div class="mb-2 flex items-center justify-between">
         <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Prescriptions</p>

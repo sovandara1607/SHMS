@@ -1,0 +1,149 @@
+<mxfile host="app.diagrams.net" version="24.0.0">
+  <diagram name="System Architecture" id="sys-arch-v4">
+    <mxGraphModel dx="1700" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1950" pageHeight="1250" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Users -->
+        <mxCell id="user1" value="User" style="shape=umlActor;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;html=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="380" width="40" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="user2" value="User" style="shape=umlActor;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;html=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="560" width="40" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Cloudflare -->
+        <mxCell id="cloudflare" value="Cloudflare" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="200" y="460" width="130" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Laravel App description note -->
+        <mxCell id="laravelNote" value="Laravel Application (Database-final repo)&#10;- Authentication&#10;- Authorization (RBAC)&#10;- CSRF Protection&#10;- Business Logic&#10;- API / Web Routes" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fillColor=#ffffff;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="470" y="30" width="320" height="150" as="geometry" />
+        </mxCell>
+
+        <!-- pgBadger (planned, dashed) -->
+        <mxCell id="pgbadger" value="pgBadger&#10;Monitoring &amp; Performance&#10;(planned — not yet in docker-compose.yml)" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#f5f5f5;strokeColor=#999999;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="1520" y="30" width="240" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Application Server -->
+        <mxCell id="appServer" value="APPLICATION SERVER&#10;(repo: Database-final)" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;fontStyle=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="470" y="220" width="340" height="260" as="geometry" />
+        </mxCell>
+
+        <mxCell id="superAdmin" value="Super Admin Panel" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="500" y="270" width="280" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="staffPanel" value="Hospital Staff Panel" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="500" y="365" width="280" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Redis Server -->
+        <mxCell id="redis" value="REDIS SERVER (shared instance)&#10;- Session, Cache (Application Server)&#10;- 'bus' DB: shared job list (unprefixed)&#10;- Central Service's own internal queue" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="220" width="320" height="180" as="geometry" />
+        </mxCell>
+
+        <!-- Firewall -->
+        <mxCell id="firewall" value="Firewall" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="250" width="60" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Database Server -->
+        <mxCell id="dbServer" value="DATABASE SERVER" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;fontStyle=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="180" width="380" height="620" as="geometry" />
+        </mxCell>
+
+        <mxCell id="postgres" value="PostgreSQL (Primary Database)&#10;- Users&#10;- Roles&#10;- Patients&#10;- Appointments&#10;- Doctors&#10;- Rooms&#10;- Billing&#10;- Medicine Stocks&#10;&#10;Schema owned by Database-final —&#10;central-service never runs migrate here." style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="1430" y="220" width="320" height="290" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mongo" value="MongoDB (Document Database)&#10;- Lab Reports&#10;- Medical Documents&#10;- Audit Trail&#10;- Medical Record Versions" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="1430" y="530" width="320" height="180" as="geometry" />
+        </mxCell>
+
+        <mxCell id="indexing" value="indexing" style="text;html=1;fontSize=11;fontColor=#666666;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="1800" y="280" width="90" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Mongo Compass -->
+        <mxCell id="compass" value="MongoDB Compass&#10;(local dev monitoring)" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#f5f5f5;strokeColor=#999999;" vertex="1" parent="1">
+          <mxGeometry x="1430" y="750" width="220" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Central Service: now a genuinely separate box/service -->
+        <mxCell id="centralService" value="CENTRAL SERVICE&#10;(separate repo &amp; deploy: central-service)&#10;&#10;- Data Synchronization Engine&#10;- File &amp; Document Processor&#10;- REST API (sync, X-Central-Service-Key)&#10;- bus:relay + queue:work (async)" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="700" y="900" width="360" height="200" as="geometry" />
+        </mxCell>
+
+        <!-- R2 Support -->
+        <mxCell id="r2" value="Cloudflare R2 Support&#10;(falls back to local disk if no R2_* creds)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="700" y="1150" width="360" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Edges -->
+        <mxCell id="e1" value="Login / Request" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;" edge="1" parent="1" source="user1" target="cloudflare">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="user2" target="cloudflare">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" value="HTTPS request" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;" edge="1" parent="1" source="cloudflare" target="appServer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e4" value="Session, Cache Mgmt" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;" edge="1" parent="1" source="appServer" target="redis">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e6" value="Eloquent queries (fetch / write)" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;" edge="1" parent="1" source="appServer" target="firewall">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="firewall" target="postgres">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="eBusPublish" value="publishes job → Redis 'bus' list (async, JSON contract)" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;dashed=1;strokeColor=#b85450;" edge="1" parent="1" source="appServer" target="redis">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eBusConsume" value="bus:relay consumes job" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;dashed=1;strokeColor=#b85450;" edge="1" parent="1" source="redis" target="centralService">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eRest" value="REST API call (sync, X-Central-Service-Key) — e.g. regenerate PDF" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;strokeColor=#82b366;" edge="1" parent="1" source="appServer" target="centralService">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="eCsQueue" value="internal queue (tries=3, backoff, failed_jobs)" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;dashed=1;" edge="1" parent="1" source="centralService" target="redis">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e8" value="writes audit trail / version snapshots / lab report metadata" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;" edge="1" parent="1" source="centralService" target="mongo">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="eCsPg" value="reads/writes lab_report, hospital_settings (thin models, no migrations)" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;" edge="1" parent="1" source="centralService" target="firewall">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e9" value="Secure Document Upload (PDFs / Lab Reports)" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;" edge="1" parent="1" source="centralService" target="r2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e10" value="Monitoring (planned)" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;dashed=1;" edge="1" parent="1" source="pgbadger" target="postgres">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e11" value="Monitoring" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;dashed=1;" edge="1" parent="1" source="compass" target="mongo">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;" edge="1" parent="1" source="postgres" target="indexing">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

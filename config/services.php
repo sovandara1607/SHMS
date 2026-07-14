@@ -35,4 +35,13 @@ return [
         ],
     ],
 
+    // The separate central-service repo (see App\Services\CentralServiceClient
+    // and App\Services\CentralServiceBus). base_url is used for the
+    // synchronous REST calls; api_key must match central-service's own
+    // CENTRAL_SERVICE_API_KEY.
+    'central_service' => [
+        'base_url' => env('CENTRAL_SERVICE_BASE_URL', 'http://127.0.0.1:8100'),
+        'api_key' => env('CENTRAL_SERVICE_API_KEY'),
+    ],
+
 ];

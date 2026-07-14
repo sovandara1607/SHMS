@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\SyncMedicalRecordVersionJob;
 use App\Models\Doctor;
 use App\Models\MedicalRecord;
 use App\Models\MedicalRecordAdjustment;
@@ -10,6 +9,7 @@ use App\Models\Medicine;
 use App\Models\Patient;
 use App\Models\VitalSign;
 use App\Services\AuditLogger;
+use App\Services\CentralServiceBus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +17,7 @@ use Illuminate\Support\Str;
 
 class MedicalRecordController extends Controller
 {
-    public function __construct(private AuditLogger $audit) {}
+    public function __construct(private AuditLogger $audit, private CentralServiceBus $bus) {}
 
     public function index(Request $request)
     {
@@ -107,11 +107,16 @@ class MedicalRecordController extends Controller
             ]);
         }
 
-        // Immutable original version mirrored to MongoDB via the Central Service.
-        SyncMedicalRecordVersionJob::dispatch(
-            $record->medical_record_id, 1, 'original', $recordData,
-            Auth::user()->staff_id, null, now()->toIso8601String(),
-        );
+        // Immutable original version mirrored to MongoDB via central-service.
+        $this->bus->publish('sync_medical_record_version', [
+            'medicalRecordId' => $record->medical_record_id,
+            'version' => 1,
+            'type' => 'original',
+            'snapshot' => $recordData,
+            'actorStaffId' => Auth::user()->staff_id,
+            'reason' => null,
+            'createdAt' => now()->toIso8601String(),
+        ]);
         $this->audit->log('medical_record.create', 'medical_record', $record->medical_record_id);
 
         return redirect('/medical-records')->with('success', "Medical record {$record->medical_record_id} created.");
@@ -140,10 +145,15 @@ class MedicalRecordController extends Controller
 
         $version = DB::connection('mongodb')->table('medical_record_versions')
             ->where('medical_record_id', $record->medical_record_id)->count() + 1;
-        SyncMedicalRecordVersionJob::dispatch(
-            $record->medical_record_id, $version, 'adjustment', $data,
-            Auth::user()->staff_id, $data['reason'], now()->toIso8601String(),
-        );
+        $this->bus->publish('sync_medical_record_version', [
+            'medicalRecordId' => $record->medical_record_id,
+            'version' => $version,
+            'type' => 'adjustment',
+            'snapshot' => $data,
+            'actorStaffId' => Auth::user()->staff_id,
+            'reason' => $data['reason'],
+            'createdAt' => now()->toIso8601String(),
+        ]);
         $this->audit->log('medical_record.adjust', 'medical_record', $record->medical_record_id, ['reason' => $data['reason']]);
 
         return redirect('/medical-records')->with('success', 'Adjustment recorded; original version preserved.')->with('reopen_record', $record->medical_record_id);
