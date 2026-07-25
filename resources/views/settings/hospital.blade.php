@@ -7,7 +7,7 @@
     @csrf
     @method('PUT')
 
-    <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
+    <div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-2">
         <div class="rounded-xl border border-slate-200 bg-white p-5">
             <p class="mb-4 font-semibold text-slate-900">Hospital Information</p>
             <div class="space-y-4">

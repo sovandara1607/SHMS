@@ -7,9 +7,9 @@ cache). No page is accessible before login; every page is gated by
 role-based access control (Laravel **Gates** + a `permission:` middleware).
 
 - Full system documentation: **[DOCUMENTATION.md](DOCUMENTATION.md)** (all deliverables)
-- ERD (draw.io, grouped by module): **[docs/erd.drawio](docs/erd.drawio)**
-- System architecture (draw.io, sketch style): **[docs/system_architecture.drawio](docs/system_architecture.drawio)**
-- Data Flow Diagram (draw.io, Level 1): **[docs/data_flow_diagram.drawio](docs/data_flow_diagram.drawio)**
+- ERD, grouped by module: **[Documentation/ERD.png](Documentation/ERD.png)**
+- System architecture (draw.io, sketch style, editable): **[docs/system_architecture.drawio](docs/system_architecture.drawio)** (rendered: [Documentation/System Architecture v2.png](Documentation/System%20Architecture%20v2.png))
+- Data Flow Diagram, Level 1: **[Documentation/DFD.png](Documentation/DFD.png)**
 
 ## Tech stack
 | Concern | Technology |

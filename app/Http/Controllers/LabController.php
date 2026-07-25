@@ -39,7 +39,8 @@ class LabController extends Controller
             ->when($status !== '', fn ($q) => $q->where('o.status', $status))
             ->orderByDesc('o.order_date')
             ->selectRaw("o.*, (p.first_name||' '||p.last_name) as patient_name, (s.first_name||' '||s.last_name) as doctor_name, (ts.first_name||' '||ts.last_name) as technician_name")
-            ->limit(200)->get();
+            ->paginate(20, ['*'], 'orders_page')
+            ->withQueryString();
 
         $results = DB::table('lab_test_result as r')
             ->join('lab_test_order as o', 'o.test_order_id', '=', 'r.test_order_id')
@@ -48,7 +49,8 @@ class LabController extends Controller
             ->leftJoin('staff as ts', 'ts.staff_id', '=', 't.staff_id')
             ->orderByDesc('r.entered_at')
             ->selectRaw("r.*, o.test_name, o.test_order_id, (p.first_name||' '||p.last_name) as patient_name, (ts.first_name||' '||ts.last_name) as technician_name")
-            ->limit(100)->get();
+            ->paginate(20, ['*'], 'results_page')
+            ->withQueryString();
 
         $reports = DB::table('lab_report as lr')
             ->join('lab_test_order as o', 'o.test_order_id', '=', 'lr.test_order_id')
@@ -56,7 +58,8 @@ class LabController extends Controller
             ->leftJoin('staff as s', 's.staff_id', '=', 'lr.generated_by')
             ->orderByDesc('lr.generated_at')
             ->selectRaw("lr.*, o.test_name, (p.first_name||' '||p.last_name) as patient_name, (s.first_name||' '||s.last_name) as generated_by_name")
-            ->limit(100)->get();
+            ->paginate(20, ['*'], 'reports_page')
+            ->withQueryString();
 
         $stats = [
             'pending'     => LabTestOrder::where('status', 'pending')->count(),
@@ -129,7 +132,8 @@ class LabController extends Controller
 
     public function updateOrderStatus(Request $request, string $id)
     {
-        $status = $request->input('status', 'in_progress');
+        $data = $request->validate(['status' => 'required|in:pending,in_progress,completed,cancelled']);
+        $status = $data['status'];
         $order = LabTestOrder::findOrFail($id);
         $order->status = $status;
         if ($tech = $this->technicianId()) {
@@ -212,6 +216,13 @@ class LabController extends Controller
             'result_status' => 'required|string',
             'remarks'       => 'nullable|string',
         ]);
+
+        // No unique constraint on test_order_id at the DB level, so without
+        // this guard resubmitting the form (double-click, back-button repost)
+        // creates a second result + a second lab report for the same order.
+        if (LabTestResult::where('test_order_id', $data['test_order_id'])->exists()) {
+            return redirect('/lab-orders')->with('error', 'A result has already been entered for this order.');
+        }
 
         $result = LabTestResult::create([
             'test_result_id' => 'LRS' . strtoupper(Str::random(8)),

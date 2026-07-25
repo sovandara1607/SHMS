@@ -37,7 +37,8 @@ class AdminController extends Controller
             })
             ->orderByDesc('s.created_at')
             ->selectRaw("s.staff_id, (s.first_name||' '||s.last_name) as full_name, u.role, u.email, s.status")
-            ->limit(200)->get();
+            ->paginate(20)
+            ->withQueryString();
 
         return view('admin.staff', ['rows' => $rows, 'q' => $q]);
     }
@@ -244,7 +245,8 @@ class AdminController extends Controller
             })
             ->orderBy('s.last_name')
             ->selectRaw("d.doctor_id, d.staff_id, (s.first_name||' '||s.last_name) as full_name, d.specialization, dep.department_id, dep.department_name, d.license_number, s.status")
-            ->limit(200)->get();
+            ->paginate(20)
+            ->withQueryString();
 
         return view('admin.doctors', ['rows' => $rows, 'q' => $q, 'departments' => Department::orderBy('department_name')->get()]);
     }
@@ -308,7 +310,8 @@ class AdminController extends Controller
             ->orderBy('r.floor_number')->orderBy('r.room_number')
             ->selectRaw("r.room_id, r.room_number, r.room_type, r.floor_number, dep.department_name,
                          count(b.bed_id) as bed_count, count(*) filter (where b.status='available') as beds_available, r.status")
-            ->limit(200)->get();
+            ->paginate(20)
+            ->withQueryString();
 
         return view('admin.rooms', ['rooms' => $rooms, 'q' => $q, 'departments' => Department::orderBy('department_name')->get()]);
     }

@@ -16,6 +16,7 @@ use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\RoomAssignmentController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\TreatmentPlanController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -66,6 +67,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/medical-records/{id}', [MedicalRecordController::class, 'show'])->middleware('permission:medical_record.view');
     Route::post('/medical-records/{id}/adjust', [MedicalRecordController::class, 'adjust'])->middleware('permission:medical_record.adjust');
     Route::post('/medical-records/{id}/prescriptions', [PrescriptionController::class, 'store'])->middleware('permission:prescription.create');
+    Route::post('/medical-records/{id}/treatment-plans', [TreatmentPlanController::class, 'store'])->middleware('permission:treatment.create');
+    Route::post('/treatment-plans/{id}/status', [TreatmentPlanController::class, 'updateStatus'])->middleware('permission:treatment.create');
     Route::get('/treatments', [PageController::class, 'treatments'])->middleware('permission:treatment.view');
     Route::get('/prescriptions', [PageController::class, 'prescriptions'])->middleware('permission:prescription.view');
     Route::get('/procedures', [PageController::class, 'procedures'])->middleware('permission:procedure.view');

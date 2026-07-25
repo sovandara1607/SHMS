@@ -2,7 +2,7 @@
 @section('content')
 
 <div x-data="{
-        tab: 'orders',
+        tab: @js(request()->query('tab', 'orders')),
         async openModal(url) {
             const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
             const body = document.getElementById('lab-modal-body');
@@ -73,6 +73,7 @@
                 @endforelse
                 </tbody>
             </table>
+            <x-pagination :paginator="$orders->appends(['tab' => 'orders'])" />
         </div>
 
         {{-- Test Results --}}
@@ -105,6 +106,7 @@
                 @endforelse
                 </tbody>
             </table>
+            <x-pagination :paginator="$results->appends(['tab' => 'results'])" />
         </div>
 
         {{-- Lab Reports --}}
@@ -124,7 +126,7 @@
                         <td class="px-4 py-3 text-slate-600">{{ $r->generated_at }}</td>
                         <td class="px-4 py-3">
                             @if($r->report_file_path)
-                                <a href="/lab-reports/{{ $r->lab_report_id }}/download" class="text-xs font-medium text-blue-600 hover:underline">Download PDF</a>
+                                <a href="/lab-reports/{{ $r->lab_report_id }}/download" download class="text-xs font-medium text-blue-600 hover:underline">Download PDF</a>
                             @else
                                 <span class="text-xs text-slate-400">Processing…</span>
                             @endif
@@ -141,6 +143,7 @@
                 @endforelse
                 </tbody>
             </table>
+            <x-pagination :paginator="$reports->appends(['tab' => 'reports'])" />
         </div>
     </div>
 

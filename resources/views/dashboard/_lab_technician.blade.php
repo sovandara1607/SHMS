@@ -11,14 +11,14 @@
     @endcan
 </div>
 
-<div class="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-    <x-stat-card label="Pending Tests" :value="$stats['pending']" icon="clipboard" icon-color="amber" />
-    <x-stat-card label="In Progress" :value="$stats['in_progress']" icon="flask" icon-color="blue" />
-    <x-stat-card label="Completed Today" :value="$stats['completed_today']" icon="clipboard" icon-color="green" />
-    <x-stat-card label="Equipment Issues" :value="$stats['equipment_issues']" icon="x" icon-color="red" />
+<div class="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <x-stat-card label="Pending Tests" :value="number_format($stats['pending'])" icon="clipboard" icon-color="amber" :badge="$kpiBadges['pending']" :report-url="$reportUrls['pending']" />
+    <x-stat-card label="In Progress" :value="number_format($stats['in_progress'])" icon="flask" icon-color="blue" :badge="$kpiBadges['in_progress']" :report-url="$reportUrls['in_progress']" />
+    <x-stat-card label="Completed Today" :value="number_format($stats['completed_today'])" icon="clipboard" icon-color="green" :badge="$kpiBadges['completed_today']" :report-url="$reportUrls['completed_today']" />
+    <x-stat-card label="Equipment Issues" :value="number_format($stats['equipment_issues'])" icon="x" icon-color="red" :badge="$kpiBadges['equipment_issues']" :report-url="$reportUrls['equipment_issues']" />
 </div>
 
-<div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
+<div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-2">
     <div class="rounded-xl border border-slate-200 bg-white p-5">
         <p class="mb-3 font-semibold text-slate-900">Active Lab Queue</p>
         <div class="space-y-3">

@@ -1,0 +1,173 @@
+# Deploys the whole Smart Hospital system as one Docker Compose project:
+# Postgres + MongoDB + Redis (shared by both apps, per each app's README),
+# plus Database-final (the Application Server, public-facing) and
+# central-service (internal-only — Database-final reaches it over this
+# network by service name, nothing here needs a host port published).
+#
+# Expects central-service checked out as a sibling directory:
+#   some-folder/
+#     Database-final/   (this repo — run docker compose from here)
+#     central-service/
+#
+# See DEPLOYMENT.md for the full walkthrough. Quick start:
+#   cp .env.production.example .env.production
+#   # fill in .env.production — passwords, APP_KEYs, R2 creds, CENTRAL_SERVICE_API_KEY
+#   docker compose -f docker-compose.production.yml --env-file .env.production up -d --build
+#   docker compose -f docker-compose.production.yml exec database-final php artisan migrate --force
+
+name: smart-hospital
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: smart_hospital
+      POSTGRES_USER: ${POSTGRES_USER:-smart_hospital}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.production}
+    volumes:
+      - smart_hospital_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-smart_hospital} -d smart_hospital"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD:?set REDIS_PASSWORD in .env.production}
+    volumes:
+      - smart_hospital_redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "--no-auth-warning", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: smart_hospital_docs
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-smart_hospital}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:?set MONGO_PASSWORD in .env.production}
+    volumes:
+      - smart_hospital_mongodata:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  database-final:
+    build:
+      context: .
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+    ports:
+      - "${DATABASE_FINAL_PORT:-8000}:8000"
+    environment:
+      APP_NAME: "Smart Hospital Management System"
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_KEY: ${DATABASE_FINAL_APP_KEY:?set DATABASE_FINAL_APP_KEY in .env.production — see DEPLOYMENT.md step 4}
+      APP_URL: ${DATABASE_FINAL_APP_URL:?set DATABASE_FINAL_APP_URL in .env.production, e.g. http://192.168.0.100:8000}
+
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: smart_hospital
+      DB_USERNAME: ${POSTGRES_USER:-smart_hospital}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+
+      MONGODB_URI: mongodb://${MONGO_USER:-smart_hospital}:${MONGO_PASSWORD}@mongo:27017/?authSource=admin
+      MONGODB_DATABASE: smart_hospital_docs
+
+      REDIS_CLIENT: phpredis
+      REDIS_HOST: redis
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_PORT: 6379
+      REDIS_BUS_DB: 2
+
+      SESSION_DRIVER: redis
+      CACHE_STORE: redis
+      QUEUE_CONNECTION: redis
+      FILESYSTEM_DISK: local
+
+      CENTRAL_SERVICE_BASE_URL: http://central-service:8100
+      CENTRAL_SERVICE_API_KEY: ${CENTRAL_SERVICE_API_KEY:?set CENTRAL_SERVICE_API_KEY in .env.production}
+
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID:-}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY:-}
+      R2_BUCKET: ${R2_BUCKET:-}
+      R2_ENDPOINT: ${R2_ENDPOINT:-}
+      R2_URL: ${R2_URL:-}
+
+      MAIL_MAILER: log
+
+  central-service:
+    build:
+      context: ../central-service
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+    # Internal-only: Database-final reaches this at http://central-service:8100
+    # over the compose network. Uncomment to expose it directly for debugging:
+    # ports:
+    #   - "8100:8100"
+    environment:
+      APP_NAME: central-service
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_KEY: ${CENTRAL_SERVICE_APP_KEY:?set CENTRAL_SERVICE_APP_KEY in .env.production — see DEPLOYMENT.md step 4}
+      APP_URL: http://central-service:8100
+
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: smart_hospital
+      DB_USERNAME: ${POSTGRES_USER:-smart_hospital}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+
+      MONGODB_URI: mongodb://${MONGO_USER:-smart_hospital}:${MONGO_PASSWORD}@mongo:27017/?authSource=admin
+      MONGODB_DATABASE: smart_hospital_docs
+
+      REDIS_CLIENT: phpredis
+      REDIS_HOST: redis
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_PORT: 6379
+      REDIS_BUS_DB: 2
+
+      SESSION_DRIVER: array
+      CACHE_STORE: array
+      QUEUE_CONNECTION: redis
+      FILESYSTEM_DISK: local
+
+      CENTRAL_SERVICE_API_KEY: ${CENTRAL_SERVICE_API_KEY:?set CENTRAL_SERVICE_API_KEY in .env.production}
+
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID:-}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY:-}
+      R2_BUCKET: ${R2_BUCKET:-}
+      R2_ENDPOINT: ${R2_ENDPOINT:-}
+      R2_URL: ${R2_URL:-}
+      # DOCUMENTS_DISK intentionally unset — falls back to 'r2' automatically
+      # once R2_ACCESS_KEY_ID is set, else 'local' (see config/filesystems.php).
+
+      MAIL_MAILER: log
+
+volumes:
+  smart_hospital_pgdata:
+  smart_hospital_redisdata:
+  smart_hospital_mongodata:

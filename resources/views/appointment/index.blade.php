@@ -99,6 +99,7 @@ $filters = ['all' => 'All', 'scheduled' => 'Scheduled', 'completed' => 'Complete
             @endforelse
             </tbody>
         </table>
+        <x-pagination :paginator="$appointments" />
     </div>
 
     <x-modal name="appointment-modal" max-width="lg">

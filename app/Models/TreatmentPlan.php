@@ -14,4 +14,14 @@ class TreatmentPlan extends Model
     public string $idPrefix = 'TP';
     public $timestamps = false;
     protected $guarded = [];
+
+    public function medicalRecord()
+    {
+        return $this->belongsTo(MedicalRecord::class, 'medical_record_id', 'medical_record_id');
+    }
+
+    public function doctor()
+    {
+        return $this->belongsTo(Doctor::class, 'doctor_id', 'doctor_id');
+    }
 }

@@ -34,4 +34,9 @@ class MedicalRecord extends Model
     {
         return $this->hasMany(Prescription::class, 'medical_record_id', 'medical_record_id');
     }
+
+    public function treatmentPlans()
+    {
+        return $this->hasMany(TreatmentPlan::class, 'medical_record_id', 'medical_record_id');
+    }
 }

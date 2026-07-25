@@ -30,9 +30,18 @@ class AppServiceProvider extends ServiceProvider
             return $user->hasPermission('*') ? true : null;
         });
 
-        // Register one Gate per distinct capability across all roles.
+        // Register one Gate per distinct capability. Sourced from both the
+        // static per-role config (which also carries the baseline
+        // dashboard.view/profile.* grants every role gets, outside the
+        // editable catalog) AND the full Roles & Permissions catalog —
+        // config alone used to miss capabilities like staff.manage/
+        // report.view that only exist in the catalog, so granting them to a
+        // non-admin role via the Roles & Permissions screen silently did
+        // nothing: the grant was stored, but Gate::denies() always failed
+        // closed because no Gate::define() was ever registered for them.
         $abilities = collect(config('permissions.permissions', []))
             ->flatten()
+            ->merge(collect(\App\Http\Controllers\RolePermissionController::catalog())->flatMap(fn ($caps) => array_keys($caps)))
             ->unique()
             ->reject(fn ($a) => $a === '*');
 

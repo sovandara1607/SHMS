@@ -54,12 +54,18 @@ class RoomAssignmentController extends Controller
 
     public function assign(Request $request, string $bedId)
     {
-        $bed = Bed::with('room')->lockForUpdate()->findOrFail($bedId);
-        abort_if($bed->status !== 'available', 409, 'This bed is not available.');
-
         $data = $request->validate(['patient_id' => 'required|exists:patient,patient_id']);
 
-        DB::transaction(function () use ($bed, $data) {
+        // lockForUpdate() only holds its row lock for the life of an active
+        // transaction — issued outside one, Postgres releases it right after
+        // this single autocommitted SELECT, so two concurrent requests could
+        // both read "available" and both assign the same bed. The lock (and
+        // the availability check it protects) must live inside the
+        // transaction to actually serialize concurrent assignment attempts.
+        $bed = DB::transaction(function () use ($bedId, $data) {
+            $bed = Bed::with('room')->lockForUpdate()->findOrFail($bedId);
+            abort_if($bed->status !== 'available', 409, 'This bed is not available.');
+
             $assignment = RoomAssignment::create([
                 'patient_id' => $data['patient_id'],
                 'room_id' => $bed->room_id,
@@ -72,6 +78,8 @@ class RoomAssignmentController extends Controller
             $this->audit->log('room_assignment.create', 'room_assignment', $assignment->room_assignment_id, [
                 'patient_id' => $data['patient_id'], 'room_id' => $bed->room_id, 'bed_id' => $bed->bed_id,
             ]);
+
+            return $bed;
         });
 
         return redirect('/rooms')->with('success', 'Patient assigned to bed ' . ($bed->bed_number ?: $bed->bed_id) . '.')

@@ -6,14 +6,14 @@
     </div>
 @endcan
 
-<div class="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-    <x-stat-card label="Assigned Patients" :value="$stats['assigned_patients']" icon="users" icon-color="red" />
-    <x-stat-card label="Vitals Due" :value="$stats['vitals_due']" icon="clipboard" icon-color="blue" />
-    <x-stat-card label="Medications Due" :value="$stats['medications_due']" icon="pill" icon-color="purple" />
-    <x-stat-card label="ICU Watch" :value="$stats['icu_watch']" icon="x" icon-color="red" />
+<div class="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <x-stat-card label="Assigned Patients" :value="number_format($stats['assigned_patients'])" icon="users" icon-color="red" :badge="$kpiBadges['assigned_patients']" :report-url="$reportUrls['assigned_patients']" />
+    <x-stat-card label="Vitals Due" :value="number_format($stats['vitals_due'])" icon="clipboard" icon-color="blue" :badge="$kpiBadges['vitals_due']" :report-url="$reportUrls['vitals_due']" />
+    <x-stat-card label="Medications Due" :value="number_format($stats['medications_due'])" icon="pill" icon-color="purple" :badge="$kpiBadges['medications_due']" :report-url="$reportUrls['medications_due']" />
+    <x-stat-card label="ICU Watch" :value="number_format($stats['icu_watch'])" icon="x" icon-color="red" :badge="$kpiBadges['icu_watch']" :report-url="$reportUrls['icu_watch']" />
 </div>
 
-<div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
+<div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-2">
     <div class="rounded-xl border border-slate-200 bg-white p-5">
         <p class="mb-3 font-semibold text-slate-900">Vitals Round (Next Up)</p>
         <div class="space-y-3">

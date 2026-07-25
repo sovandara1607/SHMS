@@ -3,6 +3,10 @@
 
 @php
 $filters = ['all' => 'All', 'unpaid' => 'Unpaid', 'partially_paid' => 'Partially Paid', 'paid' => 'Paid'];
+$totalAmount = $stats['total_amount'];
+$totalAmountDisplay = $totalAmount >= 1_000_000
+    ? '$' . number_format($totalAmount / 1_000_000, 1) . 'M'
+    : '$' . number_format($totalAmount, 2);
 @endphp
 
 <div x-data="{
@@ -25,7 +29,7 @@ $filters = ['all' => 'All', 'unpaid' => 'Unpaid', 'partially_paid' => 'Partially
     </x-page-header>
 
     <div class="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <x-stat-card label="Total Bill Amount" value="${{ number_format($stats['total_amount'], 2) }}" icon="card" icon-color="blue" />
+        <x-stat-card label="Total Bill Amount" :value="$totalAmountDisplay" icon="card" icon-color="blue" title="${{ number_format($totalAmount, 2) }}" />
         <x-stat-card label="Unpaid Bills" :value="$stats['unpaid']" icon="clipboard" icon-color="amber" />
         <x-stat-card label="Partially Paid Bills" :value="$stats['partially_paid']" icon="clipboard" icon-color="purple" />
         <x-stat-card label="Paid Bills" :value="$stats['paid']" icon="clipboard" icon-color="green" />
@@ -69,6 +73,7 @@ $filters = ['all' => 'All', 'unpaid' => 'Unpaid', 'partially_paid' => 'Partially
             @endforelse
             </tbody>
         </table>
+        <x-pagination :paginator="$bills" />
     </div>
 
     <p class="mb-2 text-sm font-semibold text-slate-700">Payment History</p>
@@ -93,6 +98,7 @@ $filters = ['all' => 'All', 'unpaid' => 'Unpaid', 'partially_paid' => 'Partially
             @endforelse
             </tbody>
         </table>
+        <x-pagination :paginator="$payments" />
     </div>
 
     <x-modal name="billing-modal" max-width="2xl">

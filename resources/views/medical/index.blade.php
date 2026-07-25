@@ -12,7 +12,7 @@
      }"
      x-init="@if($errors->any() && old('_modal_target'))openModal(@js(old('_modal_target')))@elseif(session('reopen_record'))openModal(@js('/medical-records/' . session('reopen_record')))@endif"
 >
-    <x-page-header title="Medical Records" :subtitle="$records->count() . ' records total'">
+    <x-page-header title="Medical Records" :subtitle="$records->total() . ' records total'">
         <x-slot:actions>
             @can('medical_record.create')
                 <x-button variant="primary" x-on:click="openModal('/medical-records/create')"><x-icon name="plus" class="h-4 w-4" /> Add Medical Record</x-button>
@@ -75,6 +75,7 @@
             @endforelse
             </tbody>
         </table>
+        <x-pagination :paginator="$records" />
     </div>
 
     <x-modal name="medical-modal" max-width="2xl">

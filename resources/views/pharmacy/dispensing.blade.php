@@ -32,5 +32,6 @@
         @empty<tr><td colspan="5" class="muted">No dispensing records.</td></tr>@endforelse
         </tbody>
     </table>
+    <x-pagination :paginator="$records" />
 </div>
 @endsection

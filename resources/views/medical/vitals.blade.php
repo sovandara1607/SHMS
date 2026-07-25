@@ -31,5 +31,6 @@
         @empty<tr><td colspan="7" class="muted">No vital signs.</td></tr>@endforelse
         </tbody>
     </table>
+    <x-pagination :paginator="$vitals" />
 </div>
 @endsection

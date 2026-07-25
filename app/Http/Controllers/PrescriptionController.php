@@ -61,7 +61,7 @@ class PrescriptionController extends Controller
 
         $warning = $this->interactionWarning(array_column($data['items'], 'medicine_id'));
 
-        $redirect = redirect('/medical-records/' . $record->medical_record_id)
+        $redirect = redirect('/medical-records')
             ->with('success', "Prescription {$prescription->prescription_id} created.")
             ->with('reopen_record', $record->medical_record_id);
 

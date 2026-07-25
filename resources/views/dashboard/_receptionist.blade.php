@@ -15,14 +15,14 @@
     @endforeach
 </div>
 
-<div class="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-    <x-stat-card label="Today's Check-ins" :value="$stats['checkins_today']" icon="users" icon-color="green" />
-    <x-stat-card label="Pending Appointments" :value="$stats['pending_appointments']" icon="calendar" icon-color="blue" />
-    <x-stat-card label="Available Rooms" :value="$stats['available_rooms']" icon="bed" icon-color="amber" />
-    <x-stat-card label="Unpaid Bills" :value="$stats['unpaid_bills']" icon="card" icon-color="red" />
+<div class="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <x-stat-card label="Today's Check-ins" :value="number_format($stats['checkins_today'])" icon="users" icon-color="green" :badge="$kpiBadges['checkins_today']" :report-url="$reportUrls['checkins_today']" />
+    <x-stat-card label="Pending Appointments" :value="number_format($stats['pending_appointments'])" icon="calendar" icon-color="blue" :badge="$kpiBadges['pending_appointments']" :report-url="$reportUrls['pending_appointments']" />
+    <x-stat-card label="Available Rooms" :value="number_format($stats['available_rooms'])" icon="bed" icon-color="amber" :badge="$kpiBadges['available_rooms']" :report-url="$reportUrls['available_rooms']" />
+    <x-stat-card label="Unpaid Bills" :value="number_format($stats['unpaid_bills'])" icon="card" icon-color="red" :badge="$kpiBadges['unpaid_bills']" :report-url="$reportUrls['unpaid_bills']" />
 </div>
 
-<div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
+<div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-2">
     <div class="rounded-xl border border-slate-200 bg-white p-5">
         <p class="mb-3 font-semibold text-slate-900">Upcoming Appointments</p>
         <div class="space-y-3">

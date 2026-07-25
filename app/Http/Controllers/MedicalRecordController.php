@@ -38,7 +38,8 @@ class MedicalRecordController extends Controller
             ->when($doctorId, fn ($query) => $query->where('mr.doctor_id', $doctorId))
             ->orderByDesc('mr.created_at')
             ->selectRaw("mr.*, (p.first_name||' '||p.last_name) as patient_name, (s.first_name||' '||s.last_name) as doctor_name")
-            ->limit(200)->get();
+            ->paginate(20)
+            ->withQueryString();
 
         $versionCounts = DB::connection('mongodb')->table('medical_record_versions')
             ->whereIn('medical_record_id', $records->pluck('medical_record_id'))
@@ -65,6 +66,7 @@ class MedicalRecordController extends Controller
             'versions' => $versions,
             'prescriptions' => $record->prescriptions()->with('items.medicine')->orderByDesc('prescription_date')->get(),
             'medicines' => Medicine::orderBy('medicine_name')->get(),
+            'treatmentPlans' => $record->treatmentPlans()->orderByDesc('start_date')->get(),
         ]);
     }
 

@@ -34,7 +34,8 @@ class AppointmentController extends Controller
             ->when($status !== 'all', fn ($query) => $query->where('a.status', $status))
             ->orderByDesc('a.appointment_date')->orderByDesc('a.appointment_time')
             ->selectRaw("a.*, (p.first_name||' '||p.last_name) as patient_name, p.patient_id as patient_id, (s.first_name||' '||s.last_name) as doctor_name")
-            ->limit(200)->get();
+            ->paginate(20)
+            ->withQueryString();
 
         $today = now()->toDateString();
         $stats = [

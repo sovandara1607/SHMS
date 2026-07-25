@@ -19,7 +19,8 @@ class ClinicalController extends Controller
             ->join('patient as p', 'p.patient_id', '=', 'v.patient_id')
             ->orderByDesc('v.recorded_at')
             ->selectRaw("v.*, (p.first_name||' '||p.last_name) as patient_name")
-            ->limit(100)->get();
+            ->paginate(20)
+            ->withQueryString();
 
         return view('medical.vitals', ['vitals' => $vitals]);
     }

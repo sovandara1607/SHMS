@@ -26,14 +26,16 @@ class BillingController extends Controller
             ->groupBy('b.bill_id', 'b.patient_id', 'b.appointment_id', 'b.generated_by', 'b.bill_date', 'b.total_amount', 'b.status', 'p.first_name', 'p.last_name')
             ->orderByDesc('b.bill_date')
             ->selectRaw("b.*, (p.first_name||' '||p.last_name) as patient_name, COALESCE(SUM(pm.amount_paid), 0) as paid_amount")
-            ->limit(200)->get();
+            ->paginate(20, ['*'], 'bills_page')
+            ->withQueryString();
 
         $payments = DB::table('payment as pm')
             ->join('bill as b', 'b.bill_id', '=', 'pm.bill_id')
             ->join('patient as p', 'p.patient_id', '=', 'b.patient_id')
             ->orderByDesc('pm.payment_date')
             ->selectRaw("pm.*, (p.first_name||' '||p.last_name) as patient_name")
-            ->limit(100)->get();
+            ->paginate(20, ['*'], 'payments_page')
+            ->withQueryString();
 
         $stats = [
             'total_amount'    => (float) Bill::sum('total_amount'),
@@ -114,8 +116,13 @@ class BillingController extends Controller
     public function pay(Request $request, string $id)
     {
         $bill = Bill::findOrFail($id);
+        if ($bill->status === 'paid') {
+            return back()->with('error', 'This bill is already fully paid.');
+        }
+
+        $balance = round((float) $bill->total_amount - $bill->paidAmount(), 2);
         $data = $request->validate([
-            'amount_paid' => 'required|numeric|min:0.01',
+            'amount_paid' => ['required', 'numeric', 'min:0.01', 'max:' . max($balance, 0.01)],
             'payment_method' => 'required|in:cash,card,online',
             'transaction_reference' => 'nullable|string|max:100',
         ]);
@@ -142,7 +149,8 @@ class BillingController extends Controller
             ->join('patient as p', 'p.patient_id', '=', 'b.patient_id')
             ->orderByDesc('pm.payment_date')
             ->selectRaw("pm.*, (p.first_name||' '||p.last_name) as patient_name")
-            ->limit(200)->get();
+            ->paginate(20)
+            ->withQueryString();
 
         return view('misc.table', [
             'title' => 'Payment History',

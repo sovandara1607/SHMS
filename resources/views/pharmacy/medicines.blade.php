@@ -2,7 +2,7 @@
 @section('content')
 
 <div x-data="{
-        tab: 'inventory',
+        tab: @js(request()->query('tab', 'inventory')),
         async openModal(url) {
             const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
             const body = document.getElementById('pharmacy-modal-body');
@@ -65,6 +65,7 @@
                 @endforelse
                 </tbody>
             </table>
+            <x-pagination :paginator="$medicines->appends(['tab' => 'inventory'])" />
         </div>
 
         {{-- Medicine Batches --}}
@@ -97,6 +98,7 @@
                 @endforelse
                 </tbody>
             </table>
+            <x-pagination :paginator="$batches->appends(['tab' => 'batches'])" />
         </div>
 
         {{-- Prescriptions --}}
@@ -128,6 +130,7 @@
                 @endforelse
                 </tbody>
             </table>
+            <x-pagination :paginator="$prescriptions->appends(['tab' => 'prescriptions'])" />
         </div>
 
         {{-- Dispensing Records --}}
@@ -154,6 +157,7 @@
                 @endforelse
                 </tbody>
             </table>
+            <x-pagination :paginator="$dispensingRecords->appends(['tab' => 'dispensing'])" />
         </div>
     </div>
 

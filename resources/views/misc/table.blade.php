@@ -31,5 +31,8 @@
         @endforelse
         </tbody>
     </table>
+    @if($rows instanceof \Illuminate\Contracts\Pagination\Paginator)
+        <x-pagination :paginator="$rows" />
+    @endif
 </div>
 @endsection

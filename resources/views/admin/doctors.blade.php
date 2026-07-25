@@ -124,15 +124,16 @@
                 <tr><td colspan="8" class="px-4 py-8 text-center text-slate-400">No doctors found.</td></tr>
             @endforelse
             </tbody>
-            @if($rows->count())
+            @if($rows->total())
                 <tfoot class="border-t border-slate-100 bg-slate-50/60">
                     <tr>
                         <td colspan="7" class="px-4 py-2.5 text-sm font-medium text-slate-600">Total Doctors</td>
-                        <td class="px-4 py-2.5 text-right text-sm font-semibold text-slate-900">{{ $rows->count() }}</td>
+                        <td class="px-4 py-2.5 text-right text-sm font-semibold text-slate-900">{{ $rows->total() }}</td>
                     </tr>
                 </tfoot>
             @endif
         </table>
+        <x-pagination :paginator="$rows" />
     </div>
 
     <x-modal name="doctor-modal" max-width="lg">

@@ -24,6 +24,9 @@ $map = [
     'partially_dispensed' => 'bg-amber-50 text-amber-700',
     'normal' => 'bg-green-50 text-green-700',
     'abnormal' => 'bg-amber-50 text-amber-700',
+    'available' => 'bg-green-50 text-green-700',
+    'occupied' => 'bg-amber-50 text-amber-700',
+    'maintenance' => 'bg-red-50 text-red-700',
 ];
 $key = strtolower(str_replace(' ', '_', (string) $status));
 $classes = $map[$key] ?? 'bg-slate-100 text-slate-600';

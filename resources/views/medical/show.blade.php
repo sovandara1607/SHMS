@@ -80,6 +80,44 @@
         <p class="mb-4 text-sm text-slate-400">No prescriptions for this record yet.</p>
     @endforelse
 
+    <div class="mb-2 flex items-center justify-between">
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Treatment Plans</p>
+        @can('treatment.create')
+            <button type="button" class="text-sm font-medium text-blue-600 hover:underline"
+                    x-on:click="window.dispatchEvent(new CustomEvent('open-modal', { detail: 'add-treatment-plan' }))">+ Add Treatment Plan</button>
+        @endcan
+    </div>
+    @forelse($treatmentPlans as $tp)
+        <div class="mb-3 rounded-lg border border-slate-100 px-4 py-3">
+            <div class="mb-1.5 flex items-center justify-between text-sm">
+                <span class="font-medium text-slate-900">{{ $tp->treatment_plan_id }}</span>
+                <div class="flex items-center gap-2">
+                    <span class="text-slate-400">{{ $tp->start_date }}@if($tp->end_date) &rarr; {{ $tp->end_date }}@endif</span>
+                    <x-badge :status="$tp->status" />
+                </div>
+            </div>
+            <p class="text-sm text-slate-700">{{ $tp->diagnosis_summary }}</p>
+            @if($tp->recommended_care)<p class="mt-1 text-sm text-slate-600"><span class="font-medium">Care:</span> {{ $tp->recommended_care }}</p>@endif
+            @if($tp->clinical_notes)<p class="mt-1 text-xs text-slate-500">{{ $tp->clinical_notes }}</p>@endif
+            @can('treatment.create')
+                @if($tp->status === 'active')
+                    <div class="mt-2 flex gap-3">
+                        <form method="post" action="/treatment-plans/{{ $tp->treatment_plan_id }}/status">
+                            @csrf<input type="hidden" name="status" value="completed">
+                            <button type="submit" class="text-xs font-medium text-green-600 hover:underline">Mark Completed</button>
+                        </form>
+                        <form method="post" action="/treatment-plans/{{ $tp->treatment_plan_id }}/status">
+                            @csrf<input type="hidden" name="status" value="cancelled">
+                            <button type="submit" class="text-xs font-medium text-red-600 hover:underline">Cancel Plan</button>
+                        </form>
+                    </div>
+                @endif
+            @endcan
+        </div>
+    @empty
+        <p class="mb-4 text-sm text-slate-400">No treatment plans for this record yet.</p>
+    @endforelse
+
     @can('medical_record.adjust')
         <x-button variant="primary" x-on:click="window.dispatchEvent(new CustomEvent('open-modal', { detail: 'adjust-record' }))">Adjust Medical Record</x-button>
     @endcan
@@ -173,6 +211,39 @@
         <div class="flex justify-end gap-2 pt-2">
             <x-button variant="secondary" type="button" x-on:click="show = false">Cancel</x-button>
             <x-button variant="primary" type="submit">Save Prescription</x-button>
+        </div>
+    </form>
+</x-modal>
+
+<x-modal name="add-treatment-plan" max-width="lg">
+    <x-modal-header title="Add Treatment Plan" :subtitle="'Patient: ' . ($record->patient?->fullName() ?? $record->patient_id)" />
+    <form method="post" action="/medical-records/{{ $record->medical_record_id }}/treatment-plans" class="space-y-4 px-6 py-5">
+        @csrf
+        <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-700">Diagnosis Summary *</label>
+            <textarea name="diagnosis_summary" rows="2" required class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">{{ $record->diagnosis }}</textarea>
+        </div>
+        <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-700">Recommended Care</label>
+            <textarea name="recommended_care" rows="2" placeholder="e.g. Bed rest, physical therapy 2x/week..." class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"></textarea>
+        </div>
+        <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-700">Clinical Notes</label>
+            <textarea name="clinical_notes" rows="2" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-slate-700">Start Date</label>
+                <input type="date" name="start_date" value="{{ now()->toDateString() }}" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+            </div>
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-slate-700">End Date</label>
+                <input type="date" name="end_date" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+            </div>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+            <x-button variant="secondary" type="button" x-on:click="show = false">Cancel</x-button>
+            <x-button variant="primary" type="submit">Save Treatment Plan</x-button>
         </div>
     </form>
 </x-modal>

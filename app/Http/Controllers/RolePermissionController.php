@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\RolePermission;
 use App\Services\AuditLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Admin/Super Admin screen for editing what each non-protected role can do.
@@ -126,10 +127,15 @@ class RolePermissionController extends Controller
         $allCapabilities = collect(self::catalog())->flatMap(fn ($caps) => array_keys($caps))->all();
         $selected = array_intersect($request->input('capabilities', []), $allCapabilities);
 
-        RolePermission::where('role', $role)->delete();
-        foreach ($selected as $capability) {
-            RolePermission::create(['role' => $role, 'capability' => $capability]);
-        }
+        // Wrapped so a failure mid-loop can't leave the role with its old
+        // grants deleted but the new set only partially written — i.e.
+        // stuck with none at all.
+        DB::transaction(function () use ($role, $selected) {
+            RolePermission::where('role', $role)->delete();
+            foreach ($selected as $capability) {
+                RolePermission::create(['role' => $role, 'capability' => $capability]);
+            }
+        });
 
         $this->audit->log('role_permission.update', 'role', $role, ['capabilities' => array_values($selected)]);
 

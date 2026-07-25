@@ -56,6 +56,7 @@
             @endforelse
             </tbody>
         </table>
+        <x-pagination :paginator="$rooms" />
     </div>
 
     <x-modal name="room-modal" max-width="lg">

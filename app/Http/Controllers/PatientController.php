@@ -37,7 +37,8 @@ class PatientController extends Controller
                     ->where('status', 'active'));
             })
             ->orderByDesc('created_at')
-            ->limit(200)->get();
+            ->paginate(20)
+            ->withQueryString();
 
         return view('patient.index', compact('patients', 'q', 'status'));
     }

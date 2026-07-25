@@ -14,14 +14,14 @@
     @endforeach
 </div>
 
-<div class="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-    <x-stat-card label="My Patients" :value="$stats['my_patients']" icon="users" icon-color="blue" />
-    <x-stat-card label="Today's Consults" :value="$stats['today_consults']" icon="clipboard" icon-color="green" />
-    <x-stat-card label="Pending Reports" :value="$stats['pending_reports']" icon="document" icon-color="amber" />
-    <x-stat-card label="Critical Cases" :value="$stats['critical_cases']" icon="x" icon-color="red" />
+<div class="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <x-stat-card label="My Patients" :value="number_format($stats['my_patients'])" icon="users" icon-color="blue" :badge="$kpiBadges['my_patients']" :report-url="$reportUrls['my_patients']" />
+    <x-stat-card label="Today's Consults" :value="number_format($stats['today_consults'])" icon="clipboard" icon-color="green" :badge="$kpiBadges['today_consults']" :report-url="$reportUrls['today_consults']" />
+    <x-stat-card label="Pending Reports" :value="number_format($stats['pending_reports'])" icon="document" icon-color="amber" :badge="$kpiBadges['pending_reports']" :report-url="$reportUrls['pending_reports']" />
+    <x-stat-card label="Critical Cases" :value="number_format($stats['critical_cases'])" icon="x" icon-color="red" :badge="$kpiBadges['critical_cases']" :report-url="$reportUrls['critical_cases']" />
 </div>
 
-<div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
+<div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-2">
     <div class="rounded-xl border border-slate-200 bg-white p-5">
         <p class="mb-3 font-semibold text-slate-900">Today's Patients</p>
         <div class="space-y-3">

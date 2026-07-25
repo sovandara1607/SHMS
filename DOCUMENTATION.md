@@ -261,10 +261,9 @@ prescription/lab_test_order/…`, `prescription 1—N prescription_item`,
 
 ## 7. ERD explanation
 
-The ERD ([`docs/erd.drawio`](docs/erd.drawio)) groups all 39 tables into the
-**6 system modules** from the project document, each a colored, labeled band.
-Open it at <https://app.diagrams.net> (File → Open) or in the VS Code *Draw.io
-Integration* extension. Regenerate with `php docs/generate_erd.php`.
+The ERD ([`Documentation/ERD.png`](Documentation/ERD.png)) groups all 39 tables
+into the **6 system modules** from the project document, each a colored,
+labeled band.
 
 - **Module 1 (blue) – Core System Management:** users, staff, department, the 5 staff sub-types, laboratory, patient, patient_insurance, room, bed, room_assignment, staff_shift, patient_doctor_assignment, patient_nurse_assignment (covers Patient, Staff, Department, Room and Schedule management). `staff` and `patient` are the hubs.
 - **Module 2 (orange) – Appointment Management:** appointment.
@@ -467,7 +466,8 @@ Database-Midterm/
 │                                #   billing/, misc/, errors/
 ├── routes/web.php                # route table (auth + permission middleware)
 ├── storage/logs/                 # laravel.log
-├── docs/                         # erd.drawio, system_architecture.drawio, data_flow_diagram.drawio
+├── docs/                         # system_architecture.drawio
+├── Documentation/                # ERD.png, DFD.png, System Architecture v2.png
 └── _legacy_custom_php/           # earlier from-scratch build (superseded)
 ```
 
@@ -599,7 +599,7 @@ the equivalent sequential scan.
 
 ## 18. System flow — Data Flow Diagram
 
-Diagram: **[`docs/data_flow_diagram.drawio`](docs/data_flow_diagram.drawio)**
+Diagram: **[`Documentation/DFD.png`](Documentation/DFD.png)**
 (Level-1 DFD). Notation: **rectangles** = external entities (staff roles),
 **rounded boxes** = processes (numbered 1.0–7.0), **open-ended boxes** = data
 stores (D1 PostgreSQL, D2 MongoDB, D3 Redis).

@@ -16,7 +16,7 @@ $filters = ['all' => 'All', 'active' => 'Active', 'admitted' => 'Admitted', 'icu
      }"
      x-init="@if($errors->any() && old('_modal_target'))openPatientModal(@js(old('_modal_target')))@elseif(session('reopen_patient'))openPatientModal(@js('/patients/' . session('reopen_patient')))@endif"
 >
-    <x-page-header title="Patient Management" :subtitle="$patients->count() . ' total patients registered'">
+    <x-page-header title="Patient Management" :subtitle="$patients->total() . ' total patients registered'">
         <x-slot:actions>
             <x-button variant="secondary"><x-icon name="document" class="h-4 w-4" /> Export</x-button>
             @can('patient.create')
@@ -42,7 +42,48 @@ $filters = ['all' => 'All', 'active' => 'Active', 'admitted' => 'Admitted', 'icu
         </div>
     </div>
 
-    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+    {{-- Mobile: stacked cards (the 8-column table is unusable at phone widths) --}}
+    <div class="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white sm:hidden">
+        @forelse($patients as $p)
+            @php($age = $p->date_of_birth ? \Carbon\Carbon::parse($p->date_of_birth)->age : null)
+            <div class="p-4">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex min-w-0 items-center gap-2.5">
+                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-700">
+                            {{ strtoupper(substr($p->first_name, 0, 1) . substr($p->last_name, 0, 1)) }}
+                        </div>
+                        <div class="min-w-0">
+                            <div class="truncate font-medium text-slate-900">{{ $p->fullName() }}</div>
+                            <div class="text-xs font-medium text-blue-600">{{ $p->patient_id }}</div>
+                        </div>
+                    </div>
+                    <x-badge :status="$p->patient_status" />
+                </div>
+                <div class="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 text-sm">
+                    <div><span class="text-slate-400">Gender</span> <span class="text-slate-700">{{ ucfirst($p->gender ?? '—') }}</span></div>
+                    <div><span class="text-slate-400">Blood</span> <span class="font-semibold text-red-600">{{ $p->blood_type ?: '—' }}</span></div>
+                    <div class="col-span-2"><span class="text-slate-400">DOB</span> <span class="text-slate-700">{{ $p->date_of_birth ?? '—' }}{{ $age !== null ? " ($age yrs)" : '' }}</span></div>
+                    <div class="col-span-2"><span class="text-slate-400">Phone</span> <span class="text-slate-700">{{ $p->phone_number ?: '—' }}</span></div>
+                </div>
+                <div class="mt-3 flex items-center justify-end gap-4 border-t border-slate-50 pt-3">
+                    <button type="button" x-on:click="openPatientModal('/patients/{{ $p->patient_id }}')" class="flex items-center gap-1.5 text-sm font-medium text-slate-500">
+                        <x-icon name="eye" class="h-4 w-4" /> View
+                    </button>
+                    @can('patient.update')
+                        <button type="button" x-on:click="openPatientModal('/patients/{{ $p->patient_id }}/edit')" class="flex items-center gap-1.5 text-sm font-medium text-slate-500">
+                            <x-icon name="pencil" class="h-4 w-4" /> Edit
+                        </button>
+                    @endcan
+                </div>
+            </div>
+        @empty
+            <div class="p-8 text-center text-slate-400">No patients found.</div>
+        @endforelse
+        <x-pagination :paginator="$patients" />
+    </div>
+
+    {{-- sm+: full table --}}
+    <div class="hidden overflow-x-auto rounded-xl border border-slate-200 bg-white sm:block">
         <table class="w-full text-sm">
             <thead>
                 <tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
@@ -95,9 +136,10 @@ $filters = ['all' => 'All', 'active' => 'Active', 'admitted' => 'Admitted', 'icu
             @endforelse
             </tbody>
         </table>
+        <x-pagination :paginator="$patients" />
     </div>
 
-    <x-modal name="patient-modal" max-width="3xl">
+    <x-modal name="patient-modal" max-width="5xl">
         <div id="patient-modal-body"></div>
     </x-modal>
 </div>

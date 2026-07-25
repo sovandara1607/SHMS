@@ -12,7 +12,8 @@
 </head>
 <body class="min-h-screen bg-slate-50 font-sans text-slate-900 antialiased">
 <x-loading-overlay />
-<div class="flex min-h-screen"
+<x-download-toast />
+<div class="flex h-screen"
      x-data="{ sidebarOpen: JSON.parse(localStorage.getItem('sh_sidebar_open') ?? (window.innerWidth >= 1024 ? 'true' : 'false')) }"
      x-init="$watch('sidebarOpen', (v) => localStorage.setItem('sh_sidebar_open', JSON.stringify(v)))">
     {{-- Below the lg breakpoint the sidebar becomes an overlay (fixed +
@@ -21,8 +22,8 @@
     <div x-show="sidebarOpen" x-on:click="sidebarOpen = false" x-transition.opacity
          class="fixed inset-0 z-30 bg-slate-900/50 lg:hidden" style="display:none" aria-hidden="true"></div>
 
-    <aside class="fixed inset-y-0 left-0 z-40 flex w-64 shrink-0 flex-col overflow-hidden border-slate-200 bg-white transition-transform duration-200 lg:static lg:z-auto lg:transition-[width,border-width]"
-           :class="sidebarOpen ? 'translate-x-0 lg:w-64 lg:border-r' : '-translate-x-full lg:translate-x-0 lg:w-0 lg:border-r-0'">
+    <aside class="fixed left-4 top-4 bottom-4 z-40 flex w-64 max-w-[calc(100vw-2rem)] shrink-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl transition-transform duration-200 lg:static lg:z-auto lg:max-w-none lg:rounded-none lg:border-t-0 lg:border-l-0 lg:border-b-0 lg:shadow-none lg:transition-[width,border-width]"
+           :class="sidebarOpen ? 'translate-x-0 lg:w-64 lg:border-r' : '-translate-x-[calc(100%+1rem)] lg:translate-x-0 lg:w-0 lg:border-r-0'">
         <div class="flex items-center gap-2.5 border-b border-slate-100 px-5 py-4">
             <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -35,70 +36,89 @@
             </div>
         </div>
 
-        <nav class="flex-1 space-y-5 overflow-y-auto px-3 py-4">
-            <div>
-                <p class="mb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Overview</p>
-                @can('dashboard.view')
-                    <x-nav-link href="/dashboard" icon="grid">Dashboard</x-nav-link>
-                @endcan
+        <nav class="flex-1 space-y-3 overflow-y-auto px-3 py-4">
+            <div x-data="sidebarSection('overview')">
+                <button type="button" x-on:click="toggle" :aria-expanded="open"
+                        class="mb-1 flex w-full items-center justify-between rounded-md px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400 hover:text-slate-600">
+                    <span>Overview</span>
+                    <x-icon name="chevron-down" class="h-3 w-3 shrink-0 text-slate-400 transition-transform duration-150" x-bind:class="{ '-rotate-90': !open }" />
+                </button>
+                <div x-show="open" x-transition class="space-y-1">
+                    @can('dashboard.view')
+                        <x-nav-link href="/dashboard" icon="grid">Dashboard</x-nav-link>
+                    @endcan
+                </div>
             </div>
 
             @if($u->hasPermission('patient.view') || $u->hasPermission('appointment.view') || $u->hasPermission('medical_record.view') || $u->hasPermission('treatment.view'))
-                <div>
-                    <p class="mb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Patient Care</p>
-                    @can('patient.view')<x-nav-link href="/patients" icon="users">Patients</x-nav-link>@endcan
-                    @can('appointment.view')<x-nav-link href="/appointments" icon="calendar">Appointments</x-nav-link>@endcan
-                    @can('medical_record.view')<x-nav-link href="/medical-records" icon="document">Medical Records</x-nav-link>@endcan
-                    @can('treatment.view')<x-nav-link href="/treatments" icon="clipboard">Treatments</x-nav-link>@endcan
+                <div x-data="sidebarSection('patient-care')">
+                    <button type="button" x-on:click="toggle" :aria-expanded="open"
+                            class="mb-1 flex w-full items-center justify-between rounded-md px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400 hover:text-slate-600">
+                        <span>Patient Care</span>
+                        <x-icon name="chevron-down" class="h-3 w-3 shrink-0 text-slate-400 transition-transform duration-150" x-bind:class="{ '-rotate-90': !open }" />
+                    </button>
+                    <div x-show="open" x-transition class="space-y-1">
+                        @can('patient.view')<x-nav-link href="/patients" icon="users">Patients</x-nav-link>@endcan
+                        @can('appointment.view')<x-nav-link href="/appointments" icon="calendar">Appointments</x-nav-link>@endcan
+                        @can('medical_record.view')<x-nav-link href="/medical-records" icon="document">Medical Records</x-nav-link>@endcan
+                        @can('treatment.view')<x-nav-link href="/treatments" icon="clipboard">Treatments</x-nav-link>@endcan
+                    </div>
                 </div>
             @endif
 
             @if($u->hasPermission('staff.manage') || $u->hasPermission('room.view'))
-                <div>
-                    <p class="mb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Hospital</p>
-                    @can('staff.manage')
-                        <x-nav-link href="/staff" icon="users">Staff</x-nav-link>
-                        <x-nav-link href="/departments" icon="building">Departments</x-nav-link>
-                    @endcan
-                    @can('room.view')<x-nav-link href="/rooms" icon="bed">Rooms &amp; Beds</x-nav-link>@endcan
+                <div x-data="sidebarSection('hospital')">
+                    <button type="button" x-on:click="toggle" :aria-expanded="open"
+                            class="mb-1 flex w-full items-center justify-between rounded-md px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400 hover:text-slate-600">
+                        <span>Hospital</span>
+                        <x-icon name="chevron-down" class="h-3 w-3 shrink-0 text-slate-400 transition-transform duration-150" x-bind:class="{ '-rotate-90': !open }" />
+                    </button>
+                    <div x-show="open" x-transition class="space-y-1">
+                        @can('staff.manage')
+                            <x-nav-link href="/staff" icon="users">Staff</x-nav-link>
+                            <x-nav-link href="/departments" icon="building">Departments</x-nav-link>
+                        @endcan
+                        @can('room.view')<x-nav-link href="/rooms" icon="bed">Rooms &amp; Beds</x-nav-link>@endcan
+                    </div>
                 </div>
             @endif
 
             @if($u->hasPermission('medicine.view') || $u->hasPermission('lab_order.view') || $u->hasPermission('lab_result.view') || $u->hasPermission('bill.view'))
-                <div>
-                    <p class="mb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Services</p>
-                    @can('medicine.view')<x-nav-link href="/medicines" icon="pill">Pharmacy</x-nav-link>@endcan
-                    @if($u->hasPermission('lab_order.view') || $u->hasPermission('lab_result.view'))
-                        <x-nav-link href="/lab-orders" icon="flask">Laboratory</x-nav-link>
-                    @endif
-                    @can('bill.view')<x-nav-link href="/bills" icon="card">Billing &amp; Payments</x-nav-link>@endcan
+                <div x-data="sidebarSection('services')">
+                    <button type="button" x-on:click="toggle" :aria-expanded="open"
+                            class="mb-1 flex w-full items-center justify-between rounded-md px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400 hover:text-slate-600">
+                        <span>Services</span>
+                        <x-icon name="chevron-down" class="h-3 w-3 shrink-0 text-slate-400 transition-transform duration-150" x-bind:class="{ '-rotate-90': !open }" />
+                    </button>
+                    <div x-show="open" x-transition class="space-y-1">
+                        @can('medicine.view')<x-nav-link href="/medicines" icon="pill">Pharmacy</x-nav-link>@endcan
+                        @if($u->hasPermission('lab_order.view') || $u->hasPermission('lab_result.view'))
+                            <x-nav-link href="/lab-orders" icon="flask">Laboratory</x-nav-link>
+                        @endif
+                        @can('bill.view')<x-nav-link href="/bills" icon="card">Billing &amp; Payments</x-nav-link>@endcan
+                    </div>
                 </div>
             @endif
 
             @if(\Illuminate\Support\Facades\Route::has('roles-permissions.index') && ($u->role === 'super_admin' || $u->role === 'admin'))
-                <div>
-                    <p class="mb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Administration</p>
-                    <x-nav-link href="/roles-permissions" icon="shield">Roles &amp; Permissions</x-nav-link>
-                    @if(\Illuminate\Support\Facades\Route::has('settings.hospital'))
-                        <x-nav-link href="/hospital-settings" icon="cog">Settings</x-nav-link>
-                    @endif
+                <div x-data="sidebarSection('administration')">
+                    <button type="button" x-on:click="toggle" :aria-expanded="open"
+                            class="mb-1 flex w-full items-center justify-between rounded-md px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400 hover:text-slate-600">
+                        <span>Administration</span>
+                        <x-icon name="chevron-down" class="h-3 w-3 shrink-0 text-slate-400 transition-transform duration-150" x-bind:class="{ '-rotate-90': !open }" />
+                    </button>
+                    <div x-show="open" x-transition class="space-y-1">
+                        <x-nav-link href="/roles-permissions" icon="shield">Roles &amp; Permissions</x-nav-link>
+                        @if(\Illuminate\Support\Facades\Route::has('settings.hospital'))
+                            <x-nav-link href="/hospital-settings" icon="cog">Settings</x-nav-link>
+                        @endif
+                    </div>
                 </div>
             @endif
         </nav>
 
-        <div class="border-t border-slate-100 p-3">
-            <a href="/profile" class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-slate-50">
-                <x-icon name="users" class="h-4 w-4" /> Profile
-            </a>
-            <a href="/settings" class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-slate-50">
-                <x-icon name="cog" class="h-4 w-4" /> Settings
-            </a>
-            <form action="/logout" method="post">
-                @csrf
-                <button type="submit" class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50">
-                    <x-icon name="logout" class="h-4 w-4" /> Logout
-                </button>
-            </form>
+        <div class="border-t border-slate-100 px-4 py-3">
+            <p class="text-xs text-slate-400">Smart Hospital v{{ config('app.version') }}</p>
         </div>
     </aside>
 

@@ -11,14 +11,14 @@
     @endcan
 </div>
 
-<div class="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-    <x-stat-card label="Total Medicines" :value="$stats['total_medicines']" icon="pill" icon-color="blue" />
-    <x-stat-card label="Low Stock Alerts" :value="$stats['low_stock']" icon="clipboard" icon-color="amber" />
-    <x-stat-card label="Expired Items" :value="$stats['expired']" icon="x" icon-color="red" />
-    <x-stat-card label="Dispensed Today" :value="$stats['dispensed_today']" icon="pill" icon-color="green" />
+<div class="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <x-stat-card label="Total Medicines" :value="number_format($stats['total_medicines'])" icon="pill" icon-color="blue" :badge="$kpiBadges['total_medicines']" :report-url="$reportUrls['total_medicines']" />
+    <x-stat-card label="Low Stock Alerts" :value="number_format($stats['low_stock'])" icon="clipboard" icon-color="amber" :badge="$kpiBadges['low_stock']" :report-url="$reportUrls['low_stock']" />
+    <x-stat-card label="Expired Items" :value="number_format($stats['expired'])" icon="x" icon-color="red" :badge="$kpiBadges['expired']" :report-url="$reportUrls['expired']" />
+    <x-stat-card label="Dispensed Today" :value="number_format($stats['dispensed_today'])" icon="pill" icon-color="green" :badge="$kpiBadges['dispensed_today']" :report-url="$reportUrls['dispensed_today']" />
 </div>
 
-<div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
+<div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-2">
     <div class="rounded-xl border border-slate-200 bg-white p-5">
         <p class="mb-3 font-semibold text-slate-900">Stock Alerts</p>
         <div class="space-y-3">

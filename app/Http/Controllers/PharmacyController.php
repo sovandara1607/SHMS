@@ -28,12 +28,16 @@ class PharmacyController extends Controller
                     ->orWhere('medicine_name', 'ilike', $like)
                     ->orWhere('manufacturer', 'ilike', $like);
             })
-            ->orderBy('medicine_name')->limit(200)->get();
+            ->orderBy('medicine_name')
+            ->paginate(20, ['*'], 'inventory_page')
+            ->withQueryString();
 
         $batches = DB::table('medicine_batch as b')
             ->join('medicine as m', 'm.medicine_id', '=', 'b.medicine_id')
             ->orderBy('b.expiry_date')
-            ->selectRaw('b.*, m.medicine_name')->get();
+            ->selectRaw('b.*, m.medicine_name')
+            ->paginate(20, ['*'], 'batches_page')
+            ->withQueryString();
 
         $prescriptions = DB::table('prescription as pr')
             ->join('patient as p', 'p.patient_id', '=', 'pr.patient_id')
@@ -41,7 +45,8 @@ class PharmacyController extends Controller
             ->join('staff as s', 's.staff_id', '=', 'd.staff_id')
             ->orderByDesc('pr.prescription_date')
             ->selectRaw("pr.*, (p.first_name||' '||p.last_name) as patient_name, (s.first_name||' '||s.last_name) as doctor_name")
-            ->limit(100)->get();
+            ->paginate(20, ['*'], 'prescriptions_page')
+            ->withQueryString();
 
         $dispensingRecords = DB::table('dispensing_record as dr')
             ->join('patient as p', 'p.patient_id', '=', 'dr.patient_id')
@@ -49,7 +54,8 @@ class PharmacyController extends Controller
             ->leftJoin('staff as s', 's.staff_id', '=', 'ph.staff_id')
             ->orderByDesc('dr.dispensing_date')
             ->selectRaw("dr.*, (p.first_name||' '||p.last_name) as patient_name, (s.first_name||' '||s.last_name) as pharmacist_name")
-            ->limit(100)->get();
+            ->paginate(20, ['*'], 'dispensing_page')
+            ->withQueryString();
 
         $stats = [
             'total'   => Medicine::count(),
@@ -156,7 +162,8 @@ class PharmacyController extends Controller
             ->join('patient as p', 'p.patient_id', '=', 'dr.patient_id')
             ->orderByDesc('dr.dispensing_date')
             ->selectRaw("dr.*, (p.first_name||' '||p.last_name) as patient_name")
-            ->limit(100)->get();
+            ->paginate(20)
+            ->withQueryString();
 
         $prescriptions = DB::table('prescription as pr')
             ->join('patient as p', 'p.patient_id', '=', 'pr.patient_id')
@@ -233,6 +240,14 @@ class PharmacyController extends Controller
 
         try {
             DB::transaction(function () use ($data) {
+                // Without this, resubmitting the dispense form (double-click,
+                // back-button repost) re-dispenses the same prescription: a
+                // second DispensingRecord + a second stock decrement for
+                // medicine the patient already received.
+                if (DispensingRecord::where('prescription_id', $data['prescription_id'])->exists()) {
+                    throw new \RuntimeException('This prescription has already been dispensed.');
+                }
+
                 $items = DB::table('prescription_item')->where('prescription_id', $data['prescription_id'])->get();
                 if ($items->isEmpty()) {
                     throw new \RuntimeException('This prescription has no items to dispense.');
