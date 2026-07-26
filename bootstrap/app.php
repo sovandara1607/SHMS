@@ -18,6 +18,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'permission' => \App\Http\Middleware\EnsurePermission::class,
         ]);
+
+        // Traffic arrives either straight from the LAN or via the Cloudflare
+        // Tunnel container on the same Docker network — trusting all proxies
+        // lets Laravel read X-Forwarded-Proto from cloudflared so url()/
+        // isSecure() reflect the real https:// the visitor used, instead of
+        // the plain http:// cloudflared -> database-final hop.
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

@@ -41,7 +41,7 @@ openssl rand -hex 32
 Fill in `.env.production`:
 - `POSTGRES_PASSWORD`, `MONGO_PASSWORD`, `REDIS_PASSWORD` — the generated passwords above.
 - `CENTRAL_SERVICE_API_KEY` — the hex secret above (used by both apps — same value).
-- `DATABASE_FINAL_APP_URL` — how you'll actually reach it, e.g. `http://192.168.0.100:8000` on your LAN, or a real domain if you're reverse-proxying/exposing it further.
+- `DATABASE_FINAL_APP_URL` — the public hostname from step 7, e.g. `https://smarthospital.sovandara.lol`. LAN access via `http://192.168.0.100:8000` keeps working either way.
 - `R2_*` — only if you want lab report PDFs on Cloudflare R2; leave blank to store them on local disk instead.
 
 ## 3. Generate the two Laravel APP_KEYs
@@ -86,7 +86,34 @@ docker compose -f docker-compose.production.yml exec database-final \
   curl -s http://central-service:8100/api/health
 ```
 
-Then open `DATABASE_FINAL_APP_URL` in a browser (e.g. `http://192.168.0.100:8000`) and log in.
+Then open `http://192.168.0.100:8000` in a browser on your LAN and log in — confirm it works before moving on to step 7.
+
+## 7. Public HTTPS access via Cloudflare Tunnel
+
+Gives you `https://smarthospital.sovandara.lol` reachable from anywhere, with no router port-forwarding and no separate TLS cert to manage — Cloudflare terminates HTTPS at their edge and tunnels the connection back to `database-final:8000` over the Docker network.
+
+**One-time setup, in the Cloudflare dashboard** (not on the server):
+
+1. Go to [one.dash.cloudflare.com](https://one.dash.cloudflare.com) → **Networks → Tunnels → Create a tunnel**.
+2. Choose **Cloudflared**, name it `smart-hospital`, click **Save tunnel**.
+3. On the "Install and run a connector" step, pick **Docker** — it shows a command containing a long `--token eyJ...` value. Copy just that token string.
+4. Click **Next**, then under **Public Hostname**:
+   - Subdomain: `smarthospital`
+   - Domain: `sovandara.lol`
+   - Service Type: `HTTP`
+   - URL: `database-final:8000`
+   - Save the hostname.
+5. Back on the server, add the token to `.env.production`:
+   ```bash
+   echo "CLOUDFLARE_TUNNEL_TOKEN=<paste the token here>" >> .env.production
+   ```
+6. Start the tunnel (it's already in `docker-compose.production.yml`):
+   ```bash
+   docker compose -f docker-compose.production.yml --env-file .env.production up -d cloudflared
+   ```
+7. In the dashboard, the tunnel should flip to **Healthy** within a few seconds. Visit `https://smarthospital.sovandara.lol` from anywhere — no VPN, no port forwarding.
+
+If you haven't already, also set `DATABASE_FINAL_APP_URL=https://smarthospital.sovandara.lol` in `.env.production` and re-run the `up -d --build` command from step 4 so it picks up the change.
 
 ## Updating after a code change
 
@@ -101,4 +128,4 @@ docker compose -f docker-compose.production.yml --env-file .env.production up -d
 
 - Postgres/MongoDB/Redis have no host ports published by default — only reachable by the app containers on the compose network, not from outside the server. Uncomment a `ports:` block in `docker-compose.production.yml` if you need direct access for debugging.
 - `central-service` also has no host port published — Database-final reaches it at `http://central-service:8100` over the compose network. This means the pharmacist/lab async flows (PDF generation, audit log, medical record versioning) only work while `central-service`'s three processes (`serve`, `bus:relay`, `queue:work`, all managed by `supervisord` inside its container) are running — check `docker compose -f docker-compose.production.yml logs central-service` if lab reports aren't generating.
-- If you want this reachable from outside your home network, put a reverse proxy (Caddy/nginx/Traefik) with a real TLS cert in front of `database-final`'s published port rather than exposing port 8000 directly — this compose file doesn't set that up for you.
+- The `cloudflared` service (step 7) is the intended way to expose this outside your home network — it doesn't need port 8000 opened on your router at all, since it dials *out* to Cloudflare rather than accepting inbound connections directly. Skip it if LAN-only access is all you need; just delete/comment out the `cloudflared` service and don't set `CLOUDFLARE_TUNNEL_TOKEN`.

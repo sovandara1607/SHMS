@@ -167,6 +167,22 @@ services:
 
       MAIL_MAILER: log
 
+  # Public HTTPS access without opening any router port: this dials out to
+  # Cloudflare, which proxies https://<your-hostname> back in over that
+  # connection to database-final:8000 on this same Docker network. Create
+  # the tunnel + set its public hostname in the Cloudflare Zero Trust
+  # dashboard first (see DEPLOYMENT.md step 7) — CLOUDFLARE_TUNNEL_TOKEN
+  # comes from there, this service doesn't need any ingress config of its
+  # own.
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:?set CLOUDFLARE_TUNNEL_TOKEN in .env.production — see DEPLOYMENT.md step 7}
+    depends_on:
+      - database-final
+
 volumes:
   smart_hospital_pgdata:
   smart_hospital_redisdata:
