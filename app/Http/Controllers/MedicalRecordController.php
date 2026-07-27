@@ -2,51 +2,51 @@
 
 namespace App\Http\Controllers;
 
+use App\DTOs\MedicalRecordDTO;
+use App\DTOs\PatientDTO;
 use App\Models\Doctor;
-use App\Models\MedicalRecord;
-use App\Models\MedicalRecordAdjustment;
-use App\Models\Medicine;
-use App\Models\Patient;
-use App\Models\VitalSign;
 use App\Services\AuditLogger;
 use App\Services\CentralServiceBus;
+use App\Services\CentralServiceClient;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class MedicalRecordController extends Controller
 {
-    public function __construct(private AuditLogger $audit, private CentralServiceBus $bus) {}
+    public function __construct(
+        private AuditLogger $audit,
+        private CentralServiceBus $bus,
+        private CentralServiceClient $centralService,
+    ) {}
 
     public function index(Request $request)
     {
         $q = trim((string) $request->query('q', ''));
         $doctorId = $request->query('doctor_id');
+        $date = $request->query('date');
+        $page = (int) $request->query('page', 1);
 
-        $records = DB::table('medical_record as mr')
-            ->join('patient as p', 'p.patient_id', '=', 'mr.patient_id')
-            ->join('doctor as d', 'd.doctor_id', '=', 'mr.doctor_id')
-            ->join('staff as s', 's.staff_id', '=', 'd.staff_id')
-            ->when($q !== '', function ($query) use ($q) {
-                $like = '%' . $q . '%';
-                $query->where('mr.medical_record_id', 'ilike', $like)
-                    ->orWhere('mr.patient_id', 'ilike', $like)
-                    ->orWhereRaw("(p.first_name||' '||p.last_name) ilike ?", [$like])
-                    ->orWhereRaw("(s.first_name||' '||s.last_name) ilike ?", [$like]);
-            })
-            ->when($doctorId, fn ($query) => $query->where('mr.doctor_id', $doctorId))
-            ->orderByDesc('mr.created_at')
-            ->selectRaw("mr.*, (p.first_name||' '||p.last_name) as patient_name, (s.first_name||' '||s.last_name) as doctor_name")
-            ->paginate(20)
-            ->withQueryString();
+        $response = $this->centralService->listMedicalRecords([
+            'q' => $q, 'doctor_id' => $doctorId, 'date' => $date, 'page' => $page,
+        ])->throw();
+        $body = $response->json();
+
+        $records = new LengthAwarePaginator(
+            collect($body['data'])->map(fn (array $r) => (object) $r),
+            $body['meta']['total'],
+            $body['meta']['per_page'],
+            $body['meta']['current_page'],
+            ['path' => $request->url(), 'query' => $request->query()],
+        );
 
         $versionCounts = DB::connection('mongodb')->table('medical_record_versions')
             ->whereIn('medical_record_id', $records->pluck('medical_record_id'))
             ->get()->groupBy('medical_record_id')->map->count();
 
         return view('medical.index', [
-            'records' => $records, 'q' => $q, 'doctorId' => $doctorId,
+            'records' => $records, 'q' => $q, 'doctorId' => $doctorId, 'date' => $date,
             'doctors' => Doctor::with('staff')->get(),
             'versionCounts' => $versionCounts,
         ]);
@@ -54,25 +54,53 @@ class MedicalRecordController extends Controller
 
     public function show(string $id)
     {
-        $record = MedicalRecord::with('patient', 'doctor.staff')->findOrFail($id);
+        $response = $this->centralService->getMedicalRecord($id);
+        abort_if($response->status() === 404, 404);
+        $response->throw();
+        $body = $response->json();
+
+        $record = MedicalRecordDTO::fromArray($body);
         cache()->put('mr:viewed:' . Auth::id(), $record->medical_record_id, 600);
 
         $versions = DB::connection('mongodb')->table('medical_record_versions')
             ->where('medical_record_id', $record->medical_record_id)->orderBy('version')->get();
 
+        $adjustments = collect($body['adjustments'])->map(fn (array $a) => (object) $a);
+        $prescriptions = collect($body['prescriptions'])->map(function (array $pr) {
+            $pr = (object) $pr;
+            $pr->items = collect($pr->items)->map(function (array $item) {
+                $item = (object) $item;
+                $item->medicine = $item->medicine_name !== null ? (object) ['medicine_name' => $item->medicine_name] : null;
+
+                return $item;
+            });
+
+            return $pr;
+        });
+        $reports = collect($body['reports'] ?? [])->map(fn (array $r) => (object) $r);
+
+        $medicines = collect($this->centralService->listAllMedicines()->throw()->json())
+            ->map(fn (array $m) => (object) $m);
+
         return view('medical.show', [
             'record' => $record,
-            'adjustments' => $record->adjustments()->orderByDesc('adjusted_at')->get(),
+            'adjustments' => $adjustments,
             'versions' => $versions,
-            'prescriptions' => $record->prescriptions()->with('items.medicine')->orderByDesc('prescription_date')->get(),
-            'medicines' => Medicine::orderBy('medicine_name')->get(),
-            'treatmentPlans' => $record->treatmentPlans()->orderByDesc('start_date')->get(),
+            'prescriptions' => $prescriptions,
+            'medicines' => $medicines,
+            'reports' => $reports,
         ]);
     }
 
     public function create(Request $request)
     {
-        $patient = $request->query('patient_id') ? Patient::find($request->query('patient_id')) : null;
+        $patient = null;
+        if ($request->query('patient_id')) {
+            $patientResponse = $this->centralService->getPatient($request->query('patient_id'));
+            if ($patientResponse->successful()) {
+                $patient = PatientDTO::fromArray($patientResponse->json());
+            }
+        }
 
         return view('medical.create', [
             'patient' => $patient,
@@ -85,6 +113,7 @@ class MedicalRecordController extends Controller
         $data = $request->validate([
             'patient_id' => 'required|exists:patient,patient_id',
             'doctor_id'  => 'required|exists:doctor,doctor_id',
+            'appointment_id' => 'nullable|exists:appointment,appointment_id',
             'symptoms'   => 'nullable|string',
             'diagnosis'  => 'required|string',
             'treatment_notes' => 'nullable|string',
@@ -94,70 +123,55 @@ class MedicalRecordController extends Controller
             'height'         => 'nullable|numeric',
             'weight'         => 'nullable|numeric',
         ]);
+        $data['created_by'] = Auth::user()->staff_id;
 
-        $vitalFields = ['temperature', 'blood_pressure', 'heart_rate', 'height', 'weight'];
-        $vitals = collect($data)->only($vitalFields)->filter()->all();
-        $recordData = collect($data)->except($vitalFields)->all();
-        $recordData['created_by'] = Auth::user()->staff_id;
-        $record = MedicalRecord::create($recordData);
-
-        if (! empty($vitals)) {
-            VitalSign::create($vitals + [
-                'patient_id' => $record->patient_id,
-                'medical_record_id' => $record->medical_record_id,
-                'recorded_by' => Auth::user()->staff_id,
-            ]);
-        }
+        $response = $this->centralService->createMedicalRecord($data)->throw();
+        $record = $response->json();
 
         // Immutable original version mirrored to MongoDB via central-service.
+        $vitalFields = ['temperature', 'blood_pressure', 'heart_rate', 'height', 'weight'];
+        $recordSnapshot = collect($data)->except($vitalFields)->all();
         $this->bus->publish('sync_medical_record_version', [
-            'medicalRecordId' => $record->medical_record_id,
+            'medicalRecordId' => $record['medical_record_id'],
             'version' => 1,
             'type' => 'original',
-            'snapshot' => $recordData,
+            'snapshot' => $recordSnapshot,
             'actorStaffId' => Auth::user()->staff_id,
             'reason' => null,
             'createdAt' => now()->toIso8601String(),
         ]);
-        $this->audit->log('medical_record.create', 'medical_record', $record->medical_record_id);
+        $this->audit->log('medical_record.create', 'medical_record', $record['medical_record_id']);
 
-        return redirect('/medical-records')->with('success', "Medical record {$record->medical_record_id} created.");
+        return redirect('/medical-records')->with('success', "Medical record {$record['medical_record_id']} created.");
     }
 
     public function adjust(Request $request, string $id)
     {
-        $record = MedicalRecord::findOrFail($id);
         $data = $request->validate([
             'symptoms'  => 'nullable|string',
             'diagnosis' => 'nullable|string',
             'treatment_notes' => 'nullable|string',
             'reason'    => 'required|string',  // mandatory: who/why/when
         ]);
+        $data['adjusted_by'] = Auth::user()->staff_id;
 
-        // The original is never overwritten; the amendment is appended.
-        MedicalRecordAdjustment::create([
-            'adjustment_id' => 'ADJ' . strtoupper(Str::random(8)),
-            'medical_record_id' => $record->medical_record_id,
-            'symptoms' => $data['symptoms'] ?? null,
-            'diagnosis' => $data['diagnosis'] ?? null,
-            'treatment_notes' => $data['treatment_notes'] ?? null,
-            'adjusted_by' => Auth::user()->staff_id,
-            'reason' => $data['reason'],
-        ]);
+        $response = $this->centralService->adjustMedicalRecord($id, $data);
+        abort_if($response->status() === 404, 404);
+        $response->throw();
 
         $version = DB::connection('mongodb')->table('medical_record_versions')
-            ->where('medical_record_id', $record->medical_record_id)->count() + 1;
+            ->where('medical_record_id', $id)->count() + 1;
         $this->bus->publish('sync_medical_record_version', [
-            'medicalRecordId' => $record->medical_record_id,
+            'medicalRecordId' => $id,
             'version' => $version,
             'type' => 'adjustment',
-            'snapshot' => $data,
+            'snapshot' => collect($data)->except('adjusted_by')->all(),
             'actorStaffId' => Auth::user()->staff_id,
             'reason' => $data['reason'],
             'createdAt' => now()->toIso8601String(),
         ]);
-        $this->audit->log('medical_record.adjust', 'medical_record', $record->medical_record_id, ['reason' => $data['reason']]);
+        $this->audit->log('medical_record.adjust', 'medical_record', $id, ['reason' => $data['reason']]);
 
-        return redirect('/medical-records')->with('success', 'Adjustment recorded; original version preserved.')->with('reopen_record', $record->medical_record_id);
+        return redirect('/medical-records')->with('success', 'Adjustment recorded; original version preserved.')->with('reopen_record', $id);
     }
 }

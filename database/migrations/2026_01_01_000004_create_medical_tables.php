@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 /**
  * MODULE 3 — medical records (immutable), adjustments, vital signs,
- * treatment plans, prescriptions, procedures and reports.
+ * prescriptions, procedures and reports.
  * The prescription_item → medicine FK is added later (pharmacy migration)
  * because medicine is created after this module.
  */
@@ -59,20 +59,6 @@ return new class extends Migration
             $table->foreign('patient_id')->references('patient_id')->on('patient');
             $table->foreign('medical_record_id')->references('medical_record_id')->on('medical_record');
             $table->foreign('recorded_by')->references('staff_id')->on('staff');
-        });
-
-        Schema::create('treatment_plan', function (Blueprint $table) {
-            $table->string('treatment_plan_id', 20)->primary();
-            $table->string('medical_record_id', 20);
-            $table->string('doctor_id', 20);
-            $table->text('diagnosis_summary')->nullable();
-            $table->text('clinical_notes')->nullable();
-            $table->text('recommended_care')->nullable();
-            $table->date('start_date')->nullable();
-            $table->date('end_date')->nullable();
-            $table->enum('status', ['active', 'completed', 'cancelled'])->default('active');
-            $table->foreign('medical_record_id')->references('medical_record_id')->on('medical_record');
-            $table->foreign('doctor_id')->references('doctor_id')->on('doctor');
         });
 
         Schema::create('prescription', function (Blueprint $table) {
@@ -134,7 +120,6 @@ return new class extends Migration
         Schema::dropIfExists('medical_procedure');
         Schema::dropIfExists('prescription_item');
         Schema::dropIfExists('prescription');
-        Schema::dropIfExists('treatment_plan');
         Schema::dropIfExists('vital_signs');
         Schema::dropIfExists('medical_record_adjustment');
         Schema::dropIfExists('medical_record');

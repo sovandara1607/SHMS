@@ -50,7 +50,7 @@
                 </div>
             </div>
 
-            @if($u->hasPermission('patient.view') || $u->hasPermission('appointment.view') || $u->hasPermission('medical_record.view') || $u->hasPermission('treatment.view'))
+            @if($u->hasPermission('patient.view') || $u->hasPermission('appointment.view') || $u->hasPermission('medical_record.view') || $u->hasPermission('vital_signs.view') || $u->hasPermission('procedure.view') || $u->hasPermission('medical_report.view'))
                 <div x-data="sidebarSection('patient-care')">
                     <button type="button" x-on:click="toggle" :aria-expanded="open"
                             class="mb-1 flex w-full items-center justify-between rounded-md px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400 hover:text-slate-600">
@@ -61,12 +61,14 @@
                         @can('patient.view')<x-nav-link href="/patients" icon="users">Patients</x-nav-link>@endcan
                         @can('appointment.view')<x-nav-link href="/appointments" icon="calendar">Appointments</x-nav-link>@endcan
                         @can('medical_record.view')<x-nav-link href="/medical-records" icon="document">Medical Records</x-nav-link>@endcan
-                        @can('treatment.view')<x-nav-link href="/treatments" icon="clipboard">Treatments</x-nav-link>@endcan
+                        @can('vital_signs.view')<x-nav-link href="/vital-signs" icon="clipboard">Vital Signs</x-nav-link>@endcan
+                        @can('procedure.view')<x-nav-link href="/procedures" icon="check">Procedures</x-nav-link>@endcan
+                        @can('medical_report.view')<x-nav-link href="/medical-reports" icon="document">Medical Reports</x-nav-link>@endcan
                     </div>
                 </div>
             @endif
 
-            @if($u->hasPermission('staff.manage') || $u->hasPermission('room.view'))
+            @if($u->hasPermission('staff.manage') || $u->hasPermission('room.view') || $u->hasPermission('schedule.view'))
                 <div x-data="sidebarSection('hospital')">
                     <button type="button" x-on:click="toggle" :aria-expanded="open"
                             class="mb-1 flex w-full items-center justify-between rounded-md px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400 hover:text-slate-600">
@@ -76,14 +78,16 @@
                     <div x-show="open" x-transition class="space-y-1">
                         @can('staff.manage')
                             <x-nav-link href="/staff" icon="users">Staff</x-nav-link>
+                            <x-nav-link href="/doctors" icon="users">Doctors</x-nav-link>
                             <x-nav-link href="/departments" icon="building">Departments</x-nav-link>
                         @endcan
                         @can('room.view')<x-nav-link href="/rooms" icon="bed">Rooms &amp; Beds</x-nav-link>@endcan
+                        @can('schedule.view')<x-nav-link href="/schedule" icon="calendar">Schedule</x-nav-link>@endcan
                     </div>
                 </div>
             @endif
 
-            @if($u->hasPermission('medicine.view') || $u->hasPermission('lab_order.view') || $u->hasPermission('lab_result.view') || $u->hasPermission('bill.view'))
+            @if($u->hasPermission('medicine.view') || $u->hasPermission('lab_order.view') || $u->hasPermission('lab_result.view') || $u->hasPermission('bill.view') || $u->hasPermission('lab_equipment.view'))
                 <div x-data="sidebarSection('services')">
                     <button type="button" x-on:click="toggle" :aria-expanded="open"
                             class="mb-1 flex w-full items-center justify-between rounded-md px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400 hover:text-slate-600">
@@ -95,6 +99,7 @@
                         @if($u->hasPermission('lab_order.view') || $u->hasPermission('lab_result.view'))
                             <x-nav-link href="/lab-orders" icon="flask">Laboratory</x-nav-link>
                         @endif
+                        @can('lab_equipment.view')<x-nav-link href="/lab-equipment" icon="flask">Lab Equipment</x-nav-link>@endcan
                         @can('bill.view')<x-nav-link href="/bills" icon="card">Billing &amp; Payments</x-nav-link>@endcan
                     </div>
                 </div>
@@ -112,6 +117,7 @@
                         @if(\Illuminate\Support\Facades\Route::has('settings.hospital'))
                             <x-nav-link href="/hospital-settings" icon="cog">Settings</x-nav-link>
                         @endif
+                        @can('report.view')<x-nav-link href="/reports" icon="document">Reports</x-nav-link>@endcan
                     </div>
                 </div>
             @endif

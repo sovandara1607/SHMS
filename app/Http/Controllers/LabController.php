@@ -2,21 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\LabReport;
-use App\Models\LabTestOrder;
-use App\Models\LabTestResult;
 use App\Models\Doctor;
+use App\Models\LabReport;
 use App\Models\LabTechnician;
-use App\Models\Patient;
 use App\Services\AuditLogger;
 use App\Services\CentralServiceBus;
 use App\Services\CentralServiceClient;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class LabController extends Controller
 {
@@ -30,53 +27,17 @@ class LabController extends Controller
     {
         $status = $request->query('status', '');
 
-        $orders = DB::table('lab_test_order as o')
-            ->join('patient as p', 'p.patient_id', '=', 'o.patient_id')
-            ->join('doctor as d', 'd.doctor_id', '=', 'o.doctor_id')
-            ->join('staff as s', 's.staff_id', '=', 'd.staff_id')
-            ->leftJoin('lab_technician as t', 't.technician_id', '=', 'o.technician_id')
-            ->leftJoin('staff as ts', 'ts.staff_id', '=', 't.staff_id')
-            ->when($status !== '', fn ($q) => $q->where('o.status', $status))
-            ->orderByDesc('o.order_date')
-            ->selectRaw("o.*, (p.first_name||' '||p.last_name) as patient_name, (s.first_name||' '||s.last_name) as doctor_name, (ts.first_name||' '||ts.last_name) as technician_name")
-            ->paginate(20, ['*'], 'orders_page')
-            ->withQueryString();
+        $body = $this->centralService->getLabOverview([
+            'status' => $status,
+            'orders_page' => (int) $request->query('orders_page', 1),
+            'results_page' => (int) $request->query('results_page', 1),
+            'reports_page' => (int) $request->query('reports_page', 1),
+        ])->throw()->json();
 
-        $results = DB::table('lab_test_result as r')
-            ->join('lab_test_order as o', 'o.test_order_id', '=', 'r.test_order_id')
-            ->join('patient as p', 'p.patient_id', '=', 'o.patient_id')
-            ->leftJoin('lab_technician as t', 't.technician_id', '=', 'r.entered_by')
-            ->leftJoin('staff as ts', 'ts.staff_id', '=', 't.staff_id')
-            ->orderByDesc('r.entered_at')
-            ->selectRaw("r.*, o.test_name, o.test_order_id, (p.first_name||' '||p.last_name) as patient_name, (ts.first_name||' '||ts.last_name) as technician_name")
-            ->paginate(20, ['*'], 'results_page')
-            ->withQueryString();
-
-        $reports = DB::table('lab_report as lr')
-            ->join('lab_test_order as o', 'o.test_order_id', '=', 'lr.test_order_id')
-            ->join('patient as p', 'p.patient_id', '=', 'lr.patient_id')
-            ->leftJoin('staff as s', 's.staff_id', '=', 'lr.generated_by')
-            ->orderByDesc('lr.generated_at')
-            ->selectRaw("lr.*, o.test_name, (p.first_name||' '||p.last_name) as patient_name, (s.first_name||' '||s.last_name) as generated_by_name")
-            ->paginate(20, ['*'], 'reports_page')
-            ->withQueryString();
-
-        $stats = [
-            'pending'     => LabTestOrder::where('status', 'pending')->count(),
-            'in_progress' => LabTestOrder::where('status', 'in_progress')->count(),
-            'completed'   => LabTestOrder::where('status', 'completed')->count(),
-            // NOT EXISTS instead of whereNotIn(...pluck()): at scale, pluck()
-            // inlines every lab_test_result id as a bound parameter and blows
-            // past Postgres's 65535-parameter-per-statement limit.
-            'pending_results' => DB::table('lab_test_order as o')
-                ->where('o.status', 'completed')
-                ->whereNotExists(function ($q) {
-                    $q->select(DB::raw(1))
-                        ->from('lab_test_result as r')
-                        ->whereColumn('r.test_order_id', 'o.test_order_id');
-                })
-                ->count(),
-        ];
+        $orders = $this->paginatorFrom($body['orders'], $request, 'orders_page');
+        $results = $this->paginatorFrom($body['results'], $request, 'results_page');
+        $reports = $this->paginatorFrom($body['reports'], $request, 'reports_page');
+        $stats = $body['stats'];
 
         return view('lab.orders', compact('orders', 'results', 'reports', 'status', 'stats'));
     }
@@ -99,33 +60,30 @@ class LabController extends Controller
             'priority'       => 'nullable|string',
             'notes'          => 'nullable|string',
         ]);
-        unset($data['priority'], $data['notes']);
 
-        $order = LabTestOrder::create($data);
+        $response = $this->centralService->createLabOrder($data)->throw();
+        $order = $response->json();
+
         Cache::forget('dashboard:summary');
-        $this->audit->log('lab_order.create', 'lab_test_order', $order->test_order_id);
+        $this->audit->log('lab_order.create', 'lab_test_order', $order['test_order_id']);
 
-        return redirect('/lab-orders')->with('success', "Lab order {$order->test_order_id} created.");
+        return redirect('/lab-orders')->with('success', "Lab order {$order['test_order_id']} created.");
     }
 
     public function showOrder(string $id)
     {
-        $order = DB::table('lab_test_order as o')
-            ->join('patient as p', 'p.patient_id', '=', 'o.patient_id')
-            ->join('doctor as d', 'd.doctor_id', '=', 'o.doctor_id')
-            ->join('staff as s', 's.staff_id', '=', 'd.staff_id')
-            ->leftJoin('lab_technician as t', 't.technician_id', '=', 'o.technician_id')
-            ->leftJoin('staff as ts', 'ts.staff_id', '=', 't.staff_id')
-            ->where('o.test_order_id', $id)
-            ->selectRaw("o.*, (p.first_name||' '||p.last_name) as patient_name, (s.first_name||' '||s.last_name) as doctor_name, (ts.first_name||' '||ts.last_name) as technician_name")
-            ->firstOrFail();
+        $response = $this->centralService->getLabOrder($id);
+        abort_if($response->status() === 404, 404);
+        $order = (object) $response->throw()->json();
 
         return view('lab.order-show', compact('order'));
     }
 
     public function statusForm(string $id)
     {
-        $order = LabTestOrder::findOrFail($id);
+        $response = $this->centralService->getLabOrder($id);
+        abort_if($response->status() === 404, 404);
+        $order = (object) $response->throw()->json();
 
         return view('lab.order-status-form', compact('order'));
     }
@@ -133,15 +91,14 @@ class LabController extends Controller
     public function updateOrderStatus(Request $request, string $id)
     {
         $data = $request->validate(['status' => 'required|in:pending,in_progress,completed,cancelled']);
-        $status = $data['status'];
-        $order = LabTestOrder::findOrFail($id);
-        $order->status = $status;
-        if ($tech = $this->technicianId()) {
-            $order->technician_id = $order->technician_id ?: $tech;
-        }
-        $order->save();
+        $data['resolved_technician_id'] = $this->technicianId();
+
+        $response = $this->centralService->updateLabOrderStatus($id, $data);
+        abort_if($response->status() === 404, 404);
+        $response->throw();
+
         Cache::forget('dashboard:summary');
-        $this->audit->log('lab_order.update', 'lab_test_order', $id, ['status' => $status]);
+        $this->audit->log('lab_order.update', 'lab_test_order', $id, ['status' => $data['status']]);
 
         return redirect('/lab-orders')->with('success', 'Order status updated.');
     }
@@ -153,57 +110,49 @@ class LabController extends Controller
 
     public function resultForm(string $id)
     {
-        $order = DB::table('lab_test_order as o')
-            ->join('patient as p', 'p.patient_id', '=', 'o.patient_id')
-            ->join('doctor as d', 'd.doctor_id', '=', 'o.doctor_id')
-            ->join('staff as s', 's.staff_id', '=', 'd.staff_id')
-            ->leftJoin('lab_technician as t', 't.technician_id', '=', 'o.technician_id')
-            ->leftJoin('staff as ts', 'ts.staff_id', '=', 't.staff_id')
-            ->where('o.test_order_id', $id)
-            ->selectRaw("o.*, (p.first_name||' '||p.last_name) as patient_name, (s.first_name||' '||s.last_name) as doctor_name, (ts.first_name||' '||ts.last_name) as technician_name")
-            ->firstOrFail();
+        $response = $this->centralService->getLabOrder($id);
+        abort_if($response->status() === 404, 404);
+        $order = (object) $response->throw()->json();
 
         return view('lab.result-form', ['order' => $order, 'mode' => 'create']);
     }
 
     public function showResult(string $id)
     {
-        $result = DB::table('lab_test_result as r')
-            ->join('lab_test_order as o', 'o.test_order_id', '=', 'r.test_order_id')
-            ->join('patient as p', 'p.patient_id', '=', 'o.patient_id')
-            ->where('r.test_result_id', $id)
-            ->selectRaw("r.*, o.test_name, (p.first_name||' '||p.last_name) as patient_name, p.patient_id")
-            ->firstOrFail();
+        $response = $this->centralService->getLabResult($id);
+        abort_if($response->status() === 404, 404);
+        $body = $response->throw()->json();
+        unset($body['order']);
+        $result = (object) $body;
 
         return view('lab.result-show', compact('result'));
     }
 
     public function editResult(string $id)
     {
-        $result = LabTestResult::findOrFail($id);
-        $order = DB::table('lab_test_order as o')
-            ->join('patient as p', 'p.patient_id', '=', 'o.patient_id')
-            ->join('doctor as d', 'd.doctor_id', '=', 'o.doctor_id')
-            ->join('staff as s', 's.staff_id', '=', 'd.staff_id')
-            ->leftJoin('lab_technician as t', 't.technician_id', '=', 'o.technician_id')
-            ->leftJoin('staff as ts', 'ts.staff_id', '=', 't.staff_id')
-            ->where('o.test_order_id', $result->test_order_id)
-            ->selectRaw("o.*, (p.first_name||' '||p.last_name) as patient_name, (s.first_name||' '||s.last_name) as doctor_name, (ts.first_name||' '||ts.last_name) as technician_name")
-            ->firstOrFail();
+        $response = $this->centralService->getLabResult($id);
+        abort_if($response->status() === 404, 404);
+        $body = $response->throw()->json();
+        $order = (object) $body['order'];
+        unset($body['order']);
+        $result = (object) $body;
 
         return view('lab.result-form', ['order' => $order, 'result' => $result, 'mode' => 'edit']);
     }
 
     public function updateResult(Request $request, string $id)
     {
-        $result = LabTestResult::findOrFail($id);
         $data = $request->validate([
             'result_value'  => 'required|string',
             'result_status' => 'required|string',
             'remarks'       => 'nullable|string',
         ]);
-        $result->update($data);
-        $this->audit->log('lab_result.update', 'lab_test_result', $result->test_result_id);
+
+        $response = $this->centralService->updateLabResult($id, $data);
+        abort_if($response->status() === 404, 404);
+        $response->throw();
+
+        $this->audit->log('lab_result.update', 'lab_test_result', $id);
 
         return redirect('/lab-orders')->with('success', 'Result updated.');
     }
@@ -216,38 +165,23 @@ class LabController extends Controller
             'result_status' => 'required|string',
             'remarks'       => 'nullable|string',
         ]);
+        $data['entered_by'] = $this->technicianId();
+        $data['generated_by'] = Auth::user()->staff_id;
 
-        // No unique constraint on test_order_id at the DB level, so without
-        // this guard resubmitting the form (double-click, back-button repost)
-        // creates a second result + a second lab report for the same order.
-        if (LabTestResult::where('test_order_id', $data['test_order_id'])->exists()) {
-            return redirect('/lab-orders')->with('error', 'A result has already been entered for this order.');
+        $response = $this->centralService->enterLabResult($data);
+        if ($response->status() === 409) {
+            return redirect('/lab-orders')->with('error', $response->json('message'));
         }
+        $response->throw();
+        $result = $response->json();
 
-        $result = LabTestResult::create([
-            'test_result_id' => 'LRS' . strtoupper(Str::random(8)),
-            'test_order_id' => $data['test_order_id'],
-            'result_value' => $data['result_value'],
-            'result_status' => $data['result_status'],
-            'remarks' => $data['remarks'] ?? null,
-            'entered_by' => $this->technicianId(),
-        ]);
-        $order = LabTestOrder::where('test_order_id', $data['test_order_id']);
-        $order->update(['status' => 'completed']);
-
-        // The report row itself is created synchronously (Postgres stays the
-        // immediately-consistent source of truth for the Lab Reports tab).
-        // The MongoDB snapshot and PDF generation/upload are handled by
-        // central-service, published here over the shared Redis bus.
-        $labReport = LabReport::create([
-            'test_order_id' => $data['test_order_id'],
-            'patient_id' => LabTestOrder::where('test_order_id', $data['test_order_id'])->value('patient_id'),
-            'report_content' => $data['result_value'] . ($data['remarks'] ? " — {$data['remarks']}" : ''),
-            'generated_by' => Auth::user()->staff_id,
-        ]);
-
+        // The report row itself is created synchronously by central-service
+        // (Postgres stays the immediately-consistent source of truth for the
+        // Lab Reports tab). The MongoDB snapshot and PDF generation/upload
+        // are handled by central-service, published here over the shared
+        // Redis bus.
         $this->bus->publish('generate_lab_report_document', [
-            'labReportId' => $labReport->lab_report_id,
+            'labReportId' => $result['lab_report_id'],
             'testOrderId' => $data['test_order_id'],
             'resultValue' => $data['result_value'],
             'resultStatus' => $data['result_status'],
@@ -263,6 +197,10 @@ class LabController extends Controller
 
     public function downloadReport(string $id)
     {
+        // Local read-only lookup: the file itself lives on Database-final's
+        // disk and must stream from here, and this table is shared physical
+        // storage central-service also writes to — same justified exception
+        // as the existing regenerateReport() below.
         $report = LabReport::findOrFail($id);
         abort_if(! $report->report_file_path, 404, 'Report PDF is still being generated.');
 
@@ -295,10 +233,7 @@ class LabController extends Controller
 
     public function equipment()
     {
-        $rows = DB::table('laboratory_equipment as e')
-            ->leftJoin('laboratory as l', 'l.laboratory_id', '=', 'e.laboratory_id')
-            ->orderBy('e.equipment_name')
-            ->selectRaw('e.*, l.laboratory_name')->get();
+        $rows = collect($this->centralService->getLabEquipment()->throw()->json())->map(fn (array $r) => (object) $r);
 
         return view('misc.table', [
             'title' => 'Laboratory Equipment',
@@ -311,5 +246,16 @@ class LabController extends Controller
     private function technicianId(): ?string
     {
         return DB::table('lab_technician')->where('staff_id', Auth::user()->staff_id)->value('technician_id');
+    }
+
+    private function paginatorFrom(array $body, Request $request, string $pageName): LengthAwarePaginator
+    {
+        return new LengthAwarePaginator(
+            collect($body['data'])->map(fn (array $r) => (object) $r),
+            $body['meta']['total'],
+            $body['meta']['per_page'],
+            $body['meta']['current_page'],
+            ['path' => $request->url(), 'query' => $request->query(), 'pageName' => $pageName],
+        );
     }
 }

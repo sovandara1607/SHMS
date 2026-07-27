@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\CentralServiceClient;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -11,35 +14,21 @@ use Illuminate\Support\Facades\DB;
  */
 class PageController extends Controller
 {
-    public function schedule()
+    public function __construct(private CentralServiceClient $centralService) {}
+
+    public function schedule(Request $request)
     {
-        $rows = DB::table('staff_shift as sh')
-            ->join('staff as s', 's.staff_id', '=', 'sh.staff_id')
-            ->orderByDesc('sh.shift_date')
-            ->selectRaw("sh.*, (s.first_name||' '||s.last_name) as staff_name")->paginate(20)->withQueryString();
+        $body = $this->centralService->getSchedulePage(['page' => (int) $request->query('page', 1)])->throw()->json();
+        $rows = $this->paginatorFrom($body, $request);
 
         return $this->table('Schedule Management',
             ['shift_id' => 'Shift', 'staff_name' => 'Staff', 'shift_date' => 'Date', 'start_time' => 'Start', 'end_time' => 'End', 'shift_type' => 'Type', 'status' => 'Status'], $rows);
     }
 
-    public function treatments()
+    public function prescriptions(Request $request)
     {
-        $rows = DB::table('treatment_plan as tp')
-            ->join('doctor as d', 'd.doctor_id', '=', 'tp.doctor_id')
-            ->join('staff as s', 's.staff_id', '=', 'd.staff_id')
-            ->orderByDesc('tp.start_date')
-            ->selectRaw("tp.*, (s.first_name||' '||s.last_name) as doctor_name")->paginate(20)->withQueryString();
-
-        return $this->table('Treatment Management',
-            ['treatment_plan_id' => 'Plan', 'doctor_name' => 'Doctor', 'diagnosis_summary' => 'Diagnosis', 'recommended_care' => 'Care', 'status' => 'Status'], $rows);
-    }
-
-    public function prescriptions()
-    {
-        $rows = DB::table('prescription as pr')
-            ->join('patient as p', 'p.patient_id', '=', 'pr.patient_id')
-            ->orderByDesc('pr.prescription_date')
-            ->selectRaw("pr.*, (p.first_name||' '||p.last_name) as patient_name")->paginate(20)->withQueryString();
+        $body = $this->centralService->getPharmacyOverview(['prescriptions_page' => (int) $request->query('page', 1)])->throw()->json();
+        $rows = $this->paginatorFrom($body['prescriptions'], $request);
 
         return $this->table('Prescriptions',
             ['prescription_id' => 'ID', 'patient_name' => 'Patient', 'prescription_date' => 'Date', 'notes' => 'Notes'], $rows);
@@ -56,23 +45,19 @@ class PageController extends Controller
             ['procedure_id' => 'ID', 'patient_name' => 'Patient', 'procedure_name' => 'Procedure', 'outcome' => 'Outcome', 'procedure_date' => 'Date'], $rows);
     }
 
-    public function medicalReports()
+    public function medicalReports(Request $request)
     {
-        $rows = DB::table('medical_report as mr')
-            ->join('patient as p', 'p.patient_id', '=', 'mr.patient_id')
-            ->orderByDesc('mr.generated_at')
-            ->selectRaw("mr.*, (p.first_name||' '||p.last_name) as patient_name")->paginate(20)->withQueryString();
+        $body = $this->centralService->listMedicalReports(['page' => (int) $request->query('page', 1)])->throw()->json();
+        $rows = $this->paginatorFrom($body, $request);
 
         return $this->table('Medical Reports',
             ['report_id' => 'ID', 'patient_name' => 'Patient', 'report_type' => 'Type', 'generated_at' => 'Generated'], $rows);
     }
 
-    public function labReports()
+    public function labReports(Request $request)
     {
-        $rows = DB::table('lab_report as lr')
-            ->join('patient as p', 'p.patient_id', '=', 'lr.patient_id')
-            ->orderByDesc('lr.generated_at')
-            ->selectRaw("lr.*, (p.first_name||' '||p.last_name) as patient_name")->paginate(20)->withQueryString();
+        $body = $this->centralService->getLabOverview(['reports_page' => (int) $request->query('page', 1)])->throw()->json();
+        $rows = $this->paginatorFrom($body['reports'], $request);
 
         return $this->table('Lab Reports',
             ['lab_report_id' => 'ID', 'patient_name' => 'Patient', 'test_order_id' => 'Order', 'generated_at' => 'Generated'], $rows);
@@ -96,5 +81,16 @@ class PageController extends Controller
     private function table(string $title, array $columns, $rows)
     {
         return view('misc.table', compact('title', 'columns', 'rows'));
+    }
+
+    private function paginatorFrom(array $body, Request $request): LengthAwarePaginator
+    {
+        return new LengthAwarePaginator(
+            collect($body['data'])->map(fn (array $r) => (object) $r),
+            $body['meta']['total'],
+            $body['meta']['per_page'],
+            $body['meta']['current_page'],
+            ['path' => $request->url(), 'query' => $request->query()],
+        );
     }
 }

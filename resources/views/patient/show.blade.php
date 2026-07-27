@@ -17,7 +17,7 @@ $age = $patient->date_of_birth ? \Carbon\Carbon::parse($patient->date_of_birth)-
         </div>
         <div class="flex items-center gap-2">
             @can('patient.update')
-                <x-button variant="primary" x-on:click="openPatientModal('/patients/{{ $patient->patient_id }}/edit')">Edit Patient</x-button>
+                <x-button variant="primary" x-on:click="openPatientModal('/patients/{{ $patient->patient_id }}/edit')">Adjust Patient Info</x-button>
             @endcan
             <button type="button" x-on:click="show = false" class="text-slate-400 hover:text-slate-600">
                 <x-icon name="x" class="h-5 w-5" />
@@ -36,6 +36,7 @@ $age = $patient->date_of_birth ? \Carbon\Carbon::parse($patient->date_of_birth)-
                 'rooms' => ['Room Assignments', 'bed', $patient->roomAssignments->count()],
                 'records' => ['Medical Records', 'document', $patient->medicalRecords->count()],
                 'billing' => ['Billing History', 'card', $patient->bills->count()],
+                'history' => ['Adjustment History', 'eye', $patient->adjustments->count()],
             ] as $key => [$label, $icon, $count])
                 <button type="button" @click="tab = '{{ $key }}'"
                         :class="tab === '{{ $key }}' ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-50'"
@@ -282,6 +283,36 @@ $age = $patient->date_of_birth ? \Carbon\Carbon::parse($patient->date_of_birth)-
                         </tr>
                     @empty
                         <tr><td colspan="4" class="py-4 text-center text-slate-400">No billing history.</td></tr>
+                    @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {{-- Adjustment History --}}
+        <div x-show="tab === 'history'">
+            <p class="mb-3 text-xs text-slate-400">The original patient record is never overwritten &mdash; every edit is logged here instead.</p>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
+                        <th class="pb-2">Adjusted At</th><th class="pb-2">By</th><th class="pb-2">Changes</th><th class="pb-2">Reason</th>
+                    </tr></thead>
+                    <tbody>
+                    @forelse($patient->adjustments as $adj)
+                        <tr class="border-b border-slate-50">
+                            <td class="py-2 align-top">{{ $adj->adjusted_at }}</td>
+                            <td class="py-2 align-top">{{ $adj->adjusted_by_name ?? $adj->adjusted_by }}</td>
+                            <td class="py-2 align-top">
+                                @forelse($adj->changes as $c)
+                                    <p class="text-xs text-slate-600">{{ $c }}</p>
+                                @empty
+                                    <span class="text-slate-400">&mdash;</span>
+                                @endforelse
+                            </td>
+                            <td class="py-2 align-top">{{ $adj->reason }}</td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="4" class="py-4 text-center text-slate-400">No adjustments — original preserved.</td></tr>
                     @endforelse
                     </tbody>
                 </table>

@@ -30,7 +30,7 @@
     <p class="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-400">Treatment Notes</p>
     <p class="mb-4 rounded-lg bg-green-50 px-4 py-3 text-sm text-slate-800">{{ $record->treatment_notes ?: '—' }}</p>
 
-    <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Adjustment History</p>
+    <p id="adjustment-history" class="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Adjustment History</p>
     <div class="overflow-x-auto">
         <table class="mb-4 w-full text-sm">
             <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
@@ -81,41 +81,22 @@
     @endforelse
 
     <div class="mb-2 flex items-center justify-between">
-        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Treatment Plans</p>
-        @can('treatment.create')
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Reports</p>
+        @can('medical_report.create')
             <button type="button" class="text-sm font-medium text-blue-600 hover:underline"
-                    x-on:click="window.dispatchEvent(new CustomEvent('open-modal', { detail: 'add-treatment-plan' }))">+ Add Treatment Plan</button>
+                    x-on:click="window.dispatchEvent(new CustomEvent('open-modal', { detail: 'generate-report' }))">+ Generate Report</button>
         @endcan
     </div>
-    @forelse($treatmentPlans as $tp)
+    @forelse($reports as $r)
         <div class="mb-3 rounded-lg border border-slate-100 px-4 py-3">
             <div class="mb-1.5 flex items-center justify-between text-sm">
-                <span class="font-medium text-slate-900">{{ $tp->treatment_plan_id }}</span>
-                <div class="flex items-center gap-2">
-                    <span class="text-slate-400">{{ $tp->start_date }}@if($tp->end_date) &rarr; {{ $tp->end_date }}@endif</span>
-                    <x-badge :status="$tp->status" />
-                </div>
+                <span class="font-medium text-slate-900">{{ $r->report_id }} — {{ $r->report_type }}</span>
+                <span class="text-slate-400">{{ $r->generated_at }}</span>
             </div>
-            <p class="text-sm text-slate-700">{{ $tp->diagnosis_summary }}</p>
-            @if($tp->recommended_care)<p class="mt-1 text-sm text-slate-600"><span class="font-medium">Care:</span> {{ $tp->recommended_care }}</p>@endif
-            @if($tp->clinical_notes)<p class="mt-1 text-xs text-slate-500">{{ $tp->clinical_notes }}</p>@endif
-            @can('treatment.create')
-                @if($tp->status === 'active')
-                    <div class="mt-2 flex gap-3">
-                        <form method="post" action="/treatment-plans/{{ $tp->treatment_plan_id }}/status">
-                            @csrf<input type="hidden" name="status" value="completed">
-                            <button type="submit" class="text-xs font-medium text-green-600 hover:underline">Mark Completed</button>
-                        </form>
-                        <form method="post" action="/treatment-plans/{{ $tp->treatment_plan_id }}/status">
-                            @csrf<input type="hidden" name="status" value="cancelled">
-                            <button type="submit" class="text-xs font-medium text-red-600 hover:underline">Cancel Plan</button>
-                        </form>
-                    </div>
-                @endif
-            @endcan
+            <p class="whitespace-pre-line text-sm text-slate-700">{{ $r->report_content }}</p>
         </div>
     @empty
-        <p class="mb-4 text-sm text-slate-400">No treatment plans for this record yet.</p>
+        <p class="mb-4 text-sm text-slate-400">No reports generated for this record yet.</p>
     @endforelse
 
     @can('medical_record.adjust')
@@ -128,30 +109,50 @@
 </div>
 
 <x-modal name="adjust-record" max-width="lg">
-    <x-modal-header title="Adjust Medical Record" subtitle="A reason is mandatory. The original record is preserved as a new version." />
-    <form method="post" action="/medical-records/{{ $record->medical_record_id }}/adjust" class="space-y-4 px-6 py-5">
-        @csrf
-        <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-700">Symptoms</label>
-            <textarea name="symptoms" rows="2" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">{{ $record->symptoms }}</textarea>
+    <x-modal-header title="Edit Medical Record" :subtitle="$record->medical_record_id . ' · ' . ($record->patient?->fullName() ?? $record->patient_id)" icon="pencil" icon-color="amber" />
+    <div class="max-h-[70vh] overflow-y-auto px-6 py-5">
+        <div class="mb-5 flex items-start gap-2 rounded-lg bg-blue-50 px-4 py-3 text-sm text-blue-800">
+            <x-icon name="info" class="mt-0.5 h-4 w-4 shrink-0" />
+            <span>This edit will create a new version and keep the original medical record unchanged.</span>
         </div>
-        <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-700">Diagnosis</label>
-            <textarea name="diagnosis" rows="2" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">{{ $record->diagnosis }}</textarea>
+
+        @php($age = $record->patient?->date_of_birth ? \Carbon\Carbon::parse($record->patient->date_of_birth)->age . ' yrs' : '—')
+        <div class="mb-5 rounded-lg bg-slate-50 px-4 py-3">
+            <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Patient Information</p>
+            <div class="grid grid-cols-2 gap-y-2 text-sm">
+                <div><p class="text-xs text-slate-500">Patient ID</p><p class="font-medium text-slate-900">{{ $record->patient_id }}</p></div>
+                <div><p class="text-xs text-slate-500">Patient Name</p><p class="text-slate-900">{{ $record->patient?->fullName() ?? '—' }}</p></div>
+                <div><p class="text-xs text-slate-500">Age</p><p class="text-slate-900">{{ $age }}</p></div>
+                <div><p class="text-xs text-slate-500">Gender</p><p class="text-slate-900">{{ $record->patient?->gender ? ucfirst($record->patient->gender) : '—' }}</p></div>
+                <div><p class="text-xs text-slate-500">Phone</p><p class="text-slate-900">{{ $record->patient?->phone_number ?: '—' }}</p></div>
+            </div>
         </div>
-        <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-700">Treatment Notes</label>
-            <textarea name="treatment_notes" rows="2" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">{{ $record->treatment_notes }}</textarea>
-        </div>
-        <div>
-            <label class="mb-1.5 block text-sm font-medium text-red-700">Reason for Adjustment *</label>
-            <input name="reason" required class="w-full rounded-lg border border-red-200 px-3.5 py-2.5 text-sm focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20">
-        </div>
-        <div class="flex justify-end gap-2 pt-2">
-            <x-button variant="secondary" type="button" x-on:click="show = false">Cancel</x-button>
-            <x-button variant="primary" type="submit">Save Adjustment</x-button>
-        </div>
-    </form>
+
+        <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Edit Fields</p>
+        <form method="post" action="/medical-records/{{ $record->medical_record_id }}/adjust" class="space-y-4">
+            @csrf
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-slate-700">Symptoms</label>
+                <textarea name="symptoms" rows="2" placeholder="Describe patient symptoms..." class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">{{ $record->symptoms }}</textarea>
+            </div>
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-slate-700">Diagnosis *</label>
+                <textarea name="diagnosis" rows="2" placeholder="Enter ICD codes and diagnosis description..." class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">{{ $record->diagnosis }}</textarea>
+            </div>
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-slate-700">Treatment Notes</label>
+                <textarea name="treatment_notes" rows="2" placeholder="Describe the treatment plan and notes..." class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">{{ $record->treatment_notes }}</textarea>
+            </div>
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-red-700">Reason for Adjustment *</label>
+                <textarea name="reason" rows="2" required placeholder="Explain why this record is being adjusted..." class="w-full rounded-lg border border-red-200 px-3.5 py-2.5 text-sm focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20"></textarea>
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <x-button variant="secondary" type="button" x-on:click="show = false">Cancel</x-button>
+                <button type="submit" class="rounded-lg bg-amber-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-amber-600">Save New Version</button>
+            </div>
+        </form>
+    </div>
 </x-modal>
 
 <x-modal name="prescribe" max-width="xl">
@@ -215,35 +216,29 @@
     </form>
 </x-modal>
 
-<x-modal name="add-treatment-plan" max-width="lg">
-    <x-modal-header title="Add Treatment Plan" :subtitle="'Patient: ' . ($record->patient?->fullName() ?? $record->patient_id)" />
-    <form method="post" action="/medical-records/{{ $record->medical_record_id }}/treatment-plans" class="space-y-4 px-6 py-5">
+<x-modal name="generate-report" max-width="lg">
+    <x-modal-header title="Generate Report" :subtitle="'Patient: ' . ($record->patient?->fullName() ?? $record->patient_id)" />
+    <form method="post" action="/medical-records/{{ $record->medical_record_id }}/reports" class="space-y-4 px-6 py-5">
         @csrf
         <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-700">Diagnosis Summary *</label>
-            <textarea name="diagnosis_summary" rows="2" required class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">{{ $record->diagnosis }}</textarea>
+            <label class="mb-1.5 block text-sm font-medium text-slate-700">Report Type *</label>
+            <select name="report_type" required class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                <option value="">— select —</option>
+                <option>Progress Report</option>
+                <option>Discharge Summary</option>
+                <option>Referral Letter</option>
+                <option>Diagnostic Summary</option>
+                <option>Consultation Report</option>
+            </select>
         </div>
         <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-700">Recommended Care</label>
-            <textarea name="recommended_care" rows="2" placeholder="e.g. Bed rest, physical therapy 2x/week..." class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"></textarea>
-        </div>
-        <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-700">Clinical Notes</label>
-            <textarea name="clinical_notes" rows="2" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"></textarea>
-        </div>
-        <div class="grid grid-cols-2 gap-3">
-            <div>
-                <label class="mb-1.5 block text-sm font-medium text-slate-700">Start Date</label>
-                <input type="date" name="start_date" value="{{ now()->toDateString() }}" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
-            </div>
-            <div>
-                <label class="mb-1.5 block text-sm font-medium text-slate-700">End Date</label>
-                <input type="date" name="end_date" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
-            </div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-700">Content *</label>
+            <textarea name="report_content" rows="6" required placeholder="Summary, findings, recommendations..."
+                      class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">{{ $record->diagnosis }}</textarea>
         </div>
         <div class="flex justify-end gap-2 pt-2">
             <x-button variant="secondary" type="button" x-on:click="show = false">Cancel</x-button>
-            <x-button variant="primary" type="submit">Save Treatment Plan</x-button>
+            <x-button variant="primary" type="submit">Generate Report</x-button>
         </div>
     </form>
 </x-modal>

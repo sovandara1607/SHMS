@@ -5,13 +5,13 @@ namespace App\Models;
 use App\Models\Concerns\HasBusinessKey;
 use Illuminate\Database\Eloquent\Model;
 
-class DrugInteraction extends Model
+class PatientAdjustment extends Model
 {
     use HasBusinessKey;
 
-    protected $table = 'drug_interaction';
-    protected $primaryKey = 'interaction_id';
-    public string $idPrefix = 'DRI';
+    protected $table = 'patient_adjustment';
+    protected $primaryKey = 'adjustment_id';
+    public string $idPrefix = 'PADJ';
     public $timestamps = false;
     protected $guarded = [];
 }

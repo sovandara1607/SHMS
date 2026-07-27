@@ -2,25 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\VitalSign;
 use App\Services\AuditLogger;
+use App\Services\CentralServiceClient;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class ClinicalController extends Controller
 {
-    public function __construct(private AuditLogger $audit) {}
+    public function __construct(private AuditLogger $audit, private CentralServiceClient $centralService) {}
 
-    public function vitalSigns()
+    public function vitalSigns(Request $request)
     {
-        $vitals = DB::table('vital_signs as v')
-            ->join('patient as p', 'p.patient_id', '=', 'v.patient_id')
-            ->orderByDesc('v.recorded_at')
-            ->selectRaw("v.*, (p.first_name||' '||p.last_name) as patient_name")
-            ->paginate(20)
-            ->withQueryString();
+        $page = (int) $request->query('page', 1);
+
+        $response = $this->centralService->listVitalSigns(['page' => $page])->throw();
+        $body = $response->json();
+
+        $vitals = new LengthAwarePaginator(
+            collect($body['data'])->map(fn (array $v) => (object) $v),
+            $body['meta']['total'],
+            $body['meta']['per_page'],
+            $body['meta']['current_page'],
+            ['path' => $request->url(), 'query' => $request->query()],
+        );
 
         return view('medical.vitals', ['vitals' => $vitals]);
     }
@@ -35,10 +40,16 @@ class ClinicalController extends Controller
             'height'         => 'nullable|numeric',
             'weight'         => 'nullable|numeric',
         ]);
-        $data['vital_sign_id'] = 'VS' . strtoupper(Str::random(8));
         $data['recorded_by'] = Auth::user()->staff_id;
-        VitalSign::create($data);
+
+        $response = $this->centralService->createVitalSign($data);
+        if ($response->status() === 422) {
+            return back()->withErrors($response->json('errors', []))->withInput();
+        }
+        $response->throw();
+
         $this->audit->log('vital_signs.create', 'vital_signs', $data['patient_id']);
+
         return redirect('/vital-signs')->with('success', 'Vital signs recorded.');
     }
 }

@@ -1,15 +1,15 @@
 @php
-$action = $mode === 'create' ? '/patients' : '/patients/' . $patient->patient_id;
+$action = $mode === 'create' ? '/patients' : '/patients/' . $patient->patient_id . '/adjust';
 $target = $mode === 'create' ? '/patients/create' : '/patients/' . $patient->patient_id . '/edit';
 $statuses = ['active' => 'Active', 'admitted' => 'Admitted', 'icu' => 'ICU', 'discharged' => 'Discharged', 'inactive' => 'Inactive'];
 $currentStatus = old('patient_status', $patient->patient_status ?? 'active');
 @endphp
 
-<x-modal-header :title="$mode === 'create' ? 'Add New Patient' : 'Edit Patient Information'" />
+<x-modal-header :title="$mode === 'create' ? 'Add New Patient' : 'Adjust Patient Information'"
+                :subtitle="$mode === 'edit' ? 'A reason is mandatory. The original record is preserved; this submits a logged adjustment.' : null" />
 
 <form id="patient-form" method="post" action="{{ $action }}" class="max-h-[75vh] overflow-y-auto px-6 py-5">
     @csrf
-    @if($mode === 'edit')@method('PUT')@endif
     <input type="hidden" name="_modal_target" value="{{ $target }}">
 
     <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Personal Information</p>
@@ -130,11 +130,18 @@ $currentStatus = old('patient_status', $patient->patient_status ?? 'active');
                     class="rounded-lg px-3.5 py-2 text-sm font-medium transition">{{ $label }}</button>
         @endforeach
     </div>
+
+    @if($mode === 'edit')
+        <div class="mt-5">
+            <label class="mb-1.5 block text-sm font-medium text-red-700">Reason for Adjustment *</label>
+            <input name="reason" required class="w-full rounded-lg border border-red-200 px-3.5 py-2.5 text-sm focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20">
+        </div>
+    @endif
 </form>
 
 <div class="flex justify-end gap-2 border-t border-slate-100 px-6 py-4">
     <x-button variant="secondary" x-on:click="show = false">Cancel</x-button>
     <x-button variant="primary" type="submit" form="patient-form">
-        {{ $mode === 'create' ? 'Add Patient' : 'Save Changes' }}
+        {{ $mode === 'create' ? 'Add Patient' : 'Save Adjustment' }}
     </x-button>
 </div>

@@ -8,8 +8,6 @@ use App\Models\Bill;
 use App\Models\BillItem;
 use App\Models\Department;
 use App\Models\Doctor;
-use App\Models\DrugInteraction;
-use App\Models\DrugSubstitution;
 use App\Models\Laboratory;
 use App\Models\LabTechnician;
 use App\Models\Medicine;
@@ -98,9 +96,6 @@ class DatabaseSeeder extends Seeder
         Medicine::create(['medicine_id' => 'MED0003', 'medicine_name' => 'Warfarin 5mg', 'medicine_type' => 'Tablet', 'manufacturer' => 'Acme Pharma', 'unit_price' => 0.30, 'stock_quantity' => 200]);
         Medicine::create(['medicine_id' => 'MED0004', 'medicine_name' => 'Cephalexin 500mg', 'medicine_type' => 'Capsule', 'manufacturer' => 'Beta Labs', 'unit_price' => 0.28, 'stock_quantity' => 300]);
         MedicineBatch::create(['batch_id' => 'BAT0001', 'medicine_id' => 'MED0001', 'batch_number' => 'B-2024-01', 'manufacture_date' => '2024-01-01', 'expiry_date' => now()->addDays(20)->toDateString(), 'quantity' => 500]);
-
-        DrugInteraction::create(['interaction_id' => 'DRI0001', 'medicine_id_1' => 'MED0001', 'medicine_id_2' => 'MED0003', 'interaction_effect' => 'Increased risk of bleeding with prolonged concurrent use', 'severity' => 'medium']);
-        DrugSubstitution::create(['substitution_id' => 'DRS0001', 'original_medicine_id' => 'MED0002', 'alternative_medicine_id' => 'MED0004', 'reason' => 'Alternative antibiotic when out of stock or contraindicated (penicillin allergy)']);
 
         Appointment::create(['appointment_id' => 'APT0001', 'patient_id' => 'PAT0001', 'doctor_id' => 'DOC0001', 'booked_by' => 'STF0004', 'appointment_date' => now()->addDay()->toDateString(), 'appointment_time' => '09:30', 'reason' => 'Chest pain follow-up']);
 

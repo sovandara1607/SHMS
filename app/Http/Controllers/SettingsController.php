@@ -2,17 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\HospitalSetting;
 use App\Services\AuditLogger;
+use App\Services\CentralServiceClient;
 use Illuminate\Http\Request;
 
 class SettingsController extends Controller
 {
-    public function __construct(private AuditLogger $audit) {}
+    public function __construct(
+        private AuditLogger $audit,
+        private CentralServiceClient $centralService,
+    ) {}
 
     public function edit()
     {
-        return view('settings.hospital', ['settings' => HospitalSetting::current()]);
+        $settings = json_decode($this->centralService->getHospitalSettings()->body());
+
+        return view('settings.hospital', ['settings' => $settings]);
     }
 
     public function update(Request $request)
@@ -36,9 +41,16 @@ class SettingsController extends Controller
             'operating_rooms'   => 'nullable|integer|min:0',
         ]);
 
-        $settings = HospitalSetting::current();
-        $settings->update($data);
-        $this->audit->log('hospital_settings.update', 'hospital_settings', (string) $settings->id);
+        $response = $this->centralService->updateHospitalSettings($data);
+
+        if ($response->status() === 422) {
+            return back()->withErrors($response->json('errors', []))->withInput();
+        }
+
+        $response->throw();
+
+        $settings = $response->json();
+        $this->audit->log('hospital_settings.update', 'hospital_settings', (string) $settings['id']);
 
         return redirect('/hospital-settings')->with('success', 'Settings saved.');
     }

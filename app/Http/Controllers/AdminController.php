@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Department;
 use App\Models\Doctor;
 use App\Models\LabTechnician;
-use App\Models\Laboratory;
 use App\Models\Nurse;
 use App\Models\Pharmacist;
 use App\Models\Receptionist;
-use App\Models\Room;
 use App\Models\Staff;
 use App\Models\User;
 use App\Services\AuditLogger;
+use App\Services\CentralServiceClient;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -23,7 +22,7 @@ class AdminController extends Controller
 {
     private const SUBTYPE_ROLES = ['doctor', 'nurse', 'receptionist', 'pharmacist', 'lab_technician'];
 
-    public function __construct(private AuditLogger $audit) {}
+    public function __construct(private AuditLogger $audit, private CentralServiceClient $centralService) {}
 
     public function staff(Request $request)
     {
@@ -50,8 +49,8 @@ class AdminController extends Controller
             'staff' => new Staff(),
             'lockedRole' => $request->query('role'),
             'redirectTo' => $request->query('role') === 'doctor' ? '/doctors' : '/staff',
-            'departments' => Department::orderBy('department_name')->get(),
-            'laboratories' => Laboratory::orderBy('laboratory_name')->get(),
+            'departments' => $this->departmentsForDropdown(),
+            'laboratories' => $this->laboratoriesForDropdown(),
         ]);
     }
 
@@ -94,8 +93,8 @@ class AdminController extends Controller
         return view('admin.staff-form', [
             'mode' => 'edit', 'staff' => $staff, 'subtype' => $subtype, 'role' => $role,
             'lockedRole' => null, 'redirectTo' => $role === 'doctor' ? '/doctors' : '/staff',
-            'departments' => Department::orderBy('department_name')->get(),
-            'laboratories' => Laboratory::orderBy('laboratory_name')->get(),
+            'departments' => $this->departmentsForDropdown(),
+            'laboratories' => $this->laboratoriesForDropdown(),
         ]);
     }
 
@@ -248,43 +247,51 @@ class AdminController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        return view('admin.doctors', ['rows' => $rows, 'q' => $q, 'departments' => Department::orderBy('department_name')->get()]);
+        return view('admin.doctors', ['rows' => $rows, 'q' => $q, 'departments' => $this->departmentsForDropdown()]);
     }
 
     public function departments(Request $request)
     {
         $q = trim((string) $request->query('q', ''));
-        $departments = DB::table('department')
-            ->when($q !== '', fn ($query) => $query->where('department_id', 'ilike', "%$q%")->orWhere('department_name', 'ilike', "%$q%"))
-            ->orderBy('department_name')->get();
+        $departments = collect($this->centralService->listDepartments(['q' => $q])->throw()->json())
+            ->map(fn (array $d) => (object) $d);
 
         return view('admin.departments', compact('departments', 'q'));
     }
 
     public function createDepartment()
     {
-        return view('admin.department-form', ['department' => new Department(), 'mode' => 'create']);
+        $department = (object) ['department_name' => null, 'description' => null, 'capacity' => null, 'status' => null];
+
+        return view('admin.department-form', ['department' => $department, 'mode' => 'create']);
     }
 
     public function storeDepartment(Request $request)
     {
         $data = $this->validateDepartment($request);
-        $dept = Department::create($data);
-        $this->audit->log('department.create', 'department', $dept->department_id);
+        $response = $this->centralService->createDepartment($data)->throw();
+        $dept = $response->json();
+        $this->audit->log('department.create', 'department', $dept['department_id']);
 
-        return redirect('/departments')->with('success', "Department {$dept->department_id} created.");
+        return redirect('/departments')->with('success', "Department {$dept['department_id']} created.");
     }
 
     public function editDepartment(string $id)
     {
-        return view('admin.department-form', ['department' => Department::findOrFail($id), 'mode' => 'edit']);
+        $response = $this->centralService->getDepartment($id);
+        abort_if($response->status() === 404, 404);
+        $department = (object) $response->throw()->json();
+
+        return view('admin.department-form', ['department' => $department, 'mode' => 'edit']);
     }
 
     public function updateDepartment(Request $request, string $id)
     {
-        $dept = Department::findOrFail($id);
-        $dept->update($this->validateDepartment($request));
-        $this->audit->log('department.update', 'department', $dept->department_id);
+        $response = $this->centralService->updateDepartment($id, $this->validateDepartment($request));
+        abort_if($response->status() === 404, 404);
+        $response->throw();
+
+        $this->audit->log('department.update', 'department', $id);
 
         return redirect('/departments')->with('success', 'Department updated.');
     }
@@ -302,44 +309,52 @@ class AdminController extends Controller
     public function rooms(Request $request)
     {
         $q = trim((string) $request->query('q', ''));
-        $rooms = DB::table('room as r')
-            ->leftJoin('department as dep', 'dep.department_id', '=', 'r.department_id')
-            ->leftJoin('bed as b', 'b.room_id', '=', 'r.room_id')
-            ->when($q !== '', fn ($query) => $query->where('r.room_id', 'ilike', "%$q%")->orWhere('r.room_number', 'ilike', "%$q%"))
-            ->groupBy('r.room_id', 'r.room_number', 'r.room_type', 'r.floor_number', 'dep.department_name', 'r.status')
-            ->orderBy('r.floor_number')->orderBy('r.room_number')
-            ->selectRaw("r.room_id, r.room_number, r.room_type, r.floor_number, dep.department_name,
-                         count(b.bed_id) as bed_count, count(*) filter (where b.status='available') as beds_available, r.status")
-            ->paginate(20)
-            ->withQueryString();
+        $body = $this->centralService->listRooms(['q' => $q, 'page' => (int) $request->query('page', 1)])->throw()->json();
 
-        return view('admin.rooms', ['rooms' => $rooms, 'q' => $q, 'departments' => Department::orderBy('department_name')->get()]);
+        $rooms = new LengthAwarePaginator(
+            collect($body['data'])->map(fn (array $r) => (object) $r),
+            $body['meta']['total'],
+            $body['meta']['per_page'],
+            $body['meta']['current_page'],
+            ['path' => $request->url(), 'query' => $request->query()],
+        );
+
+        return view('admin.rooms', ['rooms' => $rooms, 'q' => $q, 'departments' => $this->departmentsForDropdown()]);
     }
 
     public function createRoom()
     {
-        return view('admin.room-form', ['room' => new Room(), 'mode' => 'create', 'departments' => Department::orderBy('department_name')->get()]);
+        $room = (object) ['room_number' => null, 'floor_number' => null, 'room_type' => null, 'department_id' => null, 'status' => null];
+
+        return view('admin.room-form', ['room' => $room, 'mode' => 'create', 'departments' => $this->departmentsForDropdown()]);
     }
 
     public function storeRoom(Request $request)
     {
         $data = $this->validateRoom($request);
-        $room = Room::create($data);
-        $this->audit->log('room.create', 'room', $room->room_id);
+        $response = $this->centralService->createRoom($data)->throw();
+        $room = $response->json();
+        $this->audit->log('room.create', 'room', $room['room_id']);
 
-        return redirect('/rooms')->with('success', "Room {$room->room_id} added.");
+        return redirect('/rooms')->with('success', "Room {$room['room_id']} added.");
     }
 
     public function editRoom(string $id)
     {
-        return view('admin.room-form', ['room' => Room::findOrFail($id), 'mode' => 'edit', 'departments' => Department::orderBy('department_name')->get()]);
+        $response = $this->centralService->getRoom($id);
+        abort_if($response->status() === 404, 404);
+        $room = (object) $response->throw()->json();
+
+        return view('admin.room-form', ['room' => $room, 'mode' => 'edit', 'departments' => $this->departmentsForDropdown()]);
     }
 
     public function updateRoom(Request $request, string $id)
     {
-        $room = Room::findOrFail($id);
-        $room->update($this->validateRoom($request));
-        $this->audit->log('room.update', 'room', $room->room_id);
+        $response = $this->centralService->updateRoom($id, $this->validateRoom($request));
+        abort_if($response->status() === 404, 404);
+        $response->throw();
+
+        $this->audit->log('room.update', 'room', $id);
 
         return redirect('/rooms')->with('success', 'Room updated.');
     }
@@ -372,5 +387,15 @@ class AdminController extends Controller
             'title' => 'Reports', 'intro' => 'Hospital-wide operational summary.',
             'columns' => ['metric' => 'Metric', 'value' => 'Value'], 'rows' => $rows,
         ]);
+    }
+
+    private function departmentsForDropdown()
+    {
+        return collect($this->centralService->listDepartments()->throw()->json())->map(fn (array $d) => (object) $d);
+    }
+
+    private function laboratoriesForDropdown()
+    {
+        return collect($this->centralService->listAllLaboratories()->throw()->json())->map(fn (array $l) => (object) $l);
     }
 }
