@@ -115,7 +115,7 @@
                 </div>
             @endif
 
-            @if($u->hasPermission('medicine.view') || $u->hasPermission('lab_order.view') || $u->hasPermission('lab_result.view') || $u->hasPermission('bill.view') || $u->hasPermission('prescription.view'))
+            @if($u->hasPermission('medicine.view') || $u->hasPermission('lab_order.view') || $u->hasPermission('lab_result.view') || $u->hasPermission('bill.view'))
                 <div x-data="sidebarSection('services')">
                     <button type="button" x-on:click="toggle" :aria-expanded="open"
                             class="tab-manila relative mb-1 flex w-full items-center justify-between rounded-md px-3 py-1 pl-4 text-[11px] font-semibold uppercase tracking-wider text-slate-400 hover:text-slate-600">
@@ -124,7 +124,6 @@
                     </button>
                     <div x-show="open" x-transition class="space-y-1">
                         @can('medicine.view')<x-nav-link href="/medicines" icon="pill">Pharmacy</x-nav-link>@endcan
-                        @can('prescription.view')<x-nav-link href="/prescriptions" icon="document">Prescriptions</x-nav-link>@endcan
                         @if($u->hasPermission('lab_order.view') || $u->hasPermission('lab_result.view'))
                             <x-nav-link href="/lab-orders" icon="flask">Laboratory</x-nav-link>
                         @endif
