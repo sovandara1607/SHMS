@@ -14,13 +14,13 @@
                     $type = data_get($v, 'type', 'update');
                 @endphp
                 <li class="relative">
-                    <span class="absolute -left-[27px] top-1 h-3 w-3 rounded-full border-2 border-white {{ $type === 'create' ? 'bg-emerald-500' : 'bg-amber-500' }}"></span>
+                    <span class="absolute -left-[27px] top-1 h-3 w-3 rounded-full border-2 border-white {{ $type === 'original' ? 'bg-emerald-500' : 'bg-amber-500' }}"></span>
                     <div class="rounded-lg border border-manila/60 bg-paper-card p-4">
                         <div class="flex flex-wrap items-center justify-between gap-2">
                             <div class="flex items-center gap-2">
                                 <span class="rounded bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600">v{{ data_get($v, 'version') }}</span>
-                                <span class="text-xs font-semibold uppercase tracking-wider {{ $type === 'create' ? 'text-emerald-600' : 'text-amber-600' }}">
-                                    {{ $type === 'create' ? 'Original' : 'Adjustment' }}
+                                <span class="text-xs font-semibold uppercase tracking-wider {{ $type === 'original' ? 'text-emerald-600' : 'text-amber-600' }}">
+                                    {{ $type === 'original' ? 'Original' : 'Adjustment' }}
                                 </span>
                             </div>
                             <span class="text-xs text-slate-400">{{ data_get($v, 'created_at') }}</span>

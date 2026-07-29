@@ -125,9 +125,13 @@ class MedicalRecordController extends Controller
             }
         }
 
+        $medicines = collect($this->centralService->listAllMedicines()->throw()->json())
+            ->map(fn (array $m) => (object) $m);
+
         return view('medical.create', [
             'patient' => $patient,
             'doctors'  => Doctor::with('staff')->get(),
+            'medicines' => $medicines,
         ]);
     }
 
@@ -145,6 +149,18 @@ class MedicalRecordController extends Controller
             'heart_rate'     => 'nullable|integer',
             'height'         => 'nullable|numeric',
             'weight'         => 'nullable|numeric',
+        ]);
+        // Optional inline prescription, filled in the same "document the visit" form.
+        // Rows are nullable so an untouched template row doesn't fail validation —
+        // only rows the doctor actually picked a medicine for get submitted below.
+        $prescriptionData = $request->validate([
+            'prescription_notes'          => 'nullable|string',
+            'items'                       => 'nullable|array',
+            'items.*.medicine_id'         => 'nullable|exists:medicine,medicine_id',
+            'items.*.dosage'              => 'nullable|string|max:100',
+            'items.*.frequency'           => 'nullable|string|max:100',
+            'items.*.duration'            => 'nullable|string|max:100',
+            'items.*.quantity'            => 'nullable|integer|min:1',
         ]);
         $data['created_by'] = Auth::user()->staff_id;
 
@@ -165,7 +181,29 @@ class MedicalRecordController extends Controller
         ]);
         $this->audit->log('medical_record.create', 'medical_record', $record['medical_record_id']);
 
-        return redirect('/medical-records')->with('success', "Medical record {$record['medical_record_id']} created.");
+        $prescribedItems = collect($prescriptionData['items'] ?? [])->filter(fn ($item) => filled($item['medicine_id'] ?? null))->values();
+        $prescriptionWarning = null;
+        if ($prescribedItems->isNotEmpty()) {
+            $prescriptionResponse = $this->centralService->createPrescription($record['medical_record_id'], [
+                'notes' => $prescriptionData['prescription_notes'] ?? null,
+                'items' => $prescribedItems->all(),
+            ]);
+            if ($prescriptionResponse->successful()) {
+                $prescription = $prescriptionResponse->json();
+                $this->audit->log('prescription.create', 'prescription', $prescription['prescription_id'], [
+                    'medical_record_id' => $record['medical_record_id'], 'items' => $prescribedItems->count(),
+                ]);
+            } else {
+                $prescriptionWarning = 'The record was created, but the prescription could not be saved — add it from the record\'s page.';
+            }
+        }
+
+        $redirect = redirect('/medical-records')->with('success', "Medical record {$record['medical_record_id']} created.");
+        if ($prescriptionWarning) {
+            $redirect->with('warning', $prescriptionWarning);
+        }
+
+        return $redirect;
     }
 
     public function adjust(Request $request, string $id)

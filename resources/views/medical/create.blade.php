@@ -63,7 +63,8 @@
     </div>
 @else
     <x-modal-header title="Add Medical Record" :subtitle="'Patient: ' . $patient->fullName()" icon="document" />
-    <form id="medical-record-form" method="post" action="/medical-records" class="max-h-[65vh] overflow-y-auto px-6 py-5">
+    <form id="medical-record-form" method="post" action="/medical-records" class="max-h-[65vh] overflow-y-auto px-6 py-5"
+          x-data="{ items: [{ medicine_id: '', dosage: '', frequency: '', duration: '', quantity: '' }] }">
         @csrf
         <input type="hidden" name="patient_id" value="{{ $patient->patient_id }}">
         <input type="hidden" name="_modal_target" value="/medical-records/create?patient_id={{ $patient->patient_id }}">
@@ -141,6 +142,74 @@
                     <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">bpm</span>
                 </div>
             </div>
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-slate-700">Height</label>
+                <div class="relative">
+                    <input name="height" placeholder="e.g. 170" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 pr-10 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                    <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">cm</span>
+                </div>
+            </div>
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-slate-700">Weight</label>
+                <div class="relative">
+                    <input name="weight" placeholder="e.g. 65" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 pr-10 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                    <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">kg</span>
+                </div>
+            </div>
+        </div>
+
+        <p class="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">
+            <x-icon name="document" class="h-3.5 w-3.5 text-blue-500" /> Prescription
+        </p>
+        <p class="mb-3 text-xs text-slate-400">Optional — leave the medicine unselected to skip. Can also be added later from the record's page.</p>
+        <template x-for="(item, i) in items" :key="i">
+            <div class="mb-3 space-y-3 rounded-lg bg-slate-50 p-4">
+                <div class="flex items-center justify-between">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Medicine <span x-text="i + 1"></span></p>
+                    <button type="button" x-show="items.length > 1" x-transition.opacity x-on:click="items.splice(i, 1)" class="text-xs font-medium text-red-600 hover:underline">Remove</button>
+                </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium text-slate-700">Medicine</label>
+                    <select :name="`items[${i}][medicine_id]`" x-model="item.medicine_id"
+                            class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                        <option value="">— select —</option>
+                        @foreach($medicines as $m)
+                            <option value="{{ $m->medicine_id }}">{{ $m->medicine_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-slate-700">Dosage</label>
+                        <input :name="`items[${i}][dosage]`" x-model="item.dosage" placeholder="e.g. 500mg"
+                               class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                    </div>
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-slate-700">Frequency</label>
+                        <input :name="`items[${i}][frequency]`" x-model="item.frequency" placeholder="e.g. 3x daily"
+                               class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-slate-700">Duration</label>
+                        <input :name="`items[${i}][duration]`" x-model="item.duration" placeholder="e.g. 7 days"
+                               class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                    </div>
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-slate-700">Quantity</label>
+                        <input type="number" min="1" :name="`items[${i}][quantity]`" x-model="item.quantity"
+                               class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                    </div>
+                </div>
+            </div>
+        </template>
+        <button type="button" x-on:click="items.push({ medicine_id: '', dosage: '', frequency: '', duration: '', quantity: '' })"
+                class="mb-4 text-sm font-medium text-blue-600 hover:underline">+ Add another medicine</button>
+        <div class="mb-5">
+            <label class="mb-1.5 block text-sm font-medium text-slate-700">Prescription Notes</label>
+            <textarea name="prescription_notes" rows="2" placeholder="Additional instructions for the patient/pharmacist..."
+                      class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"></textarea>
         </div>
 
         <div class="rounded-lg bg-slate-50 px-4 py-3">
