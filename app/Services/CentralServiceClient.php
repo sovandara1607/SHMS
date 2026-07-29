@@ -95,6 +95,16 @@ class CentralServiceClient
         return $this->request()->get('/api/appointments', $params);
     }
 
+    public function bookedSlots(string $doctorId, string $date): Response
+    {
+        return $this->request()->get('/api/appointments/booked-slots', ['doctor_id' => $doctorId, 'date' => $date]);
+    }
+
+    public function searchAppointments(string $q): Response
+    {
+        return $this->request()->get('/api/appointments/search', ['q' => $q]);
+    }
+
     public function getAppointment(string $id): Response
     {
         return $this->request()->get("/api/appointments/{$id}");

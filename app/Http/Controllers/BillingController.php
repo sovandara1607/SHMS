@@ -37,7 +37,15 @@ class BillingController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate(['patient_id' => 'required|exists:patient,patient_id']);
+        $data = $request->validate([
+            'patient_id'     => 'required|exists:patient,patient_id',
+            'appointment_id' => 'nullable|exists:appointment,appointment_id',
+            'items'                    => 'nullable|array',
+            'items.*.item_type'        => 'required_with:items|in:service,medicine,lab_test,procedure,room',
+            'items.*.description'      => 'nullable|string|max:255',
+            'items.*.quantity'         => 'required_with:items|integer|min:1',
+            'items.*.unit_price'       => 'required_with:items|numeric|min:0',
+        ]);
         $data['generated_by'] = Auth::user()->staff_id;
 
         $response = $this->centralService->createBill($data)->throw();

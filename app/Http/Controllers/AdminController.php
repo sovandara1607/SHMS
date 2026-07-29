@@ -138,7 +138,7 @@ class AdminController extends Controller
             'mode' => 'create',
             'staff' => new Staff(),
             'lockedRole' => $request->query('role'),
-            'redirectTo' => $request->query('role') === 'doctor' ? '/doctors' : '/staff',
+            'redirectTo' => '/staff',
             'departments' => $this->departmentsForDropdown(),
             'laboratories' => $this->laboratoriesForDropdown(),
         ]);
@@ -184,7 +184,7 @@ class AdminController extends Controller
 
         return view('admin.staff-form', [
             'mode' => 'edit', 'staff' => $staff, 'subtype' => $subtype, 'role' => $role,
-            'lockedRole' => null, 'redirectTo' => $role === 'doctor' ? '/doctors' : '/staff',
+            'lockedRole' => null, 'redirectTo' => '/staff',
             'departments' => $this->departmentsForDropdown(),
             'laboratories' => $this->laboratoriesForDropdown(),
         ]);
@@ -325,26 +325,6 @@ class AdminController extends Controller
         $data['redirect_to'] = $data['redirect_to'] ?? '/staff';
 
         return $data;
-    }
-
-    public function doctors(Request $request)
-    {
-        $q = trim((string) $request->query('q', ''));
-        $rows = DB::table('doctor as d')
-            ->join('staff as s', 's.staff_id', '=', 'd.staff_id')
-            ->leftJoin('department as dep', 'dep.department_id', '=', 'd.department_id')
-            ->when($q !== '', function ($query) use ($q) {
-                $like = '%' . $q . '%';
-                $query->where('d.doctor_id', 'ilike', $like)
-                    ->orWhereRaw("(s.first_name||' '||s.last_name) ilike ?", [$like])
-                    ->orWhere('d.specialization', 'ilike', $like);
-            })
-            ->orderBy('s.last_name')
-            ->selectRaw("d.doctor_id, d.staff_id, (s.first_name||' '||s.last_name) as full_name, d.specialization, dep.department_id, dep.department_name, d.license_number, s.status")
-            ->paginate(20)
-            ->withQueryString();
-
-        return view('admin.doctors', ['rows' => $rows, 'q' => $q, 'departments' => $this->departmentsForDropdown()]);
     }
 
     public function departments(Request $request)

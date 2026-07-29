@@ -10,8 +10,6 @@
             window.dispatchEvent(new CustomEvent('open-modal', { detail: 'medical-modal' }));
             if (action === 'adjust') {
                 setTimeout(() => window.dispatchEvent(new CustomEvent('open-modal', { detail: 'adjust-record' })), 50);
-            } else if (action === 'history') {
-                setTimeout(() => document.getElementById('adjustment-history')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
             }
         }
      }"
@@ -90,7 +88,7 @@
                                     <x-icon name="pencil" class="h-4 w-4" />
                                 </button>
                             @endcan
-                            <button type="button" x-on:click="openModal('/medical-records/{{ $r->medical_record_id }}', 'history')" title="History" class="flex items-center gap-1 text-slate-400 hover:text-blue-600">
+                            <button type="button" x-on:click="openModal('/medical-records/{{ $r->medical_record_id }}/history')" title="History" class="flex items-center gap-1 text-slate-400 hover:text-blue-600">
                                 <x-icon name="clock" class="h-4 w-4" /> History
                             </button>
                         </div>

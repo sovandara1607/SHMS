@@ -6,7 +6,7 @@ $currentStatus = old('patient_status', $patient->patient_status ?? 'active');
 @endphp
 
 <x-modal-header :title="$mode === 'create' ? 'Add New Patient' : 'Adjust Patient Information'"
-                :subtitle="$mode === 'edit' ? 'A reason is mandatory. The original record is preserved; this submits a logged adjustment.' : null" />
+                :subtitle="$mode === 'edit' ? 'A reason is mandatory. Changes apply immediately and are logged to Adjustment History.' : null" />
 
 <form id="patient-form" method="post" action="{{ $action }}" class="max-h-[75vh] overflow-y-auto px-6 py-5">
     @csrf
@@ -62,54 +62,19 @@ $currentStatus = old('patient_status', $patient->patient_status ?? 'active');
                class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
     </div>
 
-    <p class="mb-2 mt-5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">
-        Medical Information @if($mode === 'edit')<x-icon name="lock" class="h-3 w-3" />@endif
-    </p>
-    @if($mode === 'edit')
-        {{-- Locked only when adjusting an existing patient — blood type and
-             allergies are safety-critical and shouldn't be casually changed
-             through the general info-adjustment form. Still freely editable
-             at creation time, below, where there's no prior value to
-             protect. readonly (not disabled) so the existing value still
-             submits unchanged instead of being cleared. --}}
-        <div class="grid grid-cols-2 gap-4">
-            <div>
-                <label class="mb-1.5 flex items-center gap-1 text-sm font-medium text-slate-700">
-                    Blood Type <x-icon name="lock" class="h-3 w-3 text-slate-400" />
-                </label>
-                <div class="group relative">
-                    <input name="blood_type" value="{{ old('blood_type', $patient->blood_type) }}" placeholder="e.g. O+" readonly
-                           title="Blood type isn't editable from here — it's safety-critical and locked."
-                           class="w-full cursor-not-allowed rounded-lg border border-slate-200 bg-slate-100 px-3.5 py-2.5 text-sm text-slate-500 focus:outline-none">
-                    <x-icon name="lock" class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 opacity-0 transition-opacity group-hover:opacity-100" />
-                </div>
-            </div>
-            <div>
-                <label class="mb-1.5 flex items-center gap-1 text-sm font-medium text-slate-700">
-                    Allergies <x-icon name="lock" class="h-3 w-3 text-slate-400" />
-                </label>
-                <div class="group relative">
-                    <input name="allergy" value="{{ old('allergy', $patient->allergy) }}" placeholder="Penicillin, Latex, None" readonly
-                           title="Allergies aren't editable from here — it's safety-critical and locked."
-                           class="w-full cursor-not-allowed rounded-lg border border-slate-200 bg-slate-100 px-3.5 py-2.5 text-sm text-slate-500 focus:outline-none">
-                    <x-icon name="lock" class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 opacity-0 transition-opacity group-hover:opacity-100" />
-                </div>
-            </div>
+    <p class="mb-2 mt-5 text-xs font-semibold uppercase tracking-wider text-slate-400">Medical Information</p>
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-700">Blood Type</label>
+            <input name="blood_type" value="{{ old('blood_type', $patient->blood_type) }}" placeholder="e.g. O+"
+                   class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
         </div>
-    @else
-        <div class="grid grid-cols-2 gap-4">
-            <div>
-                <label class="mb-1.5 block text-sm font-medium text-slate-700">Blood Type</label>
-                <input name="blood_type" value="{{ old('blood_type') }}" placeholder="e.g. O+"
-                       class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
-            </div>
-            <div>
-                <label class="mb-1.5 block text-sm font-medium text-slate-700">Allergies</label>
-                <input name="allergy" value="{{ old('allergy') }}" placeholder="Penicillin, Latex, None"
-                       class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
-            </div>
+        <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-700">Allergies</label>
+            <input name="allergy" value="{{ old('allergy', $patient->allergy) }}" placeholder="Penicillin, Latex, None"
+                   class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
         </div>
-    @endif
+    </div>
 
     <p class="mb-2 mt-5 text-xs font-semibold uppercase tracking-wider text-slate-400">Emergency Contact</p>
     <div class="grid grid-cols-2 gap-4">

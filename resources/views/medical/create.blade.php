@@ -97,8 +97,7 @@
         </div>
         <div class="mb-4">
             <label class="mb-1.5 block text-sm font-medium text-slate-700">Related Appointment</label>
-            <input name="appointment_id" value="{{ old('appointment_id') }}" placeholder="e.g. APT0312"
-                   class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+            <x-appointment-picker name="appointment_id" :selected-id="old('appointment_id')" :selected-label="old('appointment_id')" />
         </div>
         <div class="mb-4">
             <label class="mb-1.5 block text-sm font-medium text-slate-700">Symptoms</label>

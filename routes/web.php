@@ -56,6 +56,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/appointments', [AppointmentController::class, 'index'])->middleware('permission:appointment.view');
     Route::get('/appointments/create', [AppointmentController::class, 'create'])->middleware('permission:appointment.create');
     Route::post('/appointments', [AppointmentController::class, 'store'])->middleware('permission:appointment.create');
+    Route::get('/appointments/booked-slots', [AppointmentController::class, 'bookedSlots'])->middleware('permission:appointment.create');
+    Route::get('/appointments/search', [AppointmentController::class, 'search'])->middleware('permission:appointment.view');
     Route::get('/appointments/{id}', [AppointmentController::class, 'show'])->middleware('permission:appointment.view');
     Route::get('/appointments/{id}/edit', [AppointmentController::class, 'edit'])->middleware('permission:appointment.update');
     Route::put('/appointments/{id}', [AppointmentController::class, 'update'])->middleware('permission:appointment.update');
@@ -68,6 +70,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/medical-records/create', [MedicalRecordController::class, 'create'])->middleware('permission:medical_record.create');
     Route::post('/medical-records', [MedicalRecordController::class, 'store'])->middleware('permission:medical_record.create');
     Route::get('/medical-records/{id}', [MedicalRecordController::class, 'show'])->middleware('permission:medical_record.view');
+    Route::get('/medical-records/{id}/history', [MedicalRecordController::class, 'history'])->middleware('permission:medical_record.view');
     Route::post('/medical-records/{id}/adjust', [MedicalRecordController::class, 'adjust'])->middleware('permission:medical_record.adjust');
     Route::post('/medical-records/{id}/prescriptions', [PrescriptionController::class, 'store'])->middleware('permission:prescription.create');
     Route::post('/medical-records/{id}/reports', [MedicalReportController::class, 'store'])->middleware('permission:medical_report.create');
@@ -164,7 +167,6 @@ Route::middleware('auth')->group(function () {
     Route::put('/staff/{id}', [AdminController::class, 'updateStaff'])->middleware('permission:staff.manage');
     Route::post('/staff/{id}/deactivate', [AdminController::class, 'deactivateStaff'])->middleware('permission:staff.manage');
     Route::post('/staff/{id}/reactivate', [AdminController::class, 'reactivateStaff'])->middleware('permission:staff.manage');
-    Route::get('/doctors', [AdminController::class, 'doctors'])->middleware('permission:staff.manage');
     Route::get('/reports', [AdminController::class, 'reports'])->middleware('permission:report.view');
 
     Route::get('/roles-permissions', [RolePermissionController::class, 'index'])

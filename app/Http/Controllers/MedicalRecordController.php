@@ -52,6 +52,25 @@ class MedicalRecordController extends Controller
         ]);
     }
 
+    /** Distinct from show(): a timeline of the record's MongoDB version snapshots, not a re-display of the current record. */
+    public function history(string $id)
+    {
+        $response = $this->centralService->getMedicalRecord($id);
+        abort_if($response->status() === 404, 404);
+        $response->throw();
+        $body = $response->json();
+        $record = MedicalRecordDTO::fromArray($body);
+
+        $versions = DB::connection('mongodb')->table('medical_record_versions')
+            ->where('medical_record_id', $id)->orderByDesc('version')->get();
+
+        return view('medical.history', [
+            'record' => $record,
+            'versions' => $versions,
+            'doctors' => Doctor::with('staff')->get(),
+        ]);
+    }
+
     public function show(string $id)
     {
         $response = $this->centralService->getMedicalRecord($id);

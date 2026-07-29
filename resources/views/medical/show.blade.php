@@ -62,7 +62,12 @@
         <div class="mb-3 rounded-lg border border-slate-100 px-4 py-3">
             <div class="mb-1.5 flex items-center justify-between text-sm">
                 <span class="font-medium text-slate-900">{{ $pr->prescription_id }}</span>
-                <span class="text-slate-400">{{ $pr->prescription_date }}</span>
+                <span class="flex items-center gap-3">
+                    <span class="text-slate-400">{{ $pr->prescription_date }}</span>
+                    @can('prescription.view')
+                        <a href="/prescriptions/{{ $pr->prescription_id }}" class="text-xs font-medium text-blue-600 hover:underline">View in Pharmacy</a>
+                    @endcan
+                </span>
             </div>
             <ul class="list-disc pl-5 text-sm text-slate-700">
                 @foreach($pr->items as $item)

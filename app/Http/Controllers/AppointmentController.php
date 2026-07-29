@@ -10,10 +10,32 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Validator;
 
 class AppointmentController extends Controller
 {
     public function __construct(private AuditLogger $audit, private CentralServiceClient $centralService) {}
+
+    public function bookedSlots(Request $request)
+    {
+        $doctorId = $request->query('doctor_id');
+        $date = $request->query('date');
+        if (! $doctorId || ! $date) {
+            return response()->json([]);
+        }
+
+        return response()->json($this->centralService->bookedSlots($doctorId, $date)->json());
+    }
+
+    public function search(Request $request)
+    {
+        $q = trim((string) $request->query('q', ''));
+        if ($q === '') {
+            return response()->json([]);
+        }
+
+        return response()->json($this->centralService->searchAppointments($q)->json());
+    }
 
     public function index(Request $request)
     {
@@ -190,12 +212,25 @@ class AppointmentController extends Controller
 
     private function validateData(Request $request): array
     {
-        return $request->validate([
+        $validator = Validator::make($request->all(), [
             'patient_id'       => 'required|exists:patient,patient_id',
             'doctor_id'        => 'required|exists:doctor,doctor_id',
-            'appointment_date' => 'required|date',
-            'appointment_time' => 'required',
+            'appointment_date' => 'required|date|after_or_equal:today',
+            'appointment_time' => 'required|date_format:H:i',
             'reason'           => 'nullable|string',
         ]);
+
+        $validator->after(function ($validator) use ($request) {
+            $date = $request->input('appointment_date');
+            $time = $request->input('appointment_time');
+            if (! $date || ! $time) {
+                return;
+            }
+            if ($date === now()->toDateString() && $time < now()->format('H:i')) {
+                $validator->errors()->add('appointment_time', 'The appointment time cannot be in the past.');
+            }
+        });
+
+        return $validator->validate();
     }
 }

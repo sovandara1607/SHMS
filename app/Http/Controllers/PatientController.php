@@ -149,9 +149,10 @@ class PatientController extends Controller
     }
 
     /**
-     * Patient info is never overwritten directly (same "original preserved"
-     * policy as medical records) — this submits an adjustment, logged with
-     * a mandatory reason, rather than applying the edit in place.
+     * Applies the edit directly to the patient row and logs it as a
+     * patient_adjustment entry with a mandatory reason, so the Patient
+     * Information page always shows the latest values while the full
+     * edit history stays visible in Adjustment History.
      */
     public function adjust(Request $request, string $id)
     {
@@ -169,7 +170,7 @@ class PatientController extends Controller
 
         $this->audit->log('patient.adjust', 'patient', $id, ['reason' => $data['reason']]);
 
-        return redirect('/patients')->with('success', 'Adjustment recorded; original record preserved.')->with('reopen_patient', $id);
+        return redirect('/patients')->with('success', 'Patient information updated.')->with('reopen_patient', $id);
     }
 
     public function discharge(string $id)

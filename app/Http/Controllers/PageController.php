@@ -21,8 +21,7 @@ class PageController extends Controller
         $body = $this->centralService->getPharmacyOverview(['prescriptions_page' => (int) $request->query('page', 1)])->throw()->json();
         $rows = $this->paginatorFrom($body['prescriptions'], $request);
 
-        return $this->table('Prescriptions',
-            ['prescription_id' => 'ID', 'patient_name' => 'Patient', 'prescription_date' => 'Date', 'notes' => 'Notes'], $rows);
+        return view('prescriptions.index', ['rows' => $rows]);
     }
 
     public function procedures()
