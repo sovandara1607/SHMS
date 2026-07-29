@@ -1,0 +1,22 @@
+name: smart-hospital-mongo
+
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: smart_hospital_docs
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-smart_hospital}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:?set MONGO_PASSWORD in .env.digitalocean}
+    ports:
+      - "27017:27017"
+    volumes:
+      - smart_hospital_mongodata:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  smart_hospital_mongodata:
