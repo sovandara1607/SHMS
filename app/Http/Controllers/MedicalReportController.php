@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MedicalReport;
 use App\Services\AuditLogger;
 use App\Services\CentralServiceClient;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Doctor-side report generation. Like Prescriptions, the form is embedded
@@ -38,5 +40,45 @@ class MedicalReportController extends Controller
         return redirect('/medical-records')
             ->with('success', "Report {$result['report_id']} generated.")
             ->with('reopen_record', $recordId);
+    }
+
+    public function downloadReport(string $id)
+    {
+        // Local read-only lookup: the file itself lives on Database-final's
+        // disk and must stream from here, same justified exception as the
+        // existing LabController::downloadReport()/regenerateReport().
+        $report = MedicalReport::findOrFail($id);
+        abort_if(! $report->report_file_path, 404, 'Report PDF is still being generated.');
+
+        $disk = Storage::disk(config('filesystems.documents'));
+        abort_if(! $disk->exists($report->report_file_path), 404, 'Report PDF not found.');
+
+        return $disk->download($report->report_file_path, "{$report->report_id}-medical-report.pdf");
+    }
+
+    /**
+     * Synchronous fallback for when the PDF job failed or was never picked
+     * up (e.g. central-service's queue worker was down): calls
+     * central-service's REST API directly so the staff member gets an
+     * immediate result instead of waiting on the queue.
+     */
+    public function regenerateReport(string $id)
+    {
+        MedicalReport::findOrFail($id);
+
+        $response = $this->centralService->regenerateMedicalReport($id);
+
+        if (in_array($response->status(), [404, 422], true)) {
+            return back()->with('error', 'Could not regenerate report: '.$response->json('message'));
+        }
+        if ($response->failed()) {
+            report(new \RuntimeException("Medical report regenerate failed for {$id}: HTTP {$response->status()} - {$response->body()}"));
+
+            return back()->with('error', 'Could not regenerate the report right now. Please try again.');
+        }
+
+        $this->audit->log('medical_report.regenerate', 'medical_report', $id);
+
+        return back()->with('success', 'Report PDF regenerated.');
     }
 }

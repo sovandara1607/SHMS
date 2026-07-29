@@ -170,6 +170,16 @@ class CentralServiceClient
         return $this->request()->get('/api/medical-reports', $params);
     }
 
+    public function medicalReportStatus(string $reportId): Response
+    {
+        return $this->request()->get("/api/medical-reports/{$reportId}/status");
+    }
+
+    public function regenerateMedicalReport(string $reportId): Response
+    {
+        return $this->request()->post("/api/medical-reports/{$reportId}/regenerate");
+    }
+
     public function listVitalSigns(array $params = []): Response
     {
         return $this->request()->get('/api/vital-signs', $params);

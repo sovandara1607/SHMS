@@ -79,6 +79,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/prescriptions', [PageController::class, 'prescriptions'])->middleware('permission:prescription.view');
     Route::get('/procedures', [PageController::class, 'procedures'])->middleware('permission:procedure.view');
     Route::get('/medical-reports', [PageController::class, 'medicalReports'])->middleware('permission:medical_report.view');
+    Route::get('/medical-reports/{id}/download', [MedicalReportController::class, 'downloadReport'])->middleware('permission:medical_report.view');
+    Route::post('/medical-reports/{id}/regenerate', [MedicalReportController::class, 'regenerateReport'])->middleware('permission:medical_report.create');
     Route::get('/vital-signs', [ClinicalController::class, 'vitalSigns'])->middleware('permission:vital_signs.view');
     Route::post('/vital-signs', [ClinicalController::class, 'storeVitals'])->middleware('permission:vital_signs.create');
 

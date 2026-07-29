@@ -124,6 +124,19 @@
                 <span class="text-slate-400">{{ $r->generated_at }}</span>
             </div>
             <p class="whitespace-pre-line text-sm text-slate-700">{{ $r->report_content }}</p>
+            <div class="mt-2 flex items-center gap-3">
+                @if($r->report_file_path ?? null)
+                    <a href="/medical-reports/{{ $r->report_id }}/download" download class="text-xs font-medium text-blue-600 hover:underline">Download PDF</a>
+                @else
+                    <span class="text-xs text-slate-400">Generating PDF…</span>
+                @endif
+                @can('medical_report.create')
+                    <form action="/medical-reports/{{ $r->report_id }}/regenerate" method="POST" class="inline">
+                        @csrf
+                        <button type="submit" class="text-xs font-medium text-slate-500 hover:underline">Regenerate</button>
+                    </form>
+                @endcan
+            </div>
         </div>
     @empty
         <p class="mb-4 text-sm text-slate-400">No reports generated for this record yet.</p>
