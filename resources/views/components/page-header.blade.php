@@ -1,6 +1,6 @@
 @props(['title', 'subtitle' => null])
 
-<div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+<div class="relative mb-5 flex flex-wrap items-center justify-between gap-3 border-b-2 border-manila pb-3">
     <div>
         <h1 class="text-xl font-bold text-slate-900">{{ $title }}</h1>
         @if($subtitle)

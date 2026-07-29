@@ -26,9 +26,11 @@ class LabController extends Controller
     public function orders(Request $request)
     {
         $status = $request->query('status', '');
+        $q = trim((string) $request->query('q', ''));
 
         $body = $this->centralService->getLabOverview([
             'status' => $status,
+            'q' => $q,
             'orders_page' => (int) $request->query('orders_page', 1),
             'results_page' => (int) $request->query('results_page', 1),
             'reports_page' => (int) $request->query('reports_page', 1),
@@ -39,7 +41,7 @@ class LabController extends Controller
         $reports = $this->paginatorFrom($body['reports'], $request, 'reports_page');
         $stats = $body['stats'];
 
-        return view('lab.orders', compact('orders', 'results', 'reports', 'status', 'stats'));
+        return view('lab.orders', compact('orders', 'results', 'reports', 'status', 'q', 'stats'));
     }
 
     public function createOrder()
@@ -57,7 +59,7 @@ class LabController extends Controller
             'doctor_id'      => 'required|exists:doctor,doctor_id',
             'technician_id'  => 'nullable|exists:lab_technician,technician_id',
             'test_name'      => 'required|string|max:100',
-            'priority'       => 'nullable|string',
+            'priority'       => 'nullable|in:routine,urgent,stat',
             'notes'          => 'nullable|string',
         ]);
 
@@ -222,8 +224,13 @@ class LabController extends Controller
 
         $response = $this->centralService->regenerateLabReport($id);
 
+        if (in_array($response->status(), [404, 422], true)) {
+            return back()->with('error', 'Could not regenerate report: '.$response->json('message'));
+        }
         if ($response->failed()) {
-            return back()->with('error', 'Could not regenerate report: '.($response->json('message') ?? $response->status()));
+            report(new \RuntimeException("Lab report regenerate failed for {$id}: HTTP {$response->status()} - {$response->body()}"));
+
+            return back()->with('error', 'Could not regenerate the report right now. Please try again.');
         }
 
         $this->audit->log('lab_report.regenerate', 'lab_report', $id);

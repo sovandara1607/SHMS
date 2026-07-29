@@ -115,6 +115,11 @@ class CentralServiceClient
         return $this->request()->post("/api/appointments/{$id}/cancel", $data);
     }
 
+    public function completeAppointment(string $id): Response
+    {
+        return $this->request()->post("/api/appointments/{$id}/complete");
+    }
+
     public function listMedicalRecords(array $params = []): Response
     {
         return $this->request()->get('/api/medical-records', $params);
@@ -145,6 +150,11 @@ class CentralServiceClient
         return $this->request()->post("/api/medical-records/{$recordId}/reports", $data);
     }
 
+    public function createProcedure(string $recordId, array $data): Response
+    {
+        return $this->request()->post("/api/medical-records/{$recordId}/procedures", $data);
+    }
+
     public function listMedicalReports(array $params = []): Response
     {
         return $this->request()->get('/api/medical-reports', $params);
@@ -158,6 +168,11 @@ class CentralServiceClient
     public function createVitalSign(array $data): Response
     {
         return $this->request()->post('/api/vital-signs', $data);
+    }
+
+    public function createVitalSignForRecord(string $recordId, array $data): Response
+    {
+        return $this->request()->post("/api/medical-records/{$recordId}/vital-signs", $data);
     }
 
     public function getLabOverview(array $params = []): Response
@@ -233,6 +248,16 @@ class CentralServiceClient
     public function createMedicine(array $data): Response
     {
         return $this->request()->post('/api/medicines', $data);
+    }
+
+    public function getMedicine(string $id): Response
+    {
+        return $this->request()->get("/api/medicines/{$id}");
+    }
+
+    public function updateMedicine(string $id, array $data): Response
+    {
+        return $this->request()->put("/api/medicines/{$id}", $data);
     }
 
     public function listAllMedicines(): Response
@@ -315,6 +340,16 @@ class CentralServiceClient
         return $this->request()->get('/api/rooms', $params);
     }
 
+    public function listAllBeds(array $params = []): Response
+    {
+        return $this->request()->get('/api/room-beds', $params);
+    }
+
+    public function listRoomAssignments(array $params = []): Response
+    {
+        return $this->request()->get('/api/room-assignments', $params);
+    }
+
     public function getRoom(string $id): Response
     {
         return $this->request()->get("/api/rooms/{$id}");
@@ -373,5 +408,25 @@ class CentralServiceClient
     public function getSchedulePage(array $params = []): Response
     {
         return $this->request()->get('/api/schedule', $params);
+    }
+
+    public function getShift(string $id): Response
+    {
+        return $this->request()->get("/api/schedule/{$id}");
+    }
+
+    public function createShift(array $data): Response
+    {
+        return $this->request()->post('/api/schedule', $data);
+    }
+
+    public function updateShift(string $id, array $data): Response
+    {
+        return $this->request()->put("/api/schedule/{$id}", $data);
+    }
+
+    public function cancelShift(string $id): Response
+    {
+        return $this->request()->post("/api/schedule/{$id}/cancel");
     }
 }

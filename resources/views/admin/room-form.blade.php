@@ -23,8 +23,8 @@ $target = $mode === 'create' ? '/rooms/create' : '/rooms/' . $room->room_id . '/
             <label class="mb-1.5 block text-sm font-medium text-slate-700">Room Type</label>
             <select name="room_type" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
                 <option value="">— select —</option>
-                @foreach(['general', 'private', 'icu', 'emergency'] as $t)
-                    <option value="{{ $t }}" @selected(old('room_type', $room->room_type) === $t)>{{ ucfirst($t) }}</option>
+                @foreach(['general' => 'Standard', 'private' => 'Premium', 'icu' => 'ICU', 'emergency' => 'Trauma', 'operating_room' => 'OR'] as $t => $label)
+                    <option value="{{ $t }}" @selected(old('room_type', $room->room_type) === $t)>{{ $label }}</option>
                 @endforeach
             </select>
         </div>
@@ -38,13 +38,19 @@ $target = $mode === 'create' ? '/rooms/create' : '/rooms/' . $room->room_id . '/
             </select>
         </div>
     </div>
-    <div>
-        <label class="mb-1.5 block text-sm font-medium text-slate-700">Status</label>
-        <select name="status" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
-            @foreach(['available', 'occupied', 'maintenance'] as $s)
-                <option value="{{ $s }}" @selected(old('status', $room->status ?? 'available') === $s)>{{ ucfirst($s) }}</option>
-            @endforeach
-        </select>
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-700">Status</label>
+            <select name="status" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                @foreach(['available', 'occupied', 'maintenance'] as $s)
+                    <option value="{{ $s }}" @selected(old('status', $room->status ?? 'available') === $s)>{{ ucfirst($s) }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-700">Rate / Day</label>
+            <input type="number" step="0.01" name="rate_per_day" value="{{ old('rate_per_day', $room->rate_per_day ?? '') }}" placeholder="e.g. 150.00" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+        </div>
     </div>
 </form>
 <div class="flex justify-end gap-2 border-t border-slate-100 px-6 py-4">

@@ -81,6 +81,31 @@
     @endforelse
 
     <div class="mb-2 flex items-center justify-between">
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Vital Signs</p>
+        @can('vital_signs.create')
+            <button type="button" class="text-sm font-medium text-blue-600 hover:underline"
+                    x-on:click="window.dispatchEvent(new CustomEvent('open-modal', { detail: 'record-vitals' }))">+ Record Vitals</button>
+        @endcan
+    </div>
+    @forelse($vitalSigns as $v)
+        <div class="mb-3 rounded-lg border border-slate-100 px-4 py-3">
+            <div class="mb-1.5 flex items-center justify-between text-sm">
+                <span class="font-medium text-slate-900">{{ $v->vital_sign_id }}</span>
+                <span class="text-slate-400">{{ $v->recorded_at }}</span>
+            </div>
+            <div class="grid grid-cols-3 gap-y-1 text-sm text-slate-700">
+                <span>Temp: {{ $v->temperature ?? '—' }}{{ $v->temperature ? '°C' : '' }}</span>
+                <span>BP: {{ $v->blood_pressure ?: '—' }}</span>
+                <span>HR: {{ $v->heart_rate ?? '—' }}{{ $v->heart_rate ? ' bpm' : '' }}</span>
+                <span>Height: {{ $v->height ?? '—' }}</span>
+                <span>Weight: {{ $v->weight ?? '—' }}</span>
+            </div>
+        </div>
+    @empty
+        <p class="mb-4 text-sm text-slate-400">No vital signs recorded for this record yet.</p>
+    @endforelse
+
+    <div class="mb-2 flex items-center justify-between">
         <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Reports</p>
         @can('medical_report.create')
             <button type="button" class="text-sm font-medium text-blue-600 hover:underline"
@@ -97,6 +122,26 @@
         </div>
     @empty
         <p class="mb-4 text-sm text-slate-400">No reports generated for this record yet.</p>
+    @endforelse
+
+    <div class="mb-2 flex items-center justify-between">
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Procedures</p>
+        @can('procedure.create')
+            <button type="button" class="text-sm font-medium text-blue-600 hover:underline"
+                    x-on:click="window.dispatchEvent(new CustomEvent('open-modal', { detail: 'add-procedure' }))">+ Add Procedure</button>
+        @endcan
+    </div>
+    @forelse($procedures as $proc)
+        <div class="mb-3 rounded-lg border border-slate-100 px-4 py-3">
+            <div class="mb-1.5 flex items-center justify-between text-sm">
+                <span class="font-medium text-slate-900">{{ $proc->procedure_id }} — {{ $proc->procedure_name }}</span>
+                <span class="text-slate-400">{{ $proc->procedure_date }}</span>
+            </div>
+            @if($proc->procedure_details)<p class="text-sm text-slate-700">{{ $proc->procedure_details }}</p>@endif
+            @if($proc->outcome)<p class="mt-1.5 text-xs text-slate-500">Outcome: {{ $proc->outcome }}</p>@endif
+        </div>
+    @empty
+        <p class="mb-4 text-sm text-slate-400">No procedures recorded for this record yet.</p>
     @endforelse
 
     @can('medical_record.adjust')
@@ -164,7 +209,7 @@
             <div class="space-y-3 rounded-lg bg-slate-50 p-4">
                 <div class="flex items-center justify-between">
                     <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Medicine <span x-text="i + 1"></span></p>
-                    <button type="button" x-show="items.length > 1" x-on:click="items.splice(i, 1)" class="text-xs font-medium text-red-600 hover:underline">Remove</button>
+                    <button type="button" x-show="items.length > 1" x-transition.opacity x-on:click="items.splice(i, 1)" class="text-xs font-medium text-red-600 hover:underline">Remove</button>
                 </div>
                 <div>
                     <label class="mb-1.5 block text-sm font-medium text-slate-700">Medicine *</label>
@@ -216,6 +261,41 @@
     </form>
 </x-modal>
 
+<x-modal name="record-vitals" max-width="lg">
+    <x-modal-header title="Record Vitals" :subtitle="'Patient: ' . ($record->patient?->fullName() ?? $record->patient_id)" />
+    <form method="post" action="/medical-records/{{ $record->medical_record_id }}/vital-signs" class="space-y-4 px-6 py-5">
+        @csrf
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-slate-700">Temperature (°C)</label>
+                <input name="temperature" placeholder="e.g. 37.2" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+            </div>
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-slate-700">Blood Pressure</label>
+                <input name="blood_pressure" placeholder="e.g. 120/80" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+            </div>
+        </div>
+        <div class="grid grid-cols-3 gap-4">
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-slate-700">Heart Rate</label>
+                <input name="heart_rate" placeholder="e.g. 72" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+            </div>
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-slate-700">Height (cm)</label>
+                <input name="height" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+            </div>
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-slate-700">Weight (kg)</label>
+                <input name="weight" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+            </div>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+            <x-button variant="secondary" type="button" x-on:click="show = false">Cancel</x-button>
+            <x-button variant="primary" type="submit">Save Vitals</x-button>
+        </div>
+    </form>
+</x-modal>
+
 <x-modal name="generate-report" max-width="lg">
     <x-modal-header title="Generate Report" :subtitle="'Patient: ' . ($record->patient?->fullName() ?? $record->patient_id)" />
     <form method="post" action="/medical-records/{{ $record->medical_record_id }}/reports" class="space-y-4 px-6 py-5">
@@ -239,6 +319,37 @@
         <div class="flex justify-end gap-2 pt-2">
             <x-button variant="secondary" type="button" x-on:click="show = false">Cancel</x-button>
             <x-button variant="primary" type="submit">Generate Report</x-button>
+        </div>
+    </form>
+</x-modal>
+
+<x-modal name="add-procedure" max-width="lg">
+    <x-modal-header title="Add Procedure" :subtitle="'Patient: ' . ($record->patient?->fullName() ?? $record->patient_id)" />
+    <form method="post" action="/medical-records/{{ $record->medical_record_id }}/procedures" class="space-y-4 px-6 py-5">
+        @csrf
+        <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-700">Procedure Name *</label>
+            <input name="procedure_name" required placeholder="e.g. Wound Dressing, Suturing, X-Ray"
+                   class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+        </div>
+        <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-700">Procedure Date</label>
+            <input type="date" name="procedure_date" value="{{ now()->toDateString() }}"
+                   class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+        </div>
+        <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-700">Details</label>
+            <textarea name="procedure_details" rows="3" placeholder="What was performed..."
+                      class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"></textarea>
+        </div>
+        <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-700">Outcome</label>
+            <textarea name="outcome" rows="2" placeholder="Result / patient response..."
+                      class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"></textarea>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+            <x-button variant="secondary" type="button" x-on:click="show = false">Cancel</x-button>
+            <x-button variant="primary" type="submit">Save Procedure</x-button>
         </div>
     </form>
 </x-modal>

@@ -27,7 +27,7 @@ $reportUrls = [
     <x-stat-card label="Monthly Revenue" value="${{ number_format($stats['revenue'], 0) }}" icon="card" icon-color="green" :badge="$kpiBadges['revenue']" :report-url="$reportUrls['revenue']" />
 </div>
 
-<div class="mb-5 rounded-xl border border-slate-200 bg-white p-5">
+<div class="mb-5 shadow-paper rounded-xl border border-manila/60 bg-paper-card p-5">
     <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
         <div>
             <p class="font-semibold text-slate-900">Appointments &amp; Lab Orders</p>
@@ -53,7 +53,7 @@ $reportUrls = [
 </div>
 
 <div class="mb-5 grid grid-cols-1 items-start gap-5 lg:grid-cols-3">
-    <div class="rounded-xl border border-slate-200 bg-white p-5">
+    <div class="shadow-paper rounded-xl border border-manila/60 bg-paper-card p-5">
         <p class="mb-4 font-semibold text-slate-900">Lab Test Breakdown</p>
         @php
             $labTotal = max(1, collect($labBreakdown)->sum('value'));
@@ -83,7 +83,7 @@ $reportUrls = [
         </div>
     </div>
 
-    <div class="rounded-xl border border-slate-200 bg-white p-5">
+    <div class="shadow-paper rounded-xl border border-manila/60 bg-paper-card p-5">
         <p class="mb-4 font-semibold text-slate-900">Next Appointment</p>
         @if($nextAppointment)
             <div class="mb-4 flex items-center gap-3">
@@ -107,7 +107,7 @@ $reportUrls = [
         @endif
     </div>
 
-    <div class="rounded-xl border border-slate-200 bg-white p-5">
+    <div class="shadow-paper rounded-xl border border-manila/60 bg-paper-card p-5">
         <p class="mb-4 font-semibold text-slate-900">Pending Lab Results</p>
         <div class="space-y-3">
             @forelse($pendingLabResults as $r)
@@ -126,7 +126,7 @@ $reportUrls = [
 </div>
 
 <div class="mb-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
-    <div class="rounded-xl border border-slate-200 bg-white p-5">
+    <div class="shadow-paper rounded-xl border border-manila/60 bg-paper-card p-5">
         <p class="mb-2 font-semibold text-slate-900">Completion Rate</p>
         <div class="flex items-center gap-2">
             <p class="text-3xl font-bold text-slate-900">{{ $completionRate }}%</p>
@@ -141,13 +141,13 @@ $reportUrls = [
         </div>
     </div>
 
-    <div class="rounded-xl border border-slate-200 bg-white p-5">
+    <div class="shadow-paper rounded-xl border border-manila/60 bg-paper-card p-5">
         <p class="mb-2 font-semibold text-slate-900">Patients Seen This Month</p>
         <p class="text-3xl font-bold text-slate-900">{{ number_format($patientsThisMonth) }}</p>
         <p class="mt-1 text-xs text-slate-400">Distinct patients with an appointment this month</p>
     </div>
 
-    <div class="rounded-xl border border-slate-200 bg-white p-5">
+    <div class="shadow-paper rounded-xl border border-manila/60 bg-paper-card p-5">
         <div class="flex items-start justify-between gap-2">
             <div>
                 <p class="mb-2 font-semibold text-slate-900">Earning</p>
@@ -161,7 +161,7 @@ $reportUrls = [
     </div>
 </div>
 
-<div class="mb-5 rounded-xl border border-slate-200 bg-white p-5" x-data="{ view: 'chart' }">
+<div class="mb-5 shadow-paper rounded-xl border border-manila/60 bg-paper-card p-5" x-data="{ view: 'chart' }">
     <div class="mb-3 flex items-center justify-between">
         <p class="font-semibold text-slate-900">Department Overview</p>
         <div class="flex rounded-lg border border-slate-200 p-0.5 text-xs font-medium">
@@ -170,7 +170,7 @@ $reportUrls = [
         </div>
     </div>
 
-    <div x-show="view === 'chart'">
+    <div x-show="view === 'chart'" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
         @if(count($departments))
             @php $maxDeptValue = max(1, collect($departments)->flatMap(fn ($d) => [$d['staff_count'], $d['available_rooms']])->max()); @endphp
             <div class="mb-3 flex items-center gap-4 text-xs text-slate-500">
@@ -203,7 +203,7 @@ $reportUrls = [
         @endif
     </div>
 
-    <div x-show="view === 'table'" style="display:none">
+    <div x-show="view === 'table'" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" style="display:none">
         <table class="w-full text-sm">
             <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
                 <th class="pb-2">Department Name</th><th class="pb-2">Staff Count</th><th class="pb-2">Available Rooms</th>
@@ -224,7 +224,7 @@ $reportUrls = [
 </div>
 
 <div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-3">
-    <div class="rounded-xl border border-slate-200 bg-white p-5 lg:col-span-2">
+    <div class="shadow-paper rounded-xl border border-manila/60 bg-paper-card p-5 lg:col-span-2">
         <p class="mb-3 font-semibold text-slate-900">Today's Hospital Schedule</p>
         <table class="w-full text-sm">
             <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
@@ -245,7 +245,7 @@ $reportUrls = [
         </table>
     </div>
 
-    <div class="rounded-xl border border-slate-200 bg-white p-5">
+    <div class="shadow-paper rounded-xl border border-manila/60 bg-paper-card p-5">
         <p class="mb-3 font-semibold text-slate-900">Operations Summary</p>
         <dl class="space-y-3 text-sm">
             <div class="flex justify-between"><dt class="text-slate-500">Active Doctors Today</dt><dd class="font-medium text-slate-900">{{ $operations['active_doctors'] }}</dd></div>

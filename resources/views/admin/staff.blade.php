@@ -8,129 +8,124 @@
             body.innerHTML = await res.text();
             window.Alpine.initTree(body);
             window.dispatchEvent(new CustomEvent('open-modal', { detail: 'staff-modal' }));
-        },
-        roleFilter: 'all',
-        statusFilter: 'all',
-        selected: [],
-        rows: @js($rows->map(fn ($r) => ['id' => $r->staff_id, 'role' => $r->role, 'status' => $r->status])),
-        get visibleIds() {
-            return this.rows
-                .filter(r => (this.roleFilter === 'all' || r.role === this.roleFilter) && (this.statusFilter === 'all' || r.status === this.statusFilter))
-                .map(r => r.id);
-        },
-        get allVisibleSelected() {
-            return this.visibleIds.length > 0 && this.visibleIds.every(id => this.selected.includes(id));
-        },
-        toggleAll() {
-            this.selected = this.allVisibleSelected
-                ? this.selected.filter(id => !this.visibleIds.includes(id))
-                : [...new Set([...this.selected, ...this.visibleIds])];
-        },
-        toggleRow(id) {
-            this.selected = this.selected.includes(id) ? this.selected.filter(x => x !== id) : [...this.selected, id];
-        },
-        rowVisible(role, status) {
-            return (this.roleFilter === 'all' || role === this.roleFilter) && (this.statusFilter === 'all' || status === this.statusFilter);
-        },
-        async deactivateSelected() {
-            if (! confirm(`Deactivate ${this.selected.length} staff member(s)? They will no longer be able to log in.`)) return;
-            const token = document.querySelector('meta[name=csrf-token]').content;
-            for (const id of this.selected) {
-                await fetch(`/staff/${id}/deactivate`, { method: 'POST', headers: { 'X-CSRF-TOKEN': token, 'X-Requested-With': 'XMLHttpRequest' } });
-            }
-            window.location.reload();
         }
      }"
      x-init="@if($errors->any() && old('_modal_target'))openModal(@js(old('_modal_target')))@endif"
 >
-    <x-page-header title="Staff Management">
+    <div class="mb-5 flex flex-wrap gap-1.5">
+        @can('staff.manage')
+            <a href="/staff" class="rounded-lg bg-paper-card px-3.5 py-2 text-sm font-medium text-slate-900 shadow-sm">Staff List</a>
+        @endcan
+        @can('schedule.view')
+            <a href="/schedule" class="rounded-lg px-3.5 py-2 text-sm font-medium text-slate-500 hover:text-slate-700">Staff Schedule / Shift</a>
+        @endcan
+    </div>
+
+    <x-page-header title="Staff Management" :subtitle="$rows->total() . ' staff members registered'">
         <x-slot:actions>
+            <a href="/staff/export?{{ http_build_query(['q' => $q, 'role' => $role, 'status' => $status]) }}"
+               class="inline-flex items-center gap-1.5 rounded-lg border border-manila/60 bg-paper-card px-3.5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                <x-icon name="download" class="h-4 w-4" /> Export
+            </a>
             @can('staff.manage')
                 <x-button variant="primary" x-on:click="openModal('/staff/create')"><x-icon name="plus" class="h-4 w-4" /> Add Staff</x-button>
             @endcan
         </x-slot:actions>
     </x-page-header>
 
-    <div class="mb-4 flex flex-wrap items-center gap-2">
-        <form method="get" action="/staff" class="relative max-w-md flex-1">
+    <form method="get" action="/staff" class="mb-4 shadow-paper rounded-xl border border-manila/60 bg-paper-card p-4">
+        <div class="relative mb-3">
             <x-icon name="search" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-            <input type="text" name="q" value="{{ $q }}" placeholder="Search by name or staff ID..."
-                   class="w-full rounded-lg border border-slate-200 bg-white py-2.5 pl-9 pr-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
-        </form>
+            <input type="text" name="q" value="{{ $q }}" placeholder="Search by staff ID, name, email, role, or department..."
+                   class="w-full rounded-lg border border-manila/60 bg-paper-card py-2.5 pl-9 pr-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+        </div>
 
-        <select x-model="roleFilter" class="rounded-lg border border-slate-200 bg-white py-2.5 px-3 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
-            <option value="all">All Roles</option>
-            @foreach(config('permissions.roles') as $value => $label)
-                <option value="{{ $value }}">{{ $label }}</option>
+        {{-- These two hidden fields must stay above both button rows: a clicked
+             button shares its `name` with the other row's preserving hidden
+             field, and browsers submit duplicate names in DOM order — PHP's
+             $_GET keeps the last one, so the click has to come after. --}}
+        <input type="hidden" name="role" value="{{ $role }}">
+        <input type="hidden" name="status" value="{{ $status }}">
+
+        <div class="mb-2 flex flex-wrap items-center gap-2">
+            <span class="text-xs font-medium text-slate-400">Role:</span>
+            @foreach(['' => 'All'] + collect(config('permissions.roles'))->except('super_admin')->all() as $value => $label)
+                <button type="submit" name="role" value="{{ $value }}"
+                        class="rounded-full px-3 py-1.5 text-sm font-medium {{ (string) $role === (string) $value ? 'bg-blue-600 text-white shadow-well' : 'bg-paper-card text-slate-600 border border-manila/60 shadow-emboss' }}">{{ $label }}</button>
             @endforeach
-        </select>
+        </div>
 
-        <select x-model="statusFilter" class="rounded-lg border border-slate-200 bg-white py-2.5 px-3 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
-            <option value="all">All Statuses</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-        </select>
+        <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs font-medium text-slate-400">Status:</span>
+            @foreach(['' => 'All', 'active' => 'Active', 'inactive' => 'Inactive'] as $value => $label)
+                <button type="submit" name="status" value="{{ $value }}"
+                        class="rounded-full px-3 py-1.5 text-sm font-medium {{ (string) $status === (string) $value ? 'bg-blue-600 text-white shadow-well' : 'bg-paper-card text-slate-600 border border-manila/60 shadow-emboss' }}">{{ $label }}</button>
+            @endforeach
+        </div>
+    </form>
 
-        @can('staff.manage')
-            <button type="button" x-show="selected.length > 0" x-on:click="deactivateSelected()"
-                    class="rounded-lg border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm font-medium text-red-600 hover:bg-red-100"
-                    style="display: none;">
-                Deactivate Selected (<span x-text="selected.length"></span>)
-            </button>
-        @endcan
-    </div>
-
-    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+    <div class="overflow-x-auto rounded-xl border border-manila/60 bg-paper-card">
         <table class="w-full text-sm">
             <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
-                <th class="w-10 px-4 py-3">
-                    <input type="checkbox" :checked="allVisibleSelected" x-on:change="toggleAll()" class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
-                </th>
-                <th class="px-4 py-3">ID</th><th class="px-4 py-3">Name</th><th class="px-4 py-3">Role</th>
-                <th class="px-4 py-3">Email</th><th class="px-4 py-3">Status</th><th class="px-4 py-3 text-right">Actions</th>
+                <th class="px-4 py-3">Staff ID</th>
+                <th class="px-4 py-3">Staff Name</th>
+                <th class="px-4 py-3">Email</th>
+                <th class="px-4 py-3">Role</th>
+                <th class="px-4 py-3">Department</th>
+                <th class="px-4 py-3">Specialization / Unit</th>
+                <th class="px-4 py-3">Account Status</th>
+                <th class="px-4 py-3">Employment Status</th>
+                <th class="px-4 py-3 text-right">Actions</th>
             </tr></thead>
             <tbody>
             @forelse($rows as $r)
-                <tr class="border-b border-slate-50 last:border-0" x-show="rowVisible(@js($r->role), @js($r->status))">
-                    <td class="px-4 py-3">
-                        <input type="checkbox" :checked="selected.includes(@js($r->staff_id))" x-on:change="toggleRow(@js($r->staff_id))" class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
-                    </td>
+                <tr class="border-b border-slate-50 last:border-0 hover:bg-slate-50/50">
                     <td class="px-4 py-3 font-medium text-blue-600">{{ $r->staff_id }}</td>
-                    <td class="px-4 py-3 text-slate-900">{{ $r->full_name }}</td>
-                    <td class="px-4 py-3 text-slate-600">{{ $r->role ? ucwords(str_replace('_', ' ', $r->role)) : '—' }}</td>
+                    <td class="px-4 py-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-700">
+                                {{ strtoupper(substr($r->first_name, 0, 1) . substr($r->last_name, 0, 1)) }}
+                            </div>
+                            <div>
+                                <div class="font-medium text-slate-900">{{ $r->full_name }}</div>
+                                @if($r->title)<div class="text-xs text-slate-400">{{ $r->title }}</div>@endif
+                            </div>
+                        </div>
+                    </td>
                     <td class="px-4 py-3 text-slate-600">{{ $r->email ?: '—' }}</td>
+                    <td class="px-4 py-3">@if($r->role)<x-badge :status="$r->role" />@else —@endif</td>
+                    <td class="px-4 py-3 text-slate-600">{{ $r->department_name ?: '—' }}</td>
+                    <td class="px-4 py-3 text-slate-600">{{ $r->specialization_unit ?: '—' }}</td>
                     <td class="px-4 py-3"><x-badge :status="$r->status" /></td>
-                    <td class="px-4 py-3 text-right">
-                        @can('staff.manage')
-                            <x-row-actions>
-                                <button type="button" x-on:click="openModal('/staff/{{ $r->staff_id }}/edit')" class="block w-full px-3 py-1.5 text-left text-sm text-slate-700 hover:bg-slate-50">Edit</button>
+                    <td class="px-4 py-3 text-slate-600">{{ $r->employment_type ? ucwords(str_replace('_', ' ', $r->employment_type)) : '—' }}</td>
+                    <td class="px-4 py-3">
+                        <div class="flex justify-end items-center gap-3">
+                            <button type="button" x-on:click="openModal('/staff/{{ $r->staff_id }}')" title="View" class="text-slate-400 hover:text-blue-600">
+                                <x-icon name="eye" class="h-4 w-4" />
+                            </button>
+                            @can('staff.manage')
+                                <button type="button" x-on:click="openModal('/staff/{{ $r->staff_id }}/edit')" title="Edit" class="text-slate-400 hover:text-blue-600">
+                                    <x-icon name="pencil" class="h-4 w-4" />
+                                </button>
                                 @if($r->status === 'active')
                                     <form method="post" action="/staff/{{ $r->staff_id }}/deactivate" onsubmit="return confirm('Deactivate {{ $r->full_name }}? They will no longer be able to log in.')">
                                         @csrf
-                                        <button type="submit" class="block w-full px-3 py-1.5 text-left text-sm text-red-600 hover:bg-red-50">Deactivate</button>
+                                        <button type="submit" class="text-sm font-medium text-red-600 hover:underline">Deactivate</button>
                                     </form>
                                 @else
                                     <form method="post" action="/staff/{{ $r->staff_id }}/reactivate">
                                         @csrf
-                                        <button type="submit" class="block w-full px-3 py-1.5 text-left text-sm text-green-600 hover:bg-green-50">Reactivate</button>
+                                        <button type="submit" class="text-sm font-medium text-green-600 hover:underline">Reactivate</button>
                                     </form>
                                 @endif
-                            </x-row-actions>
-                        @endcan
+                            @endcan
+                        </div>
                     </td>
                 </tr>
             @empty
-                <tr><td colspan="7" class="px-4 py-8 text-center text-slate-400">No staff found.</td></tr>
+                <tr><td colspan="9" class="px-4 py-8 text-center text-slate-400">No staff found.</td></tr>
             @endforelse
             </tbody>
-            @if($rows->total())
-                <tfoot class="border-t border-slate-100 bg-slate-50/60">
-                    <tr>
-                        <td colspan="6" class="px-4 py-2.5 text-sm font-medium text-slate-600">Total Staff</td>
-                        <td class="px-4 py-2.5 text-right text-sm font-semibold text-slate-900">{{ $rows->total() }}</td>
-                    </tr>
-                </tfoot>
-            @endif
         </table>
         <x-pagination :paginator="$rows" />
     </div>

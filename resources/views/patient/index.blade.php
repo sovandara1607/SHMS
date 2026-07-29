@@ -29,13 +29,13 @@ $filters = ['all' => 'All', 'active' => 'Active', 'admitted' => 'Admitted', 'icu
         <form method="get" action="/patients" class="relative flex-1 min-w-[240px]">
             <x-icon name="search" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <input type="text" name="q" value="{{ $q }}" placeholder="Search by name or patient ID..."
-                   class="w-full rounded-lg border border-slate-200 bg-white py-2.5 pl-9 pr-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                   class="w-full rounded-lg border border-manila/60 bg-paper-card py-2.5 pl-9 pr-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
             <input type="hidden" name="status" value="{{ $status }}">
         </form>
         <div class="flex flex-wrap gap-1.5">
             @foreach($filters as $value => $label)
                 <a href="/patients?status={{ $value }}&q={{ urlencode($q) }}"
-                   class="rounded-lg px-3 py-2 text-sm font-medium {{ $status === $value ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 border border-slate-200' }}">
+                   class="rounded-lg px-3 py-2 text-sm font-medium {{ $status === $value ? 'bg-blue-600 text-white shadow-well' : 'bg-paper-card text-slate-600 border border-manila/60 shadow-emboss' }}">
                     {{ $label }}
                 </a>
             @endforeach
@@ -43,7 +43,7 @@ $filters = ['all' => 'All', 'active' => 'Active', 'admitted' => 'Admitted', 'icu
     </div>
 
     {{-- Mobile: stacked cards (the 8-column table is unusable at phone widths) --}}
-    <div class="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white sm:hidden">
+    <div class="divide-y divide-slate-100 rounded-xl border border-manila/60 bg-paper-card sm:hidden">
         @forelse($patients as $p)
             @php($age = $p->date_of_birth ? \Carbon\Carbon::parse($p->date_of_birth)->age : null)
             <div class="p-4">
@@ -62,7 +62,7 @@ $filters = ['all' => 'All', 'active' => 'Active', 'admitted' => 'Admitted', 'icu
                 <div class="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 text-sm">
                     <div><span class="text-slate-400">Gender</span> <span class="text-slate-700">{{ ucfirst($p->gender ?? '—') }}</span></div>
                     <div><span class="text-slate-400">Blood</span> <span class="font-semibold text-red-600">{{ $p->blood_type ?: '—' }}</span></div>
-                    <div class="col-span-2"><span class="text-slate-400">DOB</span> <span class="text-slate-700">{{ $p->date_of_birth ?? '—' }}{{ $age !== null ? " ($age yrs)" : '' }}</span></div>
+                    <div class="col-span-2"><span class="text-slate-400">DOB</span> <span class="text-slate-700">{{ $p->date_of_birth ?? '—' }}</span>{{ $age !== null ? " · {$age} yrs" : '' }}</div>
                     <div class="col-span-2"><span class="text-slate-400">Phone</span> <span class="text-slate-700">{{ $p->phone_number ?: '—' }}</span></div>
                 </div>
                 <div class="mt-3 flex items-center justify-end gap-4 border-t border-slate-50 pt-3">
@@ -83,7 +83,7 @@ $filters = ['all' => 'All', 'active' => 'Active', 'admitted' => 'Admitted', 'icu
     </div>
 
     {{-- sm+: full table --}}
-    <div class="hidden overflow-x-auto rounded-xl border border-slate-200 bg-white sm:block">
+    <div class="hidden overflow-x-auto rounded-xl border border-manila/60 bg-paper-card sm:block">
         <table class="w-full text-sm">
             <thead>
                 <tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
@@ -93,6 +93,7 @@ $filters = ['all' => 'All', 'active' => 'Active', 'admitted' => 'Admitted', 'icu
                     <th class="px-4 py-3">Date of Birth / Age</th>
                     <th class="px-4 py-3">Phone</th>
                     <th class="px-4 py-3">Blood</th>
+                    <th class="px-4 py-3">Insurance</th>
                     <th class="px-4 py-3">Status</th>
                     <th class="px-4 py-3 text-right">Actions</th>
                 </tr>
@@ -114,9 +115,15 @@ $filters = ['all' => 'All', 'active' => 'Active', 'admitted' => 'Admitted', 'icu
                         </div>
                     </td>
                     <td class="px-4 py-3 text-slate-600">{{ ucfirst($p->gender ?? '—') }}</td>
-                    <td class="px-4 py-3 text-slate-600">{{ $p->date_of_birth ?? '—' }}{{ $age !== null ? " ($age yrs)" : '' }}</td>
+                    <td class="px-4 py-3">
+                        <div class="text-slate-900">{{ $p->date_of_birth ?? '—' }}</div>
+                        @if($age !== null)
+                            <div class="text-xs text-slate-400">{{ $age }} yrs</div>
+                        @endif
+                    </td>
                     <td class="px-4 py-3 text-slate-600">{{ $p->phone_number ?: '—' }}</td>
                     <td class="px-4 py-3 font-semibold text-red-600">{{ $p->blood_type ?: '—' }}</td>
+                    <td class="px-4 py-3 text-slate-600">{{ $p->insurance_provider ?: '—' }}</td>
                     <td class="px-4 py-3"><x-badge :status="$p->patient_status" /></td>
                     <td class="px-4 py-3">
                         <div class="flex justify-end gap-2">
@@ -132,7 +139,7 @@ $filters = ['all' => 'All', 'active' => 'Active', 'admitted' => 'Admitted', 'icu
                     </td>
                 </tr>
             @empty
-                <tr><td colspan="8" class="px-4 py-8 text-center text-slate-400">No patients found.</td></tr>
+                <tr><td colspan="9" class="px-4 py-8 text-center text-slate-400">No patients found.</td></tr>
             @endforelse
             </tbody>
         </table>

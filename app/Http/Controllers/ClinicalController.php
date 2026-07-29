@@ -52,4 +52,37 @@ class ClinicalController extends Controller
 
         return redirect('/vital-signs')->with('success', 'Vital signs recorded.');
     }
+
+    /**
+     * Vitals recorded from within a medical record's detail view — like
+     * PrescriptionController/MedicalReportController/ProcedureController,
+     * this always hangs off the record it's documenting.
+     */
+    public function storeForRecord(Request $request, string $recordId)
+    {
+        $data = $request->validate([
+            'temperature'    => 'nullable|numeric',
+            'blood_pressure' => 'nullable|string|max:20',
+            'heart_rate'     => 'nullable|integer',
+            'height'         => 'nullable|numeric',
+            'weight'         => 'nullable|numeric',
+        ]);
+        $data['recorded_by'] = Auth::user()->staff_id;
+
+        $response = $this->centralService->createVitalSignForRecord($recordId, $data);
+        abort_if($response->status() === 404, 404);
+        if ($response->status() === 422) {
+            return back()->withErrors($response->json('errors', []))->withInput();
+        }
+        $response->throw();
+
+        $result = $response->json();
+        $this->audit->log('vital_signs.create', 'vital_signs', $result['vital_sign_id'], [
+            'medical_record_id' => $recordId,
+        ]);
+
+        return redirect('/medical-records')
+            ->with('success', 'Vital signs recorded.')
+            ->with('reopen_record', $recordId);
+    }
 }

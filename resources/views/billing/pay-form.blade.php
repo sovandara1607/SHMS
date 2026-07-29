@@ -14,7 +14,7 @@
     <div class="mb-4 grid grid-cols-3 gap-2">
         @foreach(['cash' => 'Cash', 'card' => 'Card', 'online' => 'Online'] as $value => $label)
             <button type="button" @click="method = '{{ $value }}'"
-                    :class="method === '{{ $value }}' ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 border border-slate-200'"
+                    :class="method === '{{ $value }}' ? 'bg-blue-600 text-white shadow-well' : 'bg-paper-card text-slate-600 border border-manila/60 shadow-emboss'"
                     class="rounded-lg px-3 py-2 text-sm font-medium">{{ $label }}</button>
         @endforeach
     </div>

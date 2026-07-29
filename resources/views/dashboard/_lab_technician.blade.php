@@ -19,8 +19,13 @@
 </div>
 
 <div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-2">
-    <div class="rounded-xl border border-slate-200 bg-white p-5">
-        <p class="mb-3 font-semibold text-slate-900">Active Lab Queue</p>
+    <div class="shadow-paper rounded-xl border border-manila/60 bg-paper-card p-5">
+        <div class="mb-3 flex items-center justify-between">
+            <p class="font-semibold text-slate-900">Active Lab Queue</p>
+            @can('lab_order.view')
+                <a href="/lab-orders" class="text-sm font-medium text-blue-600 hover:underline">View All &#8599;</a>
+            @endcan
+        </div>
         <div class="space-y-3">
             @forelse($activeQueue as $q)
                 <div class="flex items-center justify-between border-b border-slate-50 pb-2 last:border-0">
@@ -36,8 +41,13 @@
         </div>
     </div>
 
-    <div class="rounded-xl border border-slate-200 bg-white p-5">
-        <p class="mb-3 font-semibold text-slate-900">Equipment Status</p>
+    <div class="shadow-paper rounded-xl border border-manila/60 bg-paper-card p-5">
+        <div class="mb-3 flex items-center justify-between">
+            <p class="font-semibold text-slate-900">Equipment Status</p>
+            @can('lab_equipment.view')
+                <a href="/lab-equipment" class="text-sm font-medium text-blue-600 hover:underline">View All &#8599;</a>
+            @endcan
+        </div>
         <div class="space-y-3">
             @forelse($equipmentStatus as $e)
                 <div class="flex items-center justify-between border-b border-slate-50 pb-2 last:border-0">

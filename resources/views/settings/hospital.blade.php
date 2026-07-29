@@ -8,7 +8,7 @@
     @method('PUT')
 
     <div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-2">
-        <div class="rounded-xl border border-slate-200 bg-white p-5">
+        <div class="shadow-paper rounded-xl border border-manila/60 bg-paper-card p-5">
             <p class="mb-4 font-semibold text-slate-900">Hospital Information</p>
             <div class="space-y-4">
                 <div>
@@ -53,7 +53,7 @@
         </div>
 
         <div class="space-y-5">
-            <div class="rounded-xl border border-slate-200 bg-white p-5">
+            <div class="shadow-paper rounded-xl border border-manila/60 bg-paper-card p-5">
                 <p class="mb-4 font-semibold text-slate-900">Operating Hours</p>
                 <div class="space-y-3">
                     <div class="flex items-center justify-between gap-4">
@@ -75,7 +75,7 @@
                 </div>
             </div>
 
-            <div class="rounded-xl border border-slate-200 bg-white p-5">
+            <div class="shadow-paper rounded-xl border border-manila/60 bg-paper-card p-5">
                 <p class="mb-4 font-semibold text-slate-900">Department Capacity</p>
                 <div class="space-y-3">
                     <div class="flex items-center justify-between gap-4">

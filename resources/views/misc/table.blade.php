@@ -7,11 +7,11 @@
     <form method="get" action="{{ $searchAction }}" class="relative mb-4 max-w-md">
         <x-icon name="search" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
         <input type="text" name="q" value="{{ $search ?? '' }}" placeholder="Search..."
-               class="w-full rounded-lg border border-slate-200 bg-white py-2.5 pl-9 pr-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+               class="w-full rounded-lg border border-manila/60 bg-paper-card py-2.5 pl-9 pr-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
     </form>
 @endif
 
-<div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+<div class="overflow-x-auto rounded-xl border border-manila/60 bg-paper-card">
     <table class="w-full text-sm">
         <thead>
             <tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">

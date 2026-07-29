@@ -10,7 +10,7 @@
         </x-slot:actions>
     </x-page-header>
 
-    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+    <div class="overflow-x-auto rounded-xl border border-manila/60 bg-paper-card">
         <table class="w-full text-sm">
             <thead>
                 <tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
@@ -44,8 +44,14 @@
         <x-pagination :paginator="$vitals" />
     </div>
 
-    <div x-show="recordOpen" style="display: none;" class="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/40 px-4">
-        <div x-on:click.outside="recordOpen = false" class="w-full max-w-lg rounded-xl bg-white shadow-xl">
+    <div x-show="recordOpen"
+         x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+         x-transition:leave="ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+         style="display: none;" class="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/40 px-4">
+        <div x-on:click.outside="recordOpen = false"
+             x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="ease-in duration-150" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+             class="w-full max-w-lg rounded-xl bg-paper-card shadow-xl">
             <div class="flex items-center justify-between border-b border-slate-100 px-6 py-4">
                 <p class="font-semibold text-slate-900">Record Vitals</p>
                 <button type="button" x-on:click="recordOpen = false" class="text-slate-400 hover:text-slate-600">

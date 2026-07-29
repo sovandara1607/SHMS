@@ -31,14 +31,14 @@
             <input type="hidden" name="date" value="{{ $date }}">
             <x-icon name="search" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <input type="text" name="q" value="{{ $q }}" placeholder="Search by medical record ID, patient ID, patient name, or doctor name..."
-                   class="w-full rounded-lg border border-slate-200 bg-white py-2.5 pl-9 pr-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                   class="w-full rounded-lg border border-manila/60 bg-paper-card py-2.5 pl-9 pr-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
         </form>
         @if($q || $doctorId || $date)
-            <a href="/medical-records" title="Clear filters" class="rounded-lg border border-slate-200 bg-white p-2.5 text-slate-400 hover:text-slate-600">
+            <a href="/medical-records" title="Clear filters" class="rounded-lg border border-manila/60 bg-paper-card p-2.5 text-slate-400 hover:text-slate-600">
                 <x-icon name="x" class="h-4 w-4" />
             </a>
         @endif
-        <select onchange="location.href='/medical-records?q={{ urlencode($q) }}&date={{ urlencode($date ?? '') }}&doctor_id='+this.value" class="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm">
+        <select onchange="location.href='/medical-records?q={{ urlencode($q) }}&date={{ urlencode($date ?? '') }}&doctor_id='+this.value" class="rounded-lg border border-manila/60 bg-paper-card px-3 py-2.5 text-sm">
             <option value="">All Doctors</option>
             @foreach($doctors as $d)
                 <option value="{{ $d->doctor_id }}" @selected($doctorId === $d->doctor_id)>{{ $d->name() }}</option>
@@ -46,10 +46,10 @@
         </select>
         <input type="date" value="{{ $date }}"
                onchange="location.href='/medical-records?q={{ urlencode($q) }}&doctor_id={{ urlencode($doctorId ?? '') }}&date='+this.value"
-               class="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm">
+               class="rounded-lg border border-manila/60 bg-paper-card px-3 py-2.5 text-sm">
     </div>
 
-    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+    <div class="overflow-x-auto rounded-xl border border-manila/60 bg-paper-card">
         <table class="w-full text-sm">
             <thead>
                 <tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">

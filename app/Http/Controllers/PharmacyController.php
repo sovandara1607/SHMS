@@ -58,6 +58,45 @@ class PharmacyController extends Controller
         return redirect('/medicines')->with('success', "Medicine {$medicine['medicine_id']} added.");
     }
 
+    public function showMedicine(string $id)
+    {
+        $response = $this->centralService->getMedicine($id);
+        abort_if($response->status() === 404, 404);
+        $medicine = (object) $response->throw()->json();
+
+        return view('pharmacy.medicine-show', ['medicine' => $medicine]);
+    }
+
+    public function editMedicine(string $id)
+    {
+        $response = $this->centralService->getMedicine($id);
+        abort_if($response->status() === 404, 404);
+        $medicine = (object) $response->throw()->json();
+
+        return view('pharmacy.medicine-form', ['medicine' => $medicine, 'mode' => 'edit']);
+    }
+
+    public function updateMedicine(Request $request, string $id)
+    {
+        $data = $request->validate([
+            'medicine_name' => 'required|string|max:100',
+            'medicine_type' => 'nullable|string|max:50',
+            'manufacturer'  => 'nullable|string|max:100',
+            'unit_price'    => 'nullable|numeric',
+            'stock_quantity' => 'nullable|integer',
+            'status'        => 'nullable|in:available,unavailable',
+        ]);
+
+        $response = $this->centralService->updateMedicine($id, $data);
+        abort_if($response->status() === 404, 404);
+        $response->throw();
+
+        Cache::forget('medicine:lowstock');
+        $this->audit->log('medicine.update', 'medicine', $id);
+
+        return redirect('/medicines')->with('success', 'Medicine updated.');
+    }
+
     public function batches()
     {
         $body = $this->centralService->listMedicineBatches()->throw()->json();
@@ -67,12 +106,15 @@ class PharmacyController extends Controller
         return view('pharmacy.batches', compact('batches', 'expiring'));
     }
 
-    public function createBatch()
+    public function createBatch(Request $request)
     {
         $medicines = collect($this->centralService->listAllMedicines()->throw()->json())
             ->map(fn (array $m) => (object) $m);
 
-        return view('pharmacy.batch-form', ['medicines' => $medicines]);
+        return view('pharmacy.batch-form', [
+            'medicines' => $medicines,
+            'lockedMedicineId' => $request->query('medicine_id'),
+        ]);
     }
 
     public function storeBatch(Request $request)

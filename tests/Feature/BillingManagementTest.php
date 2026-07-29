@@ -63,10 +63,10 @@ class BillingManagementTest extends TestCase
             '*/api/bills*' => Http::response([
                 'bills' => $this->listResponse([[
                     'bill_id' => 'BIL0001', 'patient_id' => 'PAT0001', 'bill_date' => '2026-07-26',
-                    'total_amount' => 100, 'status' => 'unpaid', 'patient_name' => 'John Doe', 'paid_amount' => 0,
+                    'total_amount' => 100, 'status' => 'unpaid', 'patient_name' => 'John Doe', 'paid_amount' => 0, 'item_count' => 1,
                 ]]),
                 'payments' => $this->listResponse([]),
-                'stats' => ['total_amount' => 100, 'unpaid' => 1, 'partially_paid' => 0, 'paid' => 0],
+                'stats' => ['total_amount' => 100, 'total_revenue' => 0, 'pending_amount' => 100, 'unpaid' => 1, 'partially_paid' => 0, 'paid' => 0],
             ]),
         ]);
 

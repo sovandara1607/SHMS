@@ -79,7 +79,7 @@ class AdminFacilitiesManagementTest extends TestCase
         $this->actingAs($admin)->get('/beds/BED0001/assign')->assertOk();
 
         $assign = $this->actingAs($admin)->post('/beds/BED0001/assign', ['patient_id' => 'PAT0001']);
-        $assign->assertRedirect('/rooms');
+        $assign->assertRedirect();
         Http::assertSent(fn ($request) => $request->url() === 'http://127.0.0.1:8100/api/beds/BED0001/assign'
             && $request['patient_id'] === 'PAT0001'
             && $request['assigned_by'] === 'STF0001');

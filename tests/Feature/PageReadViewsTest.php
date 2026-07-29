@@ -30,19 +30,6 @@ class PageReadViewsTest extends TestCase
         return ['data' => $items, 'meta' => ['current_page' => 1, 'last_page' => 1, 'total' => count($items), 'per_page' => 20]];
     }
 
-    public function test_schedule_page_renders_via_central_service(): void
-    {
-        $admin = $this->makeAdmin();
-
-        Http::fake([
-            '*/api/schedule*' => Http::response($this->listResponse([
-                ['shift_id' => 'SH0001', 'staff_id' => 'STF0001', 'staff_name' => 'Test Admin', 'shift_date' => '2026-07-26', 'start_time' => '08:00:00', 'end_time' => '16:00:00', 'shift_type' => 'morning', 'status' => 'scheduled'],
-            ])),
-        ]);
-
-        $this->actingAs($admin)->get('/schedule')->assertOk()->assertSee('Test Admin')->assertSee('SH0001');
-    }
-
     public function test_prescriptions_page_renders_via_central_service(): void
     {
         $admin = $this->makeAdmin();

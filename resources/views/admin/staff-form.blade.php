@@ -57,6 +57,33 @@ $roleLabels = config('permissions.roles');
         </div>
     </div>
 
+    <p class="mt-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Job Details</p>
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-700">Job Title</label>
+            <input name="title" value="{{ old('title', $staff->title) }}" placeholder="e.g. Senior Physician"
+                   class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+        </div>
+        <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-700">Employment Status</label>
+            <select name="employment_type" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                <option value="">— select —</option>
+                @foreach(['full_time' => 'Full-time', 'part_time' => 'Part-time'] as $value => $label)
+                    <option value="{{ $value }}" @selected(old('employment_type', $staff->employment_type) === $value)>{{ $label }}</option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+    <div x-show="!['doctor', 'nurse'].includes(role)" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+        <label class="mb-1.5 block text-sm font-medium text-slate-700">Department</label>
+        <select name="department_id" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+            <option value="">— none —</option>
+            @foreach($departments as $d)
+                <option value="{{ $d->department_id }}" @selected(old('department_id', $staff->department_id) === $d->department_id)>{{ $d->department_name }}</option>
+            @endforeach
+        </select>
+    </div>
+
     <p class="mt-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Login &amp; Role</p>
     <div class="grid grid-cols-2 gap-4">
         <div>
@@ -95,7 +122,7 @@ $roleLabels = config('permissions.roles');
          license_number, ...) — all blocks are present in the DOM at once (only hidden via
          x-show), so two <select name="department_id"> would both be submitted and PHP
          silently keeps the last one, wiping out whichever role's value came first. --}}
-    <div x-show="role === 'doctor'" class="space-y-4 rounded-lg bg-slate-50 p-4">
+    <div x-show="role === 'doctor'" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="space-y-4 rounded-lg bg-slate-50 p-4">
         <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Doctor Details</p>
         <div class="grid grid-cols-2 gap-4">
             <div>
@@ -120,7 +147,7 @@ $roleLabels = config('permissions.roles');
         </div>
     </div>
 
-    <div x-show="role === 'nurse'" class="space-y-4 rounded-lg bg-slate-50 p-4">
+    <div x-show="role === 'nurse'" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="space-y-4 rounded-lg bg-slate-50 p-4">
         <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Nurse Details</p>
         <div class="grid grid-cols-2 gap-4">
             <div>
@@ -140,7 +167,7 @@ $roleLabels = config('permissions.roles');
         </div>
     </div>
 
-    <div x-show="role === 'receptionist'" class="space-y-4 rounded-lg bg-slate-50 p-4">
+    <div x-show="role === 'receptionist'" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="space-y-4 rounded-lg bg-slate-50 p-4">
         <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Receptionist Details</p>
         <div>
             <label class="mb-1.5 block text-sm font-medium text-slate-700">Counter Number</label>
@@ -149,7 +176,7 @@ $roleLabels = config('permissions.roles');
         </div>
     </div>
 
-    <div x-show="role === 'pharmacist'" class="space-y-4 rounded-lg bg-slate-50 p-4">
+    <div x-show="role === 'pharmacist'" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="space-y-4 rounded-lg bg-slate-50 p-4">
         <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Pharmacist Details</p>
         <div class="grid grid-cols-2 gap-4">
             <div>
@@ -165,7 +192,7 @@ $roleLabels = config('permissions.roles');
         </div>
     </div>
 
-    <div x-show="role === 'lab_technician'" class="space-y-4 rounded-lg bg-slate-50 p-4">
+    <div x-show="role === 'lab_technician'" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="space-y-4 rounded-lg bg-slate-50 p-4">
         <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Lab Technician Details</p>
         <div class="grid grid-cols-2 gap-4">
             <div>

@@ -4,7 +4,7 @@ $roleLabel = $roles[$selected] ?? $selected;
 $totalGranted = $isProtected ? collect($catalog)->flatMap(fn ($c) => array_keys($c))->count() : count($granted);
 @endphp
 
-<div id="permissions-panel" class="rounded-xl border border-slate-200 bg-white p-5">
+<div id="permissions-panel" class="shadow-paper rounded-xl border border-manila/60 bg-paper-card p-5">
     @if($isProtected)
         <div class="mb-4 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-800">
             <strong>Protected Role: {{ $roleLabel }}</strong> — {{ $roleLabel }} permissions cannot be fully modified and retains full system access.

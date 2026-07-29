@@ -1,11 +1,15 @@
 @php
 $mode = $mode ?? 'create';
 $batch = $batch ?? null;
+$lockedMedicineId = $lockedMedicineId ?? null;
+$lockedMedicine = $lockedMedicineId ? $medicines->firstWhere('medicine_id', $lockedMedicineId) : null;
 $action = $mode === 'create' ? '/medicine-batches' : '/medicine-batches/' . $batch->batch_id;
-$target = $mode === 'create' ? '/medicine-batches/create' : '/medicine-batches/' . $batch->batch_id . '/edit';
+$target = $mode === 'create'
+    ? ('/medicine-batches/create' . ($lockedMedicineId ? '?medicine_id=' . $lockedMedicineId : ''))
+    : '/medicine-batches/' . $batch->batch_id . '/edit';
 @endphp
 
-<x-modal-header :title="$mode === 'create' ? 'Add Batch' : 'Edit Batch'" />
+<x-modal-header :title="$mode === 'create' ? 'Add Batch' : 'Edit Batch'" :subtitle="$lockedMedicine?->medicine_name" />
 <form id="batch-form" method="post" action="{{ $action }}" class="space-y-4 px-6 py-5">
     @csrf
     @if($mode === 'edit')@method('PUT')@endif
@@ -14,12 +18,17 @@ $target = $mode === 'create' ? '/medicine-batches/create' : '/medicine-batches/'
     @if($mode === 'create')
         <div>
             <label class="mb-1.5 block text-sm font-medium text-slate-700">Medicine *</label>
-            <select name="medicine_id" required class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
-                <option value="">— select —</option>
-                @foreach($medicines as $m)
-                    <option value="{{ $m->medicine_id }}" @selected(old('medicine_id') === $m->medicine_id)>{{ $m->medicine_name }}</option>
-                @endforeach
-            </select>
+            @if($lockedMedicine)
+                <input type="hidden" name="medicine_id" value="{{ $lockedMedicine->medicine_id }}">
+                <p class="rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-700">{{ $lockedMedicine->medicine_name }}</p>
+            @else
+                <select name="medicine_id" required class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                    <option value="">— select —</option>
+                    @foreach($medicines as $m)
+                        <option value="{{ $m->medicine_id }}" @selected(old('medicine_id') === $m->medicine_id)>{{ $m->medicine_name }}</option>
+                    @endforeach
+                </select>
+            @endif
         </div>
     @endif
     <div>

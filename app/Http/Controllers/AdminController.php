@@ -27,19 +27,109 @@ class AdminController extends Controller
     public function staff(Request $request)
     {
         $q = trim((string) $request->query('q', ''));
-        $rows = DB::table('staff as s')
-            ->leftJoin('users as u', 'u.staff_id', '=', 's.staff_id')
-            ->when($q !== '', function ($query) use ($q) {
-                $like = '%' . $q . '%';
-                $query->where('s.staff_id', 'ilike', $like)
-                    ->orWhereRaw("(s.first_name||' '||s.last_name) ilike ?", [$like]);
-            })
-            ->orderByDesc('s.created_at')
-            ->selectRaw("s.staff_id, (s.first_name||' '||s.last_name) as full_name, u.role, u.email, s.status")
+        $role = $request->query('role');
+        $status = $request->query('status');
+
+        $rows = $this->staffQuery($q, $role, $status)
             ->paginate(20)
             ->withQueryString();
 
-        return view('admin.staff', ['rows' => $rows, 'q' => $q]);
+        return view('admin.staff', ['rows' => $rows, 'q' => $q, 'role' => $role, 'status' => $status]);
+    }
+
+    public function exportStaff(Request $request)
+    {
+        $q = trim((string) $request->query('q', ''));
+        $role = $request->query('role');
+        $status = $request->query('status');
+
+        $rows = $this->staffQuery($q, $role, $status)->get();
+
+        return response()->streamDownload(function () use ($rows) {
+            $out = fopen('php://output', 'w');
+            fputcsv($out, ['Staff ID', 'Name', 'Title', 'Email', 'Role', 'Department', 'Specialization / Unit', 'Account Status', 'Employment Status']);
+            foreach ($rows as $r) {
+                fputcsv($out, [
+                    $r->staff_id, $r->full_name, $r->title, $r->email,
+                    $r->role ? ucwords(str_replace('_', ' ', $r->role)) : '',
+                    $r->department_name, $r->specialization_unit, ucfirst($r->status),
+                    $r->employment_type ? ucwords(str_replace('_', ' ', $r->employment_type)) : '',
+                ]);
+            }
+            fclose($out);
+        }, 'staff-' . now()->format('Y-m-d') . '.csv', ['Content-Type' => 'text/csv']);
+    }
+
+    public function showStaff(string $id)
+    {
+        $row = $this->staffQuery('', null, null)->where('s.staff_id', $id)->first();
+        abort_if(! $row, 404);
+
+        return view('admin.staff-show', ['staff' => $row]);
+    }
+
+    private function staffQuery(string $q, ?string $role, ?string $status)
+    {
+        return DB::table('staff as s')
+            ->leftJoin('users as u', 'u.staff_id', '=', 's.staff_id')
+            ->leftJoin('doctor as doc', 'doc.staff_id', '=', 's.staff_id')
+            ->leftJoin('nurse as nur', 'nur.staff_id', '=', 's.staff_id')
+            ->leftJoin('receptionist as rec', 'rec.staff_id', '=', 's.staff_id')
+            ->leftJoin('pharmacist as phm', 'phm.staff_id', '=', 's.staff_id')
+            ->leftJoin('lab_technician as lt', 'lt.staff_id', '=', 's.staff_id')
+            ->leftJoin('department as dept', function ($join) {
+                $join->on('dept.department_id', '=', DB::raw('COALESCE(doc.department_id, nur.department_id, s.department_id)'));
+            })
+            ->when($q !== '', function ($query) use ($q) {
+                $like = '%' . $q . '%';
+                $query->where(function ($sub) use ($like) {
+                    $sub->where('s.staff_id', 'ilike', $like)
+                        ->orWhereRaw("(s.first_name||' '||s.last_name) ilike ?", [$like])
+                        ->orWhere('u.email', 'ilike', $like)
+                        ->orWhere('u.role', 'ilike', $like)
+                        ->orWhere('dept.department_name', 'ilike', $like);
+                });
+            })
+            ->when($role, fn ($query) => $query->where('u.role', $role))
+            ->when($status, fn ($query) => $query->where('s.status', $status))
+            ->orderByDesc('s.created_at')
+            ->selectRaw("s.staff_id, s.first_name, s.last_name, (s.first_name||' '||s.last_name) as full_name,
+                         s.title, s.status, s.employment_type, s.gender, s.phone_number, s.hire_date, u.role, u.email, dept.department_name,
+                         COALESCE(doc.specialization, nur.ward_name, phm.pharmacy_unit, lt.skill_area, rec.counter_number) as specialization_unit");
+    }
+
+    /** Backs the staff-picker used by the Assign Shift form. */
+    public function staffSearch(Request $request)
+    {
+        $q = trim((string) $request->query('q', ''));
+        if ($q === '') {
+            return response()->json([]);
+        }
+
+        $like = '%' . strtolower($q) . '%';
+        $rows = DB::table('staff as s')
+            ->join('users as u', 'u.staff_id', '=', 's.staff_id')
+            ->leftJoin('doctor as d', 'd.staff_id', '=', 's.staff_id')
+            ->leftJoin('nurse as n', 'n.staff_id', '=', 's.staff_id')
+            ->leftJoin('department as dept_doc', 'dept_doc.department_id', '=', 'd.department_id')
+            ->leftJoin('department as dept_nurse', 'dept_nurse.department_id', '=', 'n.department_id')
+            ->where('s.status', 'active')
+            ->where(function ($query) use ($like) {
+                $query->whereRaw('LOWER(s.staff_id) LIKE ?', [$like])
+                    ->orWhereRaw("LOWER(s.first_name||' '||s.last_name) LIKE ?", [$like]);
+            })
+            ->orderBy('s.last_name')
+            ->limit(20)
+            ->selectRaw("s.staff_id, (s.first_name||' '||s.last_name) as name, u.role, COALESCE(dept_doc.department_name, dept_nurse.department_name) as department_name")
+            ->get();
+
+        return response()->json($rows->map(fn ($r) => [
+            'id' => $r->staff_id,
+            'label' => $r->name . ' (' . $r->staff_id . ')',
+            'name' => $r->name,
+            'role' => $r->role,
+            'department' => $r->department_name,
+        ]));
     }
 
     public function createStaff(Request $request)
@@ -64,6 +154,8 @@ class AdminController extends Controller
                 'gender' => $data['gender'] ?? null, 'phone_number' => $data['phone_number'] ?? null,
                 'address' => $data['address'] ?? null, 'hire_date' => $data['hire_date'] ?? null,
                 'status' => $data['status'] ?? 'active',
+                'title' => $data['title'] ?? null, 'employment_type' => $data['employment_type'] ?? null,
+                'department_id' => $data['department_id'] ?? null,
             ]);
             User::create([
                 'staff_id' => $staff->staff_id, 'email' => $data['email'],
@@ -109,6 +201,8 @@ class AdminController extends Controller
                 'first_name' => $data['first_name'], 'last_name' => $data['last_name'],
                 'gender' => $data['gender'] ?? null, 'phone_number' => $data['phone_number'] ?? null,
                 'address' => $data['address'] ?? null, 'hire_date' => $data['hire_date'] ?? null,
+                'title' => $data['title'] ?? null, 'employment_type' => $data['employment_type'] ?? null,
+                'department_id' => $data['department_id'] ?? null,
             ]);
 
             $user = $staff->user ?? new User(['staff_id' => $staff->staff_id, 'role' => $role ?? 'receptionist']);
@@ -208,6 +302,9 @@ class AdminController extends Controller
             'email'    => ['required', 'email', 'max:100', Rule::unique('users', 'email')->ignore($currentUserId, 'user_id')],
             'password' => $isCreate ? 'required|string|min:8' : 'nullable|string|min:8',
             'status'   => 'nullable|in:active,inactive',
+            'title'    => 'nullable|string|max:150',
+            'employment_type' => 'nullable|in:full_time,part_time',
+            'department_id'   => 'nullable|exists:department,department_id',
             'redirect_to' => 'nullable|string',
             'doctor_department_id'  => 'nullable|exists:department,department_id',
             'doctor_specialization' => 'nullable|string|max:100',
@@ -256,7 +353,19 @@ class AdminController extends Controller
         $departments = collect($this->centralService->listDepartments(['q' => $q])->throw()->json())
             ->map(fn (array $d) => (object) $d);
 
-        return view('admin.departments', compact('departments', 'q'));
+        $heads = DB::table('staff')
+            ->whereIn('staff_id', $departments->pluck('head_staff_id')->filter()->all())
+            ->selectRaw("staff_id, (first_name||' '||last_name) as full_name")
+            ->pluck('full_name', 'staff_id');
+        $departments->each(fn ($d) => $d->head_name = $heads[$d->head_staff_id] ?? null);
+
+        $stats = [
+            'total'    => $departments->count(),
+            'active'   => $departments->where('status', 'active')->count(),
+            'inactive' => $departments->where('status', 'inactive')->count(),
+        ];
+
+        return view('admin.departments', compact('departments', 'q', 'stats'));
     }
 
     public function createDepartment()
@@ -309,22 +418,50 @@ class AdminController extends Controller
     public function rooms(Request $request)
     {
         $q = trim((string) $request->query('q', ''));
-        $body = $this->centralService->listRooms(['q' => $q, 'page' => (int) $request->query('page', 1)])->throw()->json();
+        $body = $this->centralService->listRooms([
+            'q' => $q, 'page' => (int) $request->query('page', 1),
+        ])->throw()->json();
 
         $rooms = new LengthAwarePaginator(
             collect($body['data'])->map(fn (array $r) => (object) $r),
             $body['meta']['total'],
             $body['meta']['per_page'],
             $body['meta']['current_page'],
-            ['path' => $request->url(), 'query' => $request->query()],
+            ['path' => $request->url(), 'query' => $request->query(), 'pageName' => 'page'],
         );
 
-        return view('admin.rooms', ['rooms' => $rooms, 'q' => $q, 'departments' => $this->departmentsForDropdown()]);
+        $bedQ = trim((string) $request->query('bed_q', ''));
+        $bedStatus = $request->query('bed_status');
+        $bedsBody = $this->centralService->listAllBeds([
+            'q' => $bedQ, 'status' => $bedStatus, 'page' => (int) $request->query('beds_page', 1),
+        ])->throw()->json();
+        $beds = new LengthAwarePaginator(
+            collect($bedsBody['data'])->map(fn (array $b) => (object) $b),
+            $bedsBody['meta']['total'],
+            $bedsBody['meta']['per_page'],
+            $bedsBody['meta']['current_page'],
+            ['path' => $request->url(), 'query' => $request->query(), 'pageName' => 'beds_page'],
+        );
+
+        $assignmentsBody = $this->centralService->listRoomAssignments(['page' => (int) $request->query('assignments_page', 1)])->throw()->json();
+        $assignments = new LengthAwarePaginator(
+            collect($assignmentsBody['data'])->map(fn (array $a) => (object) $a),
+            $assignmentsBody['meta']['total'],
+            $assignmentsBody['meta']['per_page'],
+            $assignmentsBody['meta']['current_page'],
+            ['path' => $request->url(), 'query' => $request->query(), 'pageName' => 'assignments_page'],
+        );
+
+        return view('admin.rooms', [
+            'rooms' => $rooms, 'beds' => $beds, 'assignments' => $assignments,
+            'stats' => $body['stats'], 'q' => $q, 'bedQ' => $bedQ, 'bedStatus' => $bedStatus,
+            'departments' => $this->departmentsForDropdown(),
+        ]);
     }
 
     public function createRoom()
     {
-        $room = (object) ['room_number' => null, 'floor_number' => null, 'room_type' => null, 'department_id' => null, 'status' => null];
+        $room = (object) ['room_number' => null, 'floor_number' => null, 'room_type' => null, 'department_id' => null, 'status' => null, 'rate_per_day' => null];
 
         return view('admin.room-form', ['room' => $room, 'mode' => 'create', 'departments' => $this->departmentsForDropdown()]);
     }
@@ -364,9 +501,10 @@ class AdminController extends Controller
         return $request->validate([
             'department_id' => 'nullable|exists:department,department_id',
             'room_number'   => 'nullable|string|max:100',
-            'room_type'     => 'nullable|in:general,private,icu,emergency',
+            'room_type'     => 'nullable|in:general,private,icu,emergency,operating_room',
             'floor_number'  => 'nullable|integer',
             'status'        => 'nullable|in:available,occupied,maintenance',
+            'rate_per_day'  => 'nullable|numeric',
         ]);
     }
 

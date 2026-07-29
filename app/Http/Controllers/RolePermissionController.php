@@ -31,6 +31,7 @@ class RolePermissionController extends Controller
                 'appointment.create' => 'Book Appointments',
                 'appointment.update' => 'Manage Appointments',
                 'appointment.cancel' => 'Cancel Appointments',
+                'appointment.complete' => 'Mark Appointments Completed',
             ],
             'Medical Records & Treatment' => [
                 'medical_record.view' => 'View Medical Records',
@@ -62,7 +63,6 @@ class RolePermissionController extends Controller
                 'lab_result.view' => 'View Lab Results',
                 'lab_result.create' => 'Enter Lab Results',
                 'lab_equipment.view' => 'View Lab Equipment',
-                'lab_equipment.manage' => 'Manage Lab Equipment',
                 'lab_report.view' => 'View Lab Reports',
                 'lab_report.create' => 'Generate Lab Reports',
             ],
@@ -77,6 +77,7 @@ class RolePermissionController extends Controller
                 'room.view' => 'View Rooms & Beds',
                 'room.assign' => 'Assign Rooms & Beds',
                 'schedule.view' => 'View Schedules',
+                'schedule.manage' => 'Manage Schedules',
             ],
             'Staff & System' => [
                 'staff.manage' => 'Manage Staff & Departments',

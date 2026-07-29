@@ -93,6 +93,16 @@ db.uploaded_medical_documents.insertOne({
 });
 
 // Helpful indexes
-db.medical_record_versions.createIndex({ medical_record_id: 1, version: 1 });
+// unique: version numbers are assigned atomically by SyncMedicalRecordVersionJob
+// (central-service) via the medical_record_version_counters document below —
+// this index is the DB-level backstop against that ever being violated.
+db.medical_record_versions.createIndex({ medical_record_id: 1, version: 1 }, { unique: true });
 db.audit_log_documents.createIndex({ entity: 1, entity_id: 1, at: -1 });
 db.lab_report_documents.createIndex({ test_order_id: 1 });
+
+// medical_record_version_counters — one doc per medical_record_id, holding the
+// next version number to assign. Incremented atomically via findOneAndUpdate
+// $inc at the moment each version is actually written, so concurrent
+// adjustments to the same record can never collide on the same version number
+// (unlike computing count()+1 ahead of time, which can race).
+db.medical_record_version_counters.insertOne({ _id: "MR0001", seq: 1 });

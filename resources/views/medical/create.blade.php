@@ -54,7 +54,7 @@
                         </td>
                     </tr>
                 </template>
-                <tr x-show="query.length >= 2 && results.length === 0" style="display: none;">
+                <tr x-show="query.length >= 2 && results.length === 0" x-transition.opacity style="display: none;">
                     <td colspan="7" class="py-4 text-center text-slate-400">No patients found.</td>
                 </tr>
                 </tbody>

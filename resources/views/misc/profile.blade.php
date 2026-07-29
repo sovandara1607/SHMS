@@ -3,7 +3,7 @@
 
 <x-page-header title="My Profile" />
 
-<div class="max-w-lg rounded-xl border border-slate-200 bg-white p-5">
+<div class="max-w-lg shadow-paper rounded-xl border border-manila/60 bg-paper-card p-5">
     <dl class="space-y-3 text-sm">
         <div class="flex justify-between"><dt class="text-slate-500">Name</dt><dd class="font-medium text-slate-900">{{ $profile->first_name ?? '' }} {{ $profile->last_name ?? '' }}</dd></div>
         <div class="flex justify-between"><dt class="text-slate-500">Staff ID</dt><dd class="text-slate-900">{{ $profile->staff_id ?? '' }}</dd></div>

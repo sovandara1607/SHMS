@@ -1,6 +1,6 @@
 @props(['title', 'subtitle' => null, 'icon' => null, 'iconColor' => 'blue'])
 
-<div class="flex items-start justify-between border-b border-slate-100 px-6 py-4">
+<div class="flex items-start justify-between border-b border-manila/50 px-6 py-4">
     <div class="flex items-start gap-3">
         @if($icon)
             <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full {{ $iconColor === 'amber' ? 'bg-amber-100 text-amber-600' : 'bg-blue-100 text-blue-600' }}">

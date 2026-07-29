@@ -62,19 +62,54 @@ $currentStatus = old('patient_status', $patient->patient_status ?? 'active');
                class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
     </div>
 
-    <p class="mb-2 mt-5 text-xs font-semibold uppercase tracking-wider text-slate-400">Medical Information</p>
-    <div class="grid grid-cols-2 gap-4">
-        <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-700">Blood Type</label>
-            <input name="blood_type" value="{{ old('blood_type', $patient->blood_type) }}" placeholder="e.g. O+"
-                   class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+    <p class="mb-2 mt-5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">
+        Medical Information @if($mode === 'edit')<x-icon name="lock" class="h-3 w-3" />@endif
+    </p>
+    @if($mode === 'edit')
+        {{-- Locked only when adjusting an existing patient — blood type and
+             allergies are safety-critical and shouldn't be casually changed
+             through the general info-adjustment form. Still freely editable
+             at creation time, below, where there's no prior value to
+             protect. readonly (not disabled) so the existing value still
+             submits unchanged instead of being cleared. --}}
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="mb-1.5 flex items-center gap-1 text-sm font-medium text-slate-700">
+                    Blood Type <x-icon name="lock" class="h-3 w-3 text-slate-400" />
+                </label>
+                <div class="group relative">
+                    <input name="blood_type" value="{{ old('blood_type', $patient->blood_type) }}" placeholder="e.g. O+" readonly
+                           title="Blood type isn't editable from here — it's safety-critical and locked."
+                           class="w-full cursor-not-allowed rounded-lg border border-slate-200 bg-slate-100 px-3.5 py-2.5 text-sm text-slate-500 focus:outline-none">
+                    <x-icon name="lock" class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 opacity-0 transition-opacity group-hover:opacity-100" />
+                </div>
+            </div>
+            <div>
+                <label class="mb-1.5 flex items-center gap-1 text-sm font-medium text-slate-700">
+                    Allergies <x-icon name="lock" class="h-3 w-3 text-slate-400" />
+                </label>
+                <div class="group relative">
+                    <input name="allergy" value="{{ old('allergy', $patient->allergy) }}" placeholder="Penicillin, Latex, None" readonly
+                           title="Allergies aren't editable from here — it's safety-critical and locked."
+                           class="w-full cursor-not-allowed rounded-lg border border-slate-200 bg-slate-100 px-3.5 py-2.5 text-sm text-slate-500 focus:outline-none">
+                    <x-icon name="lock" class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 opacity-0 transition-opacity group-hover:opacity-100" />
+                </div>
+            </div>
         </div>
-        <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-700">Allergies</label>
-            <input name="allergy" value="{{ old('allergy', $patient->allergy) }}" placeholder="Penicillin, Latex, None"
-                   class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+    @else
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-slate-700">Blood Type</label>
+                <input name="blood_type" value="{{ old('blood_type') }}" placeholder="e.g. O+"
+                       class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+            </div>
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-slate-700">Allergies</label>
+                <input name="allergy" value="{{ old('allergy') }}" placeholder="Penicillin, Latex, None"
+                       class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+            </div>
         </div>
-    </div>
+    @endif
 
     <p class="mb-2 mt-5 text-xs font-semibold uppercase tracking-wider text-slate-400">Emergency Contact</p>
     <div class="grid grid-cols-2 gap-4">
@@ -103,11 +138,6 @@ $currentStatus = old('patient_status', $patient->patient_status ?? 'active');
                    class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
         </div>
     </div>
-    <div class="mt-4">
-        <label class="mb-1.5 block text-sm font-medium text-slate-700">Coverage Details</label>
-        <input name="coverage_details" value="{{ old('coverage_details', $insurance->coverage_details) }}" placeholder="Plan B — 80% inpatient"
-               class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
-    </div>
     <div class="mt-4 grid grid-cols-2 gap-4">
         <div>
             <label class="mb-1.5 block text-sm font-medium text-slate-700">Policy Start</label>
@@ -126,7 +156,7 @@ $currentStatus = old('patient_status', $patient->patient_status ?? 'active');
         <input type="hidden" name="patient_status" x-model="status">
         @foreach($statuses as $value => $label)
             <button type="button" @click="status = '{{ $value }}'"
-                    :class="status === '{{ $value }}' ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 border border-slate-200'"
+                    :class="status === '{{ $value }}' ? 'bg-blue-600 text-white shadow-well' : 'bg-paper-card text-slate-600 border border-manila/60 shadow-emboss'"
                     class="rounded-lg px-3.5 py-2 text-sm font-medium transition">{{ $label }}</button>
         @endforeach
     </div>

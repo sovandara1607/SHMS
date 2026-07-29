@@ -109,6 +109,37 @@ class AppointmentManagementTest extends TestCase
             && $request['cancellation_reason'] === 'No longer needed');
     }
 
+    public function test_admin_can_mark_a_scheduled_appointment_completed(): void
+    {
+        $admin = $this->makeAdmin();
+        $this->makeLocalPatientAndDoctor();
+
+        Http::fake([
+            '*/api/appointments/APT0001/complete' => Http::response($this->appointmentPayload(['status' => 'completed'])),
+        ]);
+
+        $this->actingAs($admin)->post('/appointments/APT0001/complete')
+            ->assertRedirect('/appointments')
+            ->assertSessionHas('success', 'Appointment marked as completed.');
+
+        Http::assertSent(fn ($request) => $request->url() === 'http://127.0.0.1:8100/api/appointments/APT0001/complete'
+            && $request->method() === 'POST');
+    }
+
+    public function test_completing_a_non_scheduled_appointment_shows_a_conflict_error(): void
+    {
+        $admin = $this->makeAdmin();
+        $this->makeLocalPatientAndDoctor();
+
+        Http::fake([
+            '*/api/appointments/APT0001/complete' => Http::response(['message' => 'Only a scheduled appointment can be marked completed.'], 409),
+        ]);
+
+        $this->actingAs($admin)->post('/appointments/APT0001/complete')
+            ->assertRedirect()
+            ->assertSessionHas('error', 'Only a scheduled appointment can be marked completed.');
+    }
+
     public function test_double_booking_shows_a_conflict_error(): void
     {
         $admin = $this->makeAdmin();

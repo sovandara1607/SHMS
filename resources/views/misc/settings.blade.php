@@ -3,7 +3,7 @@
 
 <x-page-header title="Settings" />
 
-<div class="max-w-lg rounded-xl border border-slate-200 bg-white p-5">
+<div class="max-w-lg shadow-paper rounded-xl border border-manila/60 bg-paper-card p-5">
     <p class="mb-4 font-semibold text-slate-900">System Status</p>
     <dl class="space-y-3 text-sm">
         <div class="flex justify-between"><dt class="text-slate-500">Framework</dt><dd class="text-slate-900">Laravel {{ app()->version() }}</dd></div>

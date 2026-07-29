@@ -38,7 +38,7 @@ class RoomAssignmentController extends Controller
         return redirect('/rooms')->with('success', 'Bed added.')->with('reopen_room_beds', $roomId);
     }
 
-    public function assignForm(string $bedId)
+    public function assignForm(Request $request, string $bedId)
     {
         $response = $this->centralService->getAssignBedData($bedId);
         abort_if($response->status() === 404, 404);
@@ -48,7 +48,7 @@ class RoomAssignmentController extends Controller
         $bed = (object) $body;
         $bed->room = (object) $body['room'];
 
-        return view('admin.bed-assign-form', compact('bed'));
+        return view('admin.bed-assign-form', ['bed' => $bed, 'from' => $request->query('from')]);
     }
 
     public function assign(Request $request, string $bedId)
@@ -70,11 +70,19 @@ class RoomAssignmentController extends Controller
             'patient_id' => $data['patient_id'], 'room_id' => $result['room_id'], 'bed_id' => $result['bed_id'],
         ]);
 
-        return redirect('/rooms')->with('success', 'Patient assigned to bed ' . ($result['bed_number'] ?: $result['bed_id']) . '.')
-            ->with('reopen_room_beds', $result['room_id']);
+        $redirect = back()->with('success', 'Patient assigned to bed ' . ($result['bed_number'] ?: $result['bed_id']) . '.');
+
+        // Only the per-room Beds modal (Rooms tab) wants to reopen after this —
+        // the Beds tab already shows the updated row inline, so popping that
+        // modal open there would just be a jarring, out-of-context flicker.
+        if ($request->input('from') !== 'beds_tab') {
+            $redirect->with('reopen_room_beds', $result['room_id']);
+        }
+
+        return $redirect;
     }
 
-    public function release(string $id)
+    public function release(Request $request, string $id)
     {
         $response = $this->centralService->releaseRoomAssignment($id);
         abort_if($response->status() === 404, 404);
@@ -86,10 +94,17 @@ class RoomAssignmentController extends Controller
         $result = $response->json();
         $this->audit->log('room_assignment.release', 'room_assignment', $id);
 
-        // Released from either the Rooms & Beds modal or the patient detail modal —
-        // flash both reopen keys; only the page the user actually lands on reads its own.
-        return back()->with('success', 'Bed released.')
-            ->with('reopen_room_beds', $result['room_id'])
-            ->with('reopen_patient', $result['patient_id']);
+        $redirect = back()->with('success', 'Bed released.');
+
+        // Released from the Rooms & Beds modal or the patient detail modal —
+        // flash both reopen keys; only the page the user actually lands on
+        // reads its own. Skipped entirely from the Room Assignments tab,
+        // which already shows the updated row inline with no modal to reopen.
+        if ($request->input('from') !== 'assignments_tab') {
+            $redirect->with('reopen_room_beds', $result['room_id'])
+                ->with('reopen_patient', $result['patient_id']);
+        }
+
+        return $redirect;
     }
 }

@@ -21,9 +21,10 @@ class AppointmentController extends Controller
         $date = $request->query('date');
         $status = $request->query('status', 'all');
         $page = (int) $request->query('page', 1);
+        $month = $request->query('month', now()->format('Y-m'));
 
         $response = $this->centralService->listAppointments([
-            'q' => $q, 'date' => $date, 'status' => $status, 'page' => $page,
+            'q' => $q, 'date' => $date, 'status' => $status, 'page' => $page, 'month' => $month,
         ])->throw();
         $body = $response->json();
 
@@ -39,7 +40,31 @@ class AppointmentController extends Controller
             'appointments' => $appointments,
             'q' => $q, 'date' => $date, 'status' => $status, 'stats' => $body['stats'],
             'doctors'  => Doctor::with('staff')->get(),
+            'month' => $month,
+            'calendarDays' => $this->buildCalendarGrid($month, $body['calendar'] ?? []),
         ]);
+    }
+
+    /**
+     * @param array<string, int> $counts appointment_date => count for the month
+     * @return array<int, array{date: ?string, day: ?int, count: int}> 6x7 grid, padded with null-date cells
+     */
+    private function buildCalendarGrid(string $month, array $counts): array
+    {
+        $first = \Carbon\Carbon::parse($month . '-01');
+        $leadingBlanks = $first->dayOfWeek; // 0 (Sun) .. 6 (Sat)
+        $daysInMonth = $first->daysInMonth;
+
+        $cells = array_fill(0, $leadingBlanks, ['date' => null, 'day' => null, 'count' => 0]);
+        for ($day = 1; $day <= $daysInMonth; $day++) {
+            $date = $first->copy()->day($day)->toDateString();
+            $cells[] = ['date' => $date, 'day' => $day, 'count' => $counts[$date] ?? 0];
+        }
+        while (count($cells) % 7 !== 0) {
+            $cells[] = ['date' => null, 'day' => null, 'count' => 0];
+        }
+
+        return $cells;
     }
 
     public function create()
@@ -146,6 +171,21 @@ class AppointmentController extends Controller
         Cache::forget('dashboard:summary');
 
         return redirect('/appointments')->with('success', 'Appointment cancelled.');
+    }
+
+    public function complete(string $id)
+    {
+        $response = $this->centralService->completeAppointment($id);
+        abort_if($response->status() === 404, 404);
+        if ($response->status() === 409) {
+            return back()->with('error', $response->json('message'));
+        }
+        $response->throw();
+
+        $this->audit->log('appointment.complete', 'appointment', $id);
+        Cache::forget('dashboard:summary');
+
+        return redirect('/appointments')->with('success', 'Appointment marked as completed.');
     }
 
     private function validateData(Request $request): array

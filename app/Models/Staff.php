@@ -44,6 +44,12 @@ class Staff extends Model
         return $this->hasOne(LabTechnician::class, 'staff_id', 'staff_id');
     }
 
+    /** Only meaningful for roles whose subtype table carries no department_id of its own (receptionist, pharmacist, lab_technician, admin). */
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_id', 'department_id');
+    }
+
     public function fullName(): string
     {
         return trim($this->first_name . ' ' . $this->last_name);

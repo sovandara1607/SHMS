@@ -4,8 +4,12 @@
     <div class="flex justify-between"><span class="text-slate-500">Test Type</span><span class="text-slate-900">{{ $order->test_name }}</span></div>
     <div class="flex justify-between"><span class="text-slate-500">Ordered By</span><span class="text-slate-900">{{ $order->doctor_name }}</span></div>
     <div class="flex justify-between"><span class="text-slate-500">Technician</span><span class="text-slate-900">{{ $order->technician_name ?: '—' }}</span></div>
+    <div class="flex justify-between"><span class="text-slate-500">Priority</span><span class="text-slate-900">{{ ($order->priority ?? null) ? ucfirst($order->priority) : 'Routine' }}</span></div>
     <div class="flex justify-between"><span class="text-slate-500">Ordered Date</span><span class="text-slate-900">{{ $order->order_date }}</span></div>
     <div class="flex justify-between"><span class="text-slate-500">Status</span><x-badge :status="$order->status" /></div>
+    @if($order->notes ?? null)
+        <div><span class="text-slate-500">Clinical Notes</span><p class="mt-1 text-slate-900">{{ $order->notes }}</p></div>
+    @endif
 </div>
 <div class="flex justify-end border-t border-slate-100 px-6 py-4">
     <x-button variant="secondary" x-on:click="show = false">Close</x-button>

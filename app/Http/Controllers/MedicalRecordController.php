@@ -78,6 +78,8 @@ class MedicalRecordController extends Controller
             return $pr;
         });
         $reports = collect($body['reports'] ?? [])->map(fn (array $r) => (object) $r);
+        $procedures = collect($body['procedures'] ?? [])->map(fn (array $p) => (object) $p);
+        $vitalSigns = collect($body['vital_signs'] ?? [])->map(fn (array $v) => (object) $v);
 
         $medicines = collect($this->centralService->listAllMedicines()->throw()->json())
             ->map(fn (array $m) => (object) $m);
@@ -89,6 +91,8 @@ class MedicalRecordController extends Controller
             'prescriptions' => $prescriptions,
             'medicines' => $medicines,
             'reports' => $reports,
+            'procedures' => $procedures,
+            'vitalSigns' => $vitalSigns,
         ]);
     }
 
@@ -159,6 +163,12 @@ class MedicalRecordController extends Controller
         abort_if($response->status() === 404, 404);
         $response->throw();
 
+        // This count()+1 is advisory only — two adjustments issued close together
+        // could both read the same count before either's job has written. The
+        // authoritative version number is assigned atomically by
+        // SyncMedicalRecordVersionJob (central-service) at actual-write time via
+        // a Mongo counter document, which is what the unique (medical_record_id,
+        // version) index now enforces.
         $version = DB::connection('mongodb')->table('medical_record_versions')
             ->where('medical_record_id', $id)->count() + 1;
         $this->bus->publish('sync_medical_record_version', [

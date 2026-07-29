@@ -15,10 +15,38 @@ Alpine.data('sidebarSection', (key) => ({
 
 Alpine.start();
 
-function cloneSkeletonNodes() {
-    const template = document.getElementById('skeleton-template');
-    return template ? template.content.cloneNode(true) : null;
-}
+/**
+ * Slim top progress bar shared by both loading affordances below. Every
+ * page in this app has a different shape (stat cards, card grids, tabs,
+ * plain forms...), so a "fake content" skeleton inevitably mismatches
+ * whatever the real page turns out to be — this can't, since it doesn't
+ * pretend to be page content at all.
+ */
+const topProgress = (function () {
+    const bar = document.getElementById('top-progress-bar');
+    let hideTimer = null;
+
+    function start() {
+        if (!bar) return;
+        clearTimeout(hideTimer);
+        bar.style.transition = 'none';
+        bar.style.width = '0%';
+        bar.style.opacity = '1';
+        void bar.offsetWidth; // force reflow so the width transition below actually animates from 0
+        bar.style.transition = '';
+        bar.style.width = '80%';
+    }
+
+    function finish() {
+        if (!bar) return;
+        bar.style.width = '100%';
+        hideTimer = setTimeout(() => {
+            bar.style.opacity = '0';
+        }, 150);
+    }
+
+    return { start, finish };
+})();
 
 /**
  * Full-page loading overlay, shown only for form submits (which still cause
@@ -29,7 +57,6 @@ function cloneSkeletonNodes() {
 (function () {
     const overlay = document.getElementById('global-loading-overlay');
     const label = document.getElementById('global-loading-overlay-text');
-    const content = document.getElementById('global-loading-overlay-content');
     if (!overlay) return;
 
     let hideTimer = null;
@@ -44,11 +71,7 @@ function cloneSkeletonNodes() {
 
     function show(text) {
         if (label) label.textContent = text || 'Loading…';
-        if (content) {
-            content.innerHTML = '';
-            const nodes = cloneSkeletonNodes();
-            if (nodes) content.appendChild(nodes);
-        }
+        topProgress.start();
         overlay.classList.remove('hidden');
         overlay.classList.add('flex');
         clearTimeout(hideTimer);
@@ -106,12 +129,6 @@ function cloneSkeletonNodes() {
         return true;
     }
 
-    function showMainSkeleton() {
-        main.innerHTML = '';
-        const nodes = cloneSkeletonNodes();
-        if (nodes) main.appendChild(nodes);
-    }
-
     // Mirrors the active/inactive classes from components/nav-link.blade.php
     // so the sidebar highlight follows the page even though the sidebar
     // itself never re-renders.
@@ -133,7 +150,12 @@ function cloneSkeletonNodes() {
 
     async function navigateTo(url, { pushState = true, restoreScroll = 0 } = {}) {
         const token = ++navToken;
-        showMainSkeleton();
+        // Current content stays on screen for the whole fetch — only the
+        // progress bar indicates something's happening. Swapping in a fake
+        // skeleton first (even briefly, on a fast local request) is its own
+        // flicker; not swapping anything at all until real content is ready
+        // has none.
+        topProgress.start();
 
         let response;
         try {
@@ -169,6 +191,15 @@ function cloneSkeletonNodes() {
         // this codebase (e.g. openModal() in lab/orders.blade.php).
         main.innerHTML = newMain.innerHTML;
         window.Alpine.initTree(main);
+        topProgress.finish();
+
+        // Replay the page fade-in — the CSS animation only fires once per
+        // element lifetime, and this <main> persists across every partial
+        // navigation (that's the whole point), so swapping its content
+        // alone doesn't retrigger it without this nudge.
+        main.classList.remove('animate-page-fade-in');
+        void main.offsetWidth; // force reflow
+        main.classList.add('animate-page-fade-in');
 
         const finalUrl = response.url || url;
         updateActiveNav(new URL(finalUrl, window.location.origin).pathname);

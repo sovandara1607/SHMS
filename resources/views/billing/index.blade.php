@@ -3,10 +3,11 @@
 
 @php
 $filters = ['all' => 'All', 'unpaid' => 'Unpaid', 'partially_paid' => 'Partially Paid', 'paid' => 'Paid'];
-$totalAmount = $stats['total_amount'];
-$totalAmountDisplay = $totalAmount >= 1_000_000
-    ? '$' . number_format($totalAmount / 1_000_000, 1) . 'M'
-    : '$' . number_format($totalAmount, 2);
+$compact = fn (float $amount) => $amount >= 1_000_000
+    ? '$' . number_format($amount / 1_000_000, 1) . 'M'
+    : '$' . number_format($amount, 2);
+$totalRevenue = $stats['total_revenue'];
+$pendingAmount = $stats['pending_amount'];
 @endphp
 
 <div x-data="{
@@ -29,26 +30,26 @@ $totalAmountDisplay = $totalAmount >= 1_000_000
     </x-page-header>
 
     <div class="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <x-stat-card label="Total Bill Amount" :value="$totalAmountDisplay" icon="card" icon-color="blue" title="${{ number_format($totalAmount, 2) }}" />
-        <x-stat-card label="Unpaid Bills" :value="$stats['unpaid']" icon="clipboard" icon-color="amber" />
-        <x-stat-card label="Partially Paid Bills" :value="$stats['partially_paid']" icon="clipboard" icon-color="purple" />
+        <x-stat-card label="Total Revenue" :value="$compact($totalRevenue)" icon="card" icon-color="blue" title="${{ number_format($totalRevenue, 2) }}" />
+        <x-stat-card label="Pending Amount" :value="$compact($pendingAmount)" icon="clipboard" icon-color="amber" title="${{ number_format($pendingAmount, 2) }}" />
+        <x-stat-card label="Unpaid Bills" :value="$stats['unpaid']" icon="clipboard" icon-color="purple" />
         <x-stat-card label="Paid Bills" :value="$stats['paid']" icon="clipboard" icon-color="green" />
     </div>
 
     <div class="mb-4 flex flex-wrap gap-1.5">
         @foreach($filters as $value => $label)
             <a href="/bills?status={{ $value }}"
-               class="rounded-lg px-3 py-2 text-sm font-medium {{ $status === $value ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 border border-slate-200' }}">
+               class="rounded-lg px-3 py-2 text-sm font-medium {{ $status === $value ? 'bg-blue-600 text-white shadow-well' : 'bg-paper-card text-slate-600 border border-manila/60 shadow-emboss' }}">
                 {{ $label }}
             </a>
         @endforeach
     </div>
 
     <p class="mb-2 text-sm font-semibold text-slate-700">Billing Records</p>
-    <div class="mb-6 overflow-x-auto rounded-xl border border-slate-200 bg-white">
+    <div class="mb-6 overflow-x-auto rounded-xl border border-manila/60 bg-paper-card">
         <table class="w-full text-sm">
             <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
-                <th class="px-4 py-3">Bill ID</th><th class="px-4 py-3">Patient</th><th class="px-4 py-3">Bill Date</th><th class="px-4 py-3">Total Amount</th><th class="px-4 py-3">Paid Amount</th><th class="px-4 py-3">Status</th><th class="px-4 py-3 text-right">Actions</th>
+                <th class="px-4 py-3">Bill ID</th><th class="px-4 py-3">Patient</th><th class="px-4 py-3">Bill Date</th><th class="px-4 py-3">Items</th><th class="px-4 py-3">Total Amount</th><th class="px-4 py-3">Balance Due</th><th class="px-4 py-3">Status</th><th class="px-4 py-3 text-right">Actions</th>
             </tr></thead>
             <tbody>
             @forelse($bills as $b)
@@ -56,8 +57,9 @@ $totalAmountDisplay = $totalAmount >= 1_000_000
                     <td class="px-4 py-3 font-medium text-blue-600">{{ $b->bill_id }}</td>
                     <td class="px-4 py-3 text-slate-900">{{ $b->patient_name }}</td>
                     <td class="px-4 py-3 text-slate-600">{{ $b->bill_date }}</td>
+                    <td class="px-4 py-3 text-slate-600">{{ $b->item_count }}</td>
                     <td class="px-4 py-3 text-slate-600">${{ number_format((float) $b->total_amount, 2) }}</td>
-                    <td class="px-4 py-3 text-slate-600">${{ number_format((float) $b->paid_amount, 2) }}</td>
+                    <td class="px-4 py-3 {{ (float) $b->total_amount - (float) $b->paid_amount > 0 ? 'font-semibold text-amber-600' : 'text-slate-600' }}">${{ number_format((float) $b->total_amount - (float) $b->paid_amount, 2) }}</td>
                     <td class="px-4 py-3"><x-badge :status="$b->status" /></td>
                     <td class="px-4 py-3">
                         <div class="flex justify-end gap-2">
@@ -77,7 +79,7 @@ $totalAmountDisplay = $totalAmount >= 1_000_000
     </div>
 
     <p class="mb-2 text-sm font-semibold text-slate-700">Payment History</p>
-    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+    <div class="overflow-x-auto rounded-xl border border-manila/60 bg-paper-card">
         <table class="w-full text-sm">
             <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
                 <th class="px-4 py-3">Payment ID</th><th class="px-4 py-3">Bill ID</th><th class="px-4 py-3">Patient</th><th class="px-4 py-3">Method</th><th class="px-4 py-3">Amount</th><th class="px-4 py-3">Date</th><th class="px-4 py-3">Reference</th>

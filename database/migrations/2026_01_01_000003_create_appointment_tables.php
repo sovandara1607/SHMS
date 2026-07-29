@@ -37,7 +37,7 @@ return new class extends Migration
             $table->time('start_time');
             $table->time('end_time');
             $table->enum('shift_type', ['morning', 'afternoon', 'night']);
-            $table->enum('status', ['scheduled', 'completed', 'cancelled'])->default('scheduled');
+            $table->enum('status', ['scheduled', 'completed', 'cancelled', 'on_leave'])->default('scheduled');
             $table->foreign('staff_id')->references('staff_id')->on('staff');
         });
 

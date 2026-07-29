@@ -13,8 +13,32 @@
      }"
      x-init="@if($errors->any() && old('_modal_target'))openModal(@js(old('_modal_target')))@endif"
 >
-    <x-page-header title="Pharmacy & Inventory">
-        <x-slot:actions>
+    <x-page-header title="Pharmacy & Inventory" />
+
+    <div class="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <x-stat-card label="Total Medicines" :value="$stats['total']" icon="package" icon-color="blue" />
+        <x-stat-card label="Available Medicines" :value="$stats['available']" icon="package" icon-color="green" />
+        <x-stat-card label="Low Stock Medicines" :value="$stats['low_stock']" icon="alert-triangle" icon-color="amber" />
+        <x-stat-card label="Expired Batches" :value="$stats['expired_batches']" icon="alert-triangle" icon-color="red" />
+    </div>
+
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap gap-1.5">
+            <button type="button" @click="tab = 'inventory'" :class="tab === 'inventory' ? 'bg-blue-600 text-white shadow-well' : 'bg-paper-card text-slate-600 border border-manila/60 shadow-emboss'" class="inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium"><x-icon name="package" class="h-4 w-4" /> Medicine Inventory</button>
+            <button type="button" @click="tab = 'batches'" :class="tab === 'batches' ? 'bg-blue-600 text-white shadow-well' : 'bg-paper-card text-slate-600 border border-manila/60 shadow-emboss'" class="inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium"><x-icon name="clipboard" class="h-4 w-4" /> Medicine Batches</button>
+            <button type="button" @click="tab = 'prescriptions'" :class="tab === 'prescriptions' ? 'bg-blue-600 text-white shadow-well' : 'bg-paper-card text-slate-600 border border-manila/60 shadow-emboss'" class="inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium"><x-icon name="document" class="h-4 w-4" /> Prescriptions</button>
+            <button type="button" @click="tab = 'dispensing'" :class="tab === 'dispensing' ? 'bg-blue-600 text-white shadow-well' : 'bg-paper-card text-slate-600 border border-manila/60 shadow-emboss'" class="inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium"><x-icon name="check" class="h-4 w-4" /> Dispensing Records</button>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <template x-if="tab === 'inventory'">
+                <form method="get" action="/medicines" class="relative">
+                    <input type="hidden" name="tab" value="inventory">
+                    <x-icon name="search" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                    <input type="text" name="q" value="{{ $q }}" placeholder="Search..."
+                           class="w-56 rounded-lg border border-manila/60 bg-paper-card py-2.5 pl-9 pr-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                </form>
+            </template>
             <template x-if="tab === 'inventory'">
                 @can('medicine.create')
                     <x-button variant="primary" x-on:click="openModal('/medicines/create')"><x-icon name="plus" class="h-4 w-4" /> Add Medicine</x-button>
@@ -25,43 +49,47 @@
                     <x-button variant="primary" x-on:click="openModal('/medicine-batches/create')"><x-icon name="plus" class="h-4 w-4" /> Add Batch</x-button>
                 @endcan
             </template>
-        </x-slot:actions>
-    </x-page-header>
-
-    <div class="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <x-stat-card label="Total Medicines" :value="$stats['total']" icon="pill" icon-color="blue" />
-        <x-stat-card label="Available Medicines" :value="$stats['available']" icon="pill" icon-color="green" />
-        <x-stat-card label="Low Stock Medicines" :value="$stats['low_stock']" icon="clipboard" icon-color="amber" />
-        <x-stat-card label="Expired Batches" :value="$stats['expired_batches']" icon="x" icon-color="red" />
+        </div>
     </div>
 
-    <div class="mb-4 flex flex-wrap gap-1.5">
-        <button type="button" @click="tab = 'inventory'" :class="tab === 'inventory' ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 border border-slate-200'" class="rounded-lg px-3.5 py-2 text-sm font-medium">Medicine Inventory</button>
-        <button type="button" @click="tab = 'batches'" :class="tab === 'batches' ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 border border-slate-200'" class="rounded-lg px-3.5 py-2 text-sm font-medium">Medicine Batches</button>
-        <button type="button" @click="tab = 'prescriptions'" :class="tab === 'prescriptions' ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 border border-slate-200'" class="rounded-lg px-3.5 py-2 text-sm font-medium">Prescriptions</button>
-        <button type="button" @click="tab = 'dispensing'" :class="tab === 'dispensing' ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 border border-slate-200'" class="rounded-lg px-3.5 py-2 text-sm font-medium">Dispensing Records</button>
-    </div>
-
-    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+    <div class="overflow-x-auto rounded-xl border border-manila/60 bg-paper-card">
         {{-- Medicine Inventory --}}
-        <div x-show="tab === 'inventory'">
+        <div x-show="tab === 'inventory'" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
             <table class="w-full text-sm">
                 <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
-                    <th class="px-4 py-3">Medicine ID</th><th class="px-4 py-3">Name</th><th class="px-4 py-3">Type</th><th class="px-4 py-3">Manufacturer</th><th class="px-4 py-3">Unit Price</th><th class="px-4 py-3">Stock</th><th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3">Medicine ID</th><th class="px-4 py-3">Name</th><th class="px-4 py-3">Type</th><th class="px-4 py-3">Manufacturer</th><th class="px-4 py-3">Unit Price</th><th class="px-4 py-3">Stock</th><th class="px-4 py-3">Status</th><th class="px-4 py-3 text-right">Actions</th>
                 </tr></thead>
                 <tbody>
                 @forelse($medicines as $m)
                     <tr class="border-b border-slate-50 last:border-0">
                         <td class="px-4 py-3 font-medium text-blue-600">{{ $m->medicine_id }}</td>
-                        <td class="px-4 py-3 text-slate-900">{{ $m->medicine_name }}</td>
+                        <td class="px-4 py-3 text-slate-900">
+                            <div class="flex items-center gap-2">
+                                <x-icon name="package" class="h-4 w-4 shrink-0 text-slate-400" />
+                                {{ $m->medicine_name }}
+                            </div>
+                        </td>
                         <td class="px-4 py-3 text-slate-600">{{ $m->medicine_type ?: '—' }}</td>
                         <td class="px-4 py-3 text-slate-600">{{ $m->manufacturer ?: '—' }}</td>
                         <td class="px-4 py-3 text-slate-600">${{ number_format($m->unit_price ?? 0, 2) }}</td>
-                        <td class="px-4 py-3 {{ $m->stock_quantity <= 20 ? 'font-semibold text-amber-600' : 'text-slate-600' }}">{{ $m->stock_quantity }}</td>
+                        <td class="px-4 py-3 {{ $m->stock_quantity == 0 ? 'font-semibold text-red-600' : ($m->stock_quantity <= 20 ? 'font-semibold text-amber-600' : 'text-slate-600') }}">{{ $m->stock_quantity }}</td>
                         <td class="px-4 py-3"><x-badge :status="$m->status" /></td>
+                        <td class="px-4 py-3">
+                            <div class="flex justify-end items-center gap-3">
+                                <button type="button" x-on:click="openModal('/medicines/{{ $m->medicine_id }}')" title="View" class="text-slate-400 hover:text-blue-600"><x-icon name="eye" class="h-4 w-4" /></button>
+                                @can('medicine.update')
+                                    <button type="button" x-on:click="openModal('/medicines/{{ $m->medicine_id }}/edit')" title="Edit" class="text-slate-400 hover:text-blue-600"><x-icon name="pencil" class="h-4 w-4" /></button>
+                                @endcan
+                                @can('medicine_batch.create')
+                                    <button type="button" x-on:click="openModal('/medicine-batches/create?medicine_id={{ $m->medicine_id }}')" class="inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:underline">
+                                        <x-icon name="plus" class="h-3.5 w-3.5" /> Add Batch
+                                    </button>
+                                @endcan
+                            </div>
+                        </td>
                     </tr>
                 @empty
-                    <tr><td colspan="7" class="px-4 py-8 text-center text-slate-400">No medicines.</td></tr>
+                    <tr><td colspan="8" class="px-4 py-8 text-center text-slate-400">No medicines.</td></tr>
                 @endforelse
                 </tbody>
             </table>
@@ -69,7 +97,7 @@
         </div>
 
         {{-- Medicine Batches --}}
-        <div x-show="tab === 'batches'">
+        <div x-show="tab === 'batches'" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
             <table class="w-full text-sm">
                 <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
                     <th class="px-4 py-3">Batch ID</th><th class="px-4 py-3">Medicine</th><th class="px-4 py-3">Batch #</th><th class="px-4 py-3">Manufacture</th><th class="px-4 py-3">Expiry</th><th class="px-4 py-3">Quantity</th><th class="px-4 py-3">Status</th><th class="px-4 py-3 text-right">Actions</th>
@@ -102,7 +130,7 @@
         </div>
 
         {{-- Prescriptions --}}
-        <div x-show="tab === 'prescriptions'">
+        <div x-show="tab === 'prescriptions'" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
             <table class="w-full text-sm">
                 <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
                     <th class="px-4 py-3">Prescription ID</th><th class="px-4 py-3">Patient</th><th class="px-4 py-3">Doctor</th><th class="px-4 py-3">Medical Record</th><th class="px-4 py-3">Date</th><th class="px-4 py-3">Notes</th><th class="px-4 py-3 text-right">Actions</th>
@@ -134,7 +162,7 @@
         </div>
 
         {{-- Dispensing Records --}}
-        <div x-show="tab === 'dispensing'">
+        <div x-show="tab === 'dispensing'" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
             <table class="w-full text-sm">
                 <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
                     <th class="px-4 py-3">Dispensing ID</th><th class="px-4 py-3">Prescription</th><th class="px-4 py-3">Patient</th><th class="px-4 py-3">Pharmacist</th><th class="px-4 py-3">Date</th><th class="px-4 py-3">Status</th><th class="px-4 py-3 text-right">Actions</th>

@@ -13,63 +13,87 @@
      }"
      x-init="@if($errors->any() && old('_modal_target'))openModal(@js(old('_modal_target')))@endif"
 >
-    <x-page-header title="Laboratory & Diagnostics">
-        <x-slot:actions>
-            <template x-if="tab === 'orders'">
-                @can('lab_order.create')
-                    <x-button variant="primary" x-on:click="openModal('/lab-orders/create')"><x-icon name="plus" class="h-4 w-4" /> Order Lab Test</x-button>
-                @endcan
-            </template>
-        </x-slot:actions>
-    </x-page-header>
+    <x-page-header title="Laboratory & Diagnostics" />
 
     <div class="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <x-stat-card label="Pending Test Orders" :value="$stats['pending']" icon="clipboard" icon-color="amber" />
+        <x-stat-card label="Pending Test Orders" :value="$stats['pending']" icon="clock" icon-color="amber" />
         <x-stat-card label="In Progress Tests" :value="$stats['in_progress']" icon="flask" icon-color="blue" />
-        <x-stat-card label="Completed Tests" :value="$stats['completed']" icon="clipboard" icon-color="green" />
-        <x-stat-card label="Pending Result Entry" :value="$stats['pending_results']" icon="document" icon-color="purple" />
+        <x-stat-card label="Completed Tests" :value="$stats['completed']" icon="check" icon-color="green" />
+        <x-stat-card label="Pending Result Entry" :value="$stats['pending_results']" icon="clipboard" icon-color="purple" />
     </div>
 
     <div class="mb-4 flex flex-wrap gap-1.5">
-        <button type="button" @click="tab = 'orders'" :class="tab === 'orders' ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 border border-slate-200'" class="rounded-lg px-3.5 py-2 text-sm font-medium">Lab Test Orders</button>
-        <button type="button" @click="tab = 'results'" :class="tab === 'results' ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 border border-slate-200'" class="rounded-lg px-3.5 py-2 text-sm font-medium">Test Results</button>
-        <button type="button" @click="tab = 'reports'" :class="tab === 'reports' ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 border border-slate-200'" class="rounded-lg px-3.5 py-2 text-sm font-medium">Lab Reports</button>
+        <button type="button" @click="tab = 'orders'" :class="tab === 'orders' ? 'bg-blue-600 text-white shadow-well' : 'bg-paper-card text-slate-600 border border-manila/60 shadow-emboss'" class="rounded-lg px-3.5 py-2 text-sm font-medium">Lab Test Orders</button>
+        <button type="button" @click="tab = 'results'" :class="tab === 'results' ? 'bg-blue-600 text-white shadow-well' : 'bg-paper-card text-slate-600 border border-manila/60 shadow-emboss'" class="rounded-lg px-3.5 py-2 text-sm font-medium">Test Results</button>
+        <button type="button" @click="tab = 'reports'" :class="tab === 'reports' ? 'bg-blue-600 text-white shadow-well' : 'bg-paper-card text-slate-600 border border-manila/60 shadow-emboss'" class="rounded-lg px-3.5 py-2 text-sm font-medium">Lab Reports</button>
     </div>
 
-    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+    <template x-if="tab === 'orders'">
+        <form method="get" action="/lab-orders" class="mb-4 flex flex-wrap items-center gap-3">
+            <input type="hidden" name="tab" value="orders">
+            <div class="relative min-w-[240px] flex-1">
+                <x-icon name="search" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <input type="text" name="q" value="{{ $q }}" placeholder="Search by order ID, patient, or test type..."
+                       class="w-full rounded-lg border border-manila/60 bg-paper-card py-2.5 pl-9 pr-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+            </div>
+            <div class="flex flex-wrap items-center gap-1.5">
+                @foreach(['' => 'All', 'pending' => 'Pending', 'in_progress' => 'In Progress', 'completed' => 'Completed'] as $value => $label)
+                    <button type="submit" name="status" value="{{ $value }}"
+                            class="rounded-full px-3 py-1.5 text-sm font-medium {{ (string) $status === (string) $value ? 'bg-blue-600 text-white shadow-well' : 'bg-paper-card text-slate-600 border border-manila/60 shadow-emboss' }}">{{ $label }}</button>
+                @endforeach
+            </div>
+            @can('lab_order.create')
+                <x-button variant="primary" type="button" x-on:click="openModal('/lab-orders/create')"><x-icon name="plus" class="h-4 w-4" /> Order Lab Test</x-button>
+            @endcan
+        </form>
+    </template>
+
+    <div class="overflow-x-auto rounded-xl border border-manila/60 bg-paper-card">
         {{-- Lab Test Orders --}}
-        <div x-show="tab === 'orders'">
+        <div x-show="tab === 'orders'" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
             <table class="w-full text-sm">
                 <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
-                    <th class="px-4 py-3">Order ID</th><th class="px-4 py-3">Patient</th><th class="px-4 py-3">Test Type</th><th class="px-4 py-3">Ordered By</th><th class="px-4 py-3">Technician</th><th class="px-4 py-3">Status</th><th class="px-4 py-3 text-right">Actions</th>
+                    <th class="px-4 py-3">Order ID</th><th class="px-4 py-3">Patient</th><th class="px-4 py-3">Test Type</th><th class="px-4 py-3">Ordered By</th><th class="px-4 py-3">Assigned Lab Technician</th><th class="px-4 py-3">Priority</th><th class="px-4 py-3">Status</th><th class="px-4 py-3 text-right">Actions</th>
                 </tr></thead>
                 <tbody>
                 @forelse($orders as $o)
                     <tr class="border-b border-slate-50 last:border-0">
                         <td class="px-4 py-3 font-medium text-blue-600">{{ $o->test_order_id }}</td>
-                        <td class="px-4 py-3 text-slate-900">{{ $o->patient_name }}</td>
+                        <td class="px-4 py-3">
+                            <div class="text-slate-900">{{ $o->patient_name }}</div>
+                            <div class="text-xs text-slate-400">{{ $o->patient_id }}</div>
+                        </td>
                         <td class="px-4 py-3 text-slate-600">{{ $o->test_name }}</td>
                         <td class="px-4 py-3 text-slate-600">{{ $o->doctor_name }}</td>
                         <td class="px-4 py-3 text-slate-600">{{ $o->technician_name ?: '—' }}</td>
+                        <td class="px-4 py-3">
+                            @if(($o->priority ?? null) === 'stat')
+                                <span class="text-sm font-semibold text-red-600">STAT</span>
+                            @elseif(($o->priority ?? null) === 'urgent')
+                                <span class="text-sm font-medium text-amber-600">Urgent</span>
+                            @else
+                                <span class="text-sm text-slate-600">Routine</span>
+                            @endif
+                        </td>
                         <td class="px-4 py-3"><x-badge :status="$o->status" /></td>
                         <td class="px-4 py-3">
                             <div class="flex justify-end gap-2">
-                                <button type="button" x-on:click="openModal('/lab-orders/{{ $o->test_order_id }}')" class="text-slate-400 hover:text-blue-600"><x-icon name="eye" class="h-4 w-4" /></button>
-                                @can('lab_order.update')
-                                    @if($o->status !== 'completed')
-                                        <button type="button" x-on:click="openModal('/lab-orders/{{ $o->test_order_id }}/status')" class="text-slate-400 hover:text-blue-600"><x-icon name="pencil" class="h-4 w-4" /></button>
-                                    @endif
-                                @endcan
+                                <button type="button" x-on:click="openModal('/lab-orders/{{ $o->test_order_id }}')" title="View" class="text-slate-400 hover:text-blue-600"><x-icon name="eye" class="h-4 w-4" /></button>
                                 @can('lab_result.create')
                                     @if($o->status !== 'completed')
-                                        <button type="button" x-on:click="openModal('/lab-results/create/{{ $o->test_order_id }}')" class="text-slate-400 hover:text-green-600"><x-icon name="document" class="h-4 w-4" /></button>
+                                        <button type="button" x-on:click="openModal('/lab-results/create/{{ $o->test_order_id }}')" title="Enter Result" class="text-slate-400 hover:text-green-600"><x-icon name="clipboard" class="h-4 w-4" /></button>
+                                    @endif
+                                @endcan
+                                @can('lab_order.update')
+                                    @if($o->status !== 'completed')
+                                        <button type="button" x-on:click="openModal('/lab-orders/{{ $o->test_order_id }}/status')" title="Update Status" class="text-slate-400 hover:text-blue-600"><x-icon name="refresh" class="h-4 w-4" /></button>
                                     @endif
                                 @endcan
                             </div>
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="7" class="px-4 py-8 text-center text-slate-400">No lab orders.</td></tr>
+                    <tr><td colspan="8" class="px-4 py-8 text-center text-slate-400">No lab orders.</td></tr>
                 @endforelse
                 </tbody>
             </table>
@@ -77,7 +101,7 @@
         </div>
 
         {{-- Test Results --}}
-        <div x-show="tab === 'results'">
+        <div x-show="tab === 'results'" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
             <table class="w-full text-sm">
                 <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
                     <th class="px-4 py-3">Result ID</th><th class="px-4 py-3">Order ID</th><th class="px-4 py-3">Patient</th><th class="px-4 py-3">Test Type</th><th class="px-4 py-3">Result Value</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Entered By</th><th class="px-4 py-3 text-right">Actions</th>
@@ -110,7 +134,7 @@
         </div>
 
         {{-- Lab Reports --}}
-        <div x-show="tab === 'reports'">
+        <div x-show="tab === 'reports'" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
             <table class="w-full text-sm">
                 <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wider text-slate-400">
                     <th class="px-4 py-3">Report ID</th><th class="px-4 py-3">Order ID</th><th class="px-4 py-3">Patient</th><th class="px-4 py-3">Test Type</th><th class="px-4 py-3">Generated By</th><th class="px-4 py-3">Generated At</th><th class="px-4 py-3">Report File</th>
@@ -130,7 +154,7 @@
                             @else
                                 <span class="text-xs text-slate-400">Processing…</span>
                             @endif
-                            @can('lab_result.create')
+                            @can('lab_report.create')
                                 <form action="/lab-reports/{{ $r->lab_report_id }}/regenerate" method="POST" class="inline">
                                     @csrf
                                     <button type="submit" class="ml-2 text-xs font-medium text-slate-500 hover:underline">Regenerate</button>

@@ -22,7 +22,7 @@
 </div>
 
 <div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-2">
-    <div class="rounded-xl border border-slate-200 bg-white p-5">
+    <div class="shadow-paper rounded-xl border border-manila/60 bg-paper-card p-5">
         <p class="mb-3 font-semibold text-slate-900">Today's Patients</p>
         <div class="space-y-3">
             @forelse($todayPatients as $p)
@@ -39,7 +39,7 @@
         </div>
     </div>
 
-    <div class="rounded-xl border border-slate-200 bg-white p-5">
+    <div class="shadow-paper rounded-xl border border-manila/60 bg-paper-card p-5">
         <p class="mb-3 font-semibold text-slate-900">Pending Lab Results</p>
         <div class="space-y-3">
             @forelse($pendingLabResults as $r)

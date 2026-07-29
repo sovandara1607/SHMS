@@ -78,7 +78,7 @@ class PatientManagementTest extends TestCase
             '*/api/appointments*' => Http::response(['data' => [], 'meta' => ['current_page' => 1, 'last_page' => 1, 'total' => 0, 'per_page' => 100]]),
             '*/api/medical-records*' => Http::response(['data' => [], 'meta' => ['current_page' => 1, 'last_page' => 1, 'total' => 0, 'per_page' => 100]]),
             '*/api/patients/PAT0001/room-assignments' => Http::response([]),
-            '*/api/bills*' => Http::response(['bills' => ['data' => [], 'meta' => ['current_page' => 1, 'last_page' => 1, 'total' => 0, 'per_page' => 100]], 'payments' => ['data' => [], 'meta' => ['current_page' => 1, 'last_page' => 1, 'total' => 0, 'per_page' => 20]], 'stats' => ['total_amount' => 0, 'unpaid' => 0, 'partially_paid' => 0, 'paid' => 0]]),
+            '*/api/bills*' => Http::response(['bills' => ['data' => [], 'meta' => ['current_page' => 1, 'last_page' => 1, 'total' => 0, 'per_page' => 100]], 'payments' => ['data' => [], 'meta' => ['current_page' => 1, 'last_page' => 1, 'total' => 0, 'per_page' => 20]], 'stats' => ['total_amount' => 0, 'total_revenue' => 0, 'pending_amount' => 0, 'unpaid' => 0, 'partially_paid' => 0, 'paid' => 0]]),
             '*/api/staff-shifts' => Http::response([]),
             '*/api/patients/PAT0001/release-room' => Http::response(['released' => false]),
         ]);
@@ -119,7 +119,7 @@ class PatientManagementTest extends TestCase
         $receptionist = $this->makeUser('receptionist');
 
         Http::fake([
-            '*/api/bills*' => Http::response(['bills' => ['data' => [], 'meta' => ['current_page' => 1, 'last_page' => 1, 'total' => 0, 'per_page' => 100]], 'payments' => ['data' => [], 'meta' => ['current_page' => 1, 'last_page' => 1, 'total' => 0, 'per_page' => 20]], 'stats' => ['total_amount' => 0, 'unpaid' => 0, 'partially_paid' => 0, 'paid' => 0]]),
+            '*/api/bills*' => Http::response(['bills' => ['data' => [], 'meta' => ['current_page' => 1, 'last_page' => 1, 'total' => 0, 'per_page' => 100]], 'payments' => ['data' => [], 'meta' => ['current_page' => 1, 'last_page' => 1, 'total' => 0, 'per_page' => 20]], 'stats' => ['total_amount' => 0, 'total_revenue' => 0, 'pending_amount' => 0, 'unpaid' => 0, 'partially_paid' => 0, 'paid' => 0]]),
         ]);
 
         $this->actingAs($receptionist)->get('/bills')->assertOk();
@@ -188,7 +188,7 @@ class PatientManagementTest extends TestCase
             '*/api/appointments*' => Http::response(['data' => [], 'meta' => ['current_page' => 1, 'last_page' => 1, 'total' => 0, 'per_page' => 100]]),
             '*/api/medical-records*' => Http::response(['data' => [], 'meta' => ['current_page' => 1, 'last_page' => 1, 'total' => 0, 'per_page' => 100]]),
             '*/api/patients/PAT0001/room-assignments' => Http::response([]),
-            '*/api/bills*' => Http::response(['bills' => ['data' => [], 'meta' => ['current_page' => 1, 'last_page' => 1, 'total' => 0, 'per_page' => 100]], 'payments' => ['data' => [], 'meta' => ['current_page' => 1, 'last_page' => 1, 'total' => 0, 'per_page' => 20]], 'stats' => ['total_amount' => 0, 'unpaid' => 0, 'partially_paid' => 0, 'paid' => 0]]),
+            '*/api/bills*' => Http::response(['bills' => ['data' => [], 'meta' => ['current_page' => 1, 'last_page' => 1, 'total' => 0, 'per_page' => 100]], 'payments' => ['data' => [], 'meta' => ['current_page' => 1, 'last_page' => 1, 'total' => 0, 'per_page' => 20]], 'stats' => ['total_amount' => 0, 'total_revenue' => 0, 'pending_amount' => 0, 'unpaid' => 0, 'partially_paid' => 0, 'paid' => 0]]),
         ]);
 
         $this->actingAs($doctorUser)->get('/patients')->assertOk();

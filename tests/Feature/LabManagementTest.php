@@ -57,7 +57,7 @@ class LabManagementTest extends TestCase
                 'orders' => $this->listResponse([[
                     'test_order_id' => 'LAB0001', 'patient_id' => 'PAT0001', 'doctor_id' => 'DOC0001',
                     'test_name' => 'Blood Test', 'status' => 'pending', 'patient_name' => 'John Doe',
-                    'doctor_name' => 'David Heart', 'technician_name' => null,
+                    'doctor_name' => 'David Heart', 'technician_name' => null, 'priority' => 'routine',
                 ]]),
                 'results' => $this->listResponse([]),
                 'reports' => $this->listResponse([]),

@@ -30,7 +30,7 @@ return [
         'receptionist' => [
             'dashboard.view',
             'patient.view', 'patient.create', 'patient.update', 'patient.discharge',
-            'appointment.view', 'appointment.create', 'appointment.update', 'appointment.cancel',
+            'appointment.view', 'appointment.create', 'appointment.update', 'appointment.cancel', 'appointment.complete',
             'room.view', 'room.assign',
             'schedule.view',
             'bill.view', 'bill.create', 'bill.update',
@@ -41,7 +41,7 @@ return [
         'doctor' => [
             'dashboard.view',
             'patient.view',
-            'appointment.view',
+            'appointment.view', 'appointment.complete',
             'medical_record.view', 'medical_record.create', 'medical_record.adjust',
             'prescription.view', 'prescription.create',
             'procedure.view', 'procedure.create',
@@ -74,7 +74,7 @@ return [
             'dashboard.view',
             'lab_order.view', 'lab_order.update',
             'lab_result.view', 'lab_result.create',
-            'lab_equipment.view', 'lab_equipment.manage',
+            'lab_equipment.view',
             'lab_report.view', 'lab_report.create',
             'patient.view',
             'profile.view', 'profile.update',

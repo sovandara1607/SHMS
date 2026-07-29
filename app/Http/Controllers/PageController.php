@@ -16,15 +16,6 @@ class PageController extends Controller
 {
     public function __construct(private CentralServiceClient $centralService) {}
 
-    public function schedule(Request $request)
-    {
-        $body = $this->centralService->getSchedulePage(['page' => (int) $request->query('page', 1)])->throw()->json();
-        $rows = $this->paginatorFrom($body, $request);
-
-        return $this->table('Schedule Management',
-            ['shift_id' => 'Shift', 'staff_name' => 'Staff', 'shift_date' => 'Date', 'start_time' => 'Start', 'end_time' => 'End', 'shift_type' => 'Type', 'status' => 'Status'], $rows);
-    }
-
     public function prescriptions(Request $request)
     {
         $body = $this->centralService->getPharmacyOverview(['prescriptions_page' => (int) $request->query('page', 1)])->throw()->json();

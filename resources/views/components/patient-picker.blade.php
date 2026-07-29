@@ -28,8 +28,8 @@
     >
     <input type="hidden" name="{{ $name }}" x-model="selectedId" @if($required) required @endif>
     <div
-        x-show="open" x-on:click.outside="open = false" style="display: none;"
-        class="absolute z-10 mt-1 max-h-56 w-full overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-lg"
+        x-show="open" x-on:click.outside="open = false" x-transition style="display: none;"
+        class="absolute z-10 mt-1 max-h-56 w-full overflow-y-auto rounded-lg border border-manila/60 bg-paper-card shadow-lg"
     >
         <template x-for="p in results" :key="p.id">
             <button type="button" x-on:click="select(p)" class="block w-full px-3.5 py-2 text-left text-sm hover:bg-slate-50" x-text="p.label"></button>

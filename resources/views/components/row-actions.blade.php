@@ -4,7 +4,7 @@
         <x-icon name="dots" class="h-4 w-4" />
     </button>
     <div x-show="open" x-on:click="open = false" x-transition style="display: none;"
-         class="absolute right-0 z-20 mt-1 w-40 rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
+         class="absolute right-0 z-20 mt-1 w-40 rounded-lg border border-manila/60 bg-paper-card py-1 shadow-lg">
         {{ $slot }}
     </div>
 </div>

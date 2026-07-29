@@ -15,7 +15,7 @@
     <x-page-header title="Roles & Permissions" />
 
     <div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-[280px_1fr]">
-        <div class="rounded-xl border border-slate-200 bg-white p-3">
+        <div class="shadow-paper rounded-xl border border-manila/60 bg-paper-card p-3">
             <p class="mb-2 px-2 text-xs font-semibold uppercase tracking-wider text-slate-400">System Roles</p>
             <p class="mb-3 px-2 text-xs text-slate-400">{{ count($roles) }} roles defined</p>
             <div class="space-y-1">

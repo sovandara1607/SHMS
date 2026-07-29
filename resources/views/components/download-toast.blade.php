@@ -1,5 +1,5 @@
 <div id="download-toast"
-     class="fixed bottom-5 right-5 z-[110] hidden max-w-sm items-center gap-2.5 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm shadow-lg"
+     class="fixed bottom-5 right-5 z-[110] hidden max-w-sm items-center gap-2.5 rounded-lg border border-manila/60 bg-paper-card px-4 py-3 text-sm shadow-lg"
      role="status" aria-live="polite">
     <svg id="download-toast-spinner" class="h-4 w-4 shrink-0 animate-spin text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
