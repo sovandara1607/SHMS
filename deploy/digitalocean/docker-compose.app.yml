@@ -1,0 +1,66 @@
+name: smart-hospital-app
+
+services:
+  database-final:
+    build:
+      context: ../..
+    restart: unless-stopped
+    expose:
+      - "8000"
+    environment:
+      APP_NAME: "Smart Hospital Management System"
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_KEY: ${DATABASE_FINAL_APP_KEY:?set DATABASE_FINAL_APP_KEY in .env.digitalocean}
+      APP_URL: https://${APP_DOMAIN:?set APP_DOMAIN in .env.digitalocean}
+
+      DB_CONNECTION: pgsql
+      DB_HOST: ${POSTGRES_HOST:?set POSTGRES_HOST in .env.digitalocean}
+      DB_PORT: 5432
+      DB_DATABASE: smart_hospital
+      DB_USERNAME: ${POSTGRES_USER:-smart_hospital}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.digitalocean}
+
+      MONGODB_URI: mongodb://${MONGO_USER:-smart_hospital}:${MONGO_PASSWORD:?set MONGO_PASSWORD in .env.digitalocean}@${MONGO_HOST:?set MONGO_HOST in .env.digitalocean}:27017/?authSource=admin
+      MONGODB_DATABASE: smart_hospital_docs
+
+      REDIS_CLIENT: phpredis
+      REDIS_HOST: ${REDIS_HOST:?set REDIS_HOST in .env.digitalocean}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?set REDIS_PASSWORD in .env.digitalocean}
+      REDIS_PORT: 6379
+      REDIS_BUS_DB: 2
+
+      SESSION_DRIVER: redis
+      CACHE_STORE: redis
+      QUEUE_CONNECTION: redis
+      FILESYSTEM_DISK: local
+
+      CENTRAL_SERVICE_BASE_URL: http://${CENTRAL_SERVICE_HOST:?set CENTRAL_SERVICE_HOST in .env.digitalocean}:8100
+      CENTRAL_SERVICE_API_KEY: ${CENTRAL_SERVICE_API_KEY:?set CENTRAL_SERVICE_API_KEY in .env.digitalocean}
+
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID:-}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY:-}
+      R2_BUCKET: ${R2_BUCKET:-}
+      R2_ENDPOINT: ${R2_ENDPOINT:-}
+      R2_URL: ${R2_URL:-}
+
+      MAIL_MAILER: log
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - database-final
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:?set APP_DOMAIN in .env.digitalocean}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:
