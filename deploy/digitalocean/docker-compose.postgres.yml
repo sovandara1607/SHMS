@@ -1,0 +1,22 @@
+name: smart-hospital-postgres
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: smart_hospital
+      POSTGRES_USER: ${POSTGRES_USER:-smart_hospital}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.digitalocean}
+    ports:
+      - "5432:5432"
+    volumes:
+      - smart_hospital_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-smart_hospital} -d smart_hospital"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  smart_hospital_pgdata:
