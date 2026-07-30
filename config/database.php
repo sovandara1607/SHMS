@@ -172,6 +172,12 @@ return [
             'backoff_algorithm' => env('REDIS_BACKOFF_ALGORITHM', 'decorrelated_jitter'),
             'backoff_base' => env('REDIS_BACKOFF_BASE', 100),
             'backoff_cap' => env('REDIS_BACKOFF_CAP', 1000),
+            // Fail fast rather than let a network blip hang a clinician's
+            // request (this connection backs sessions — see config/session.php).
+            'options' => [
+                'timeout' => env('REDIS_CONNECT_TIMEOUT', 0.25),
+                'read_write_timeout' => env('REDIS_RW_TIMEOUT', 0.25),
+            ],
         ],
 
         'cache' => [
@@ -185,6 +191,10 @@ return [
             'backoff_algorithm' => env('REDIS_BACKOFF_ALGORITHM', 'decorrelated_jitter'),
             'backoff_base' => env('REDIS_BACKOFF_BASE', 100),
             'backoff_cap' => env('REDIS_BACKOFF_CAP', 1000),
+            'options' => [
+                'timeout' => env('REDIS_CONNECT_TIMEOUT', 0.25),
+                'read_write_timeout' => env('REDIS_RW_TIMEOUT', 0.25),
+            ],
         ],
 
         // Shared handoff point with the separate central-service repo. See
@@ -200,6 +210,10 @@ return [
             'port' => env('REDIS_PORT', '6379'),
             'database' => env('REDIS_BUS_DB', '2'),
             'prefix' => '',
+            'options' => [
+                'timeout' => env('REDIS_CONNECT_TIMEOUT', 0.25),
+                'read_write_timeout' => env('REDIS_RW_TIMEOUT', 0.25),
+            ],
         ],
 
     ],

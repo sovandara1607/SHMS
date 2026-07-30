@@ -7,6 +7,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Request;
+use Predis\PredisException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -75,5 +76,23 @@ return Application::configure(basePath: dirname(__DIR__))
             report($e);
 
             return back()->with('error', 'Something went wrong processing your request. Please try again.');
+        });
+
+        // Redis backs sessions/cache/the central-service bus (see
+        // config/database.php) — an outage there can surface as an uncaught
+        // Predis exception from almost anywhere in the request lifecycle,
+        // including session start before routing even happens. Left alone,
+        // that would render Laravel's raw debug/error page. Show a plain,
+        // non-alarming "try again" page instead — this doesn't make session
+        // storage itself fail-open (that still needs Redis up), it just
+        // converts an ungraceful crash into an honest, controlled response.
+        $exceptions->render(function (PredisException $e, Request $request) {
+            report($e);
+
+            if ($request->is('api/*')) {
+                return response()->json(['message' => 'The system is temporarily unavailable. Please try again shortly.'], 503);
+            }
+
+            return response()->view('errors.degraded', [], 503);
         });
     })->create();
