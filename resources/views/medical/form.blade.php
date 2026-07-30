@@ -11,7 +11,7 @@
         </select></div>
         <div><label>Doctor *</label><select name="doctor_id" required>
             <option value="">— select —</option>
-            @foreach($doctors as $d)<option value="{{ $d->doctor_id }}">{{ optional($d->staff)->first_name }} {{ optional($d->staff)->last_name }}</option>@endforeach
+            @foreach($doctors as $d)<option value="{{ $d->doctor_id }}">{{ $d->first_name }} {{ $d->last_name }}</option>@endforeach
         </select></div>
     </div>
     <label>Symptoms</label><textarea class="input" name="symptoms" rows="2">{{ old('symptoms') }}</textarea>

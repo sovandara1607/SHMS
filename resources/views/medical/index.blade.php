@@ -39,7 +39,7 @@
         <select onchange="location.href='/medical-records?q={{ urlencode($q) }}&date={{ urlencode($date ?? '') }}&doctor_id='+this.value" class="rounded-lg border border-manila/60 bg-paper-card px-3 py-2.5 text-sm">
             <option value="">All Doctors</option>
             @foreach($doctors as $d)
-                <option value="{{ $d->doctor_id }}" @selected($doctorId === $d->doctor_id)>{{ $d->name() }}</option>
+                <option value="{{ $d->doctor_id }}" @selected($doctorId === $d->doctor_id)>{{ $d->name }}</option>
             @endforeach
         </select>
         <input type="date" value="{{ $date }}"

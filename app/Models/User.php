@@ -27,6 +27,17 @@ class User extends Authenticatable
 
     protected $hidden = ['password_hash', 'remember_token'];
 
+    /**
+     * Per-instance memoization for permissions(). Auth::user()/$request
+     * ->user() return the same User instance for the whole request (the
+     * guard resolves and caches it once), and permissions() is called
+     * repeatedly per request — the RBAC Gate check, EnsurePermission
+     * middleware, and every @can/hasPermission() in views all hit it. A
+     * fresh instance is resolved on the next request regardless, so this
+     * carries no cross-request staleness risk.
+     */
+    private ?array $permissionsCache = null;
+
     /** Laravel auth reads the hash from here instead of a `password` column. */
     public function getAuthPassword(): string
     {
@@ -53,15 +64,19 @@ class User extends Authenticatable
      */
     public function permissions(): array
     {
+        if ($this->permissionsCache !== null) {
+            return $this->permissionsCache;
+        }
+
         $protected = config("permissions.permissions.{$this->role}", []);
         if (in_array('*', $protected, true)) {
-            return ['*'];
+            return $this->permissionsCache = ['*'];
         }
 
         $baseline = ['dashboard.view', 'profile.view', 'profile.update'];
         $stored = RolePermission::where('role', $this->role)->pluck('capability')->all();
 
-        return array_values(array_unique(array_merge($baseline, $stored)));
+        return $this->permissionsCache = array_values(array_unique(array_merge($baseline, $stored)));
     }
 
     /** Does the role grant a capability? '*' (admin) grants everything. */

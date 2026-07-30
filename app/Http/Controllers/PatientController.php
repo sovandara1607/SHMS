@@ -9,6 +9,7 @@ use App\Models\Doctor;
 use App\Models\Nurse;
 use App\Services\AuditLogger;
 use App\Services\CentralServiceClient;
+use App\Support\DropdownCache;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -156,11 +157,20 @@ class PatientController extends Controller
             abort_unless($isAssigned, 403, 'You are not assigned to this patient.');
         }
 
-        // Frequently-viewed patient cache (Redis, 5 min).
-        cache()->put('patient:viewed:' . $patient->patient_id, $patient->toJson(), 300);
-
-        $doctors = Doctor::with('staff')->get();
-        $nurses = Nurse::with('staff')->get();
+        $doctors = DropdownCache::remember('doctors-with-staff', fn () => Doctor::with('staff')->get()->map(fn ($d) => (object) [
+            'doctor_id' => $d->doctor_id,
+            'staff_id' => $d->staff_id,
+            'specialization' => $d->specialization,
+            'name' => $d->name(),
+            'first_name' => $d->staff?->first_name,
+            'last_name' => $d->staff?->last_name,
+        ]));
+        $nurses = DropdownCache::remember('nurses-with-staff', fn () => Nurse::with('staff')->get()->map(fn ($n) => (object) [
+            'nurse_id' => $n->nurse_id,
+            'staff_id' => $n->staff_id,
+            'ward_name' => $n->ward_name,
+            'name' => $n->name(),
+        ]));
         $shifts = collect($this->centralService->listStaffShifts()->throw()->json())->map(fn (array $s) => (object) $s);
 
         return view('patient.show', compact('patient', 'doctors', 'nurses', 'shifts'));

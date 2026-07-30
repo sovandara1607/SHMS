@@ -43,12 +43,17 @@ class AdminController extends Controller
         $role = $request->query('role');
         $status = $request->query('status');
 
-        $rows = $this->staffQuery($q, $role, $status)->get();
+        $query = $this->staffQuery($q, $role, $status);
 
-        return response()->streamDownload(function () use ($rows) {
+        // Streamed via cursor() rather than get() — this is a 6-table join
+        // (staff + 5 subtype LEFT JOINs + department), so loading the full
+        // filtered result set into memory before streaming would be the
+        // single most memory-risky endpoint in the app at 1M+ staff rows
+        // (matches the pattern already used in PatientController::exportPatients).
+        return response()->streamDownload(function () use ($query) {
             $out = fopen('php://output', 'w');
             fputcsv($out, ['Staff ID', 'Name', 'Title', 'Email', 'Role', 'Department', 'Specialization / Unit', 'Account Status', 'Employment Status']);
-            foreach ($rows as $r) {
+            foreach ($query->cursor() as $r) {
                 fputcsv($out, [
                     $r->staff_id, $r->full_name, $r->title, $r->email,
                     $r->role ? ucwords(str_replace('_', ' ', $r->role)) : '',
@@ -106,7 +111,19 @@ class AdminController extends Controller
             return response()->json([]);
         }
 
-        $like = '%' . strtolower($q) . '%';
+        // whereLike(..., caseSensitive: false) rather than LOWER(...) LIKE
+        // or a bare 'ilike' operator string: on Postgres this compiles to a
+        // native ilike, which can actually use the trigram GIN indexes on
+        // staff_id/full name (those were built on the raw expression, and
+        // a GIN trgm index can't satisfy a filter wrapped in LOWER() since
+        // that's a different expression than what's indexed). A bare
+        // 'ilike' operator string bypasses Laravel's whereLike() dispatch
+        // and gets emitted literally, which isn't portable (SQLite has no
+        // ILIKE keyword) — whereLike() compiles per-driver instead, so it
+        // stays correct on both. ilike/whereLike are already
+        // case-insensitive, so which rows match is unchanged either way —
+        // only the query plan (and portability) changes.
+        $like = '%' . $q . '%';
         $rows = DB::table('staff as s')
             ->join('users as u', 'u.staff_id', '=', 's.staff_id')
             ->leftJoin('doctor as d', 'd.staff_id', '=', 's.staff_id')
@@ -115,8 +132,8 @@ class AdminController extends Controller
             ->leftJoin('department as dept_nurse', 'dept_nurse.department_id', '=', 'n.department_id')
             ->where('s.status', 'active')
             ->where(function ($query) use ($like) {
-                $query->whereRaw('LOWER(s.staff_id) LIKE ?', [$like])
-                    ->orWhereRaw("LOWER(s.first_name||' '||s.last_name) LIKE ?", [$like]);
+                $query->whereLike('s.staff_id', $like)
+                    ->orWhereLike(DB::raw("(s.first_name||' '||s.last_name)"), $like);
             })
             ->orderBy('s.last_name')
             ->limit(20)
@@ -490,14 +507,29 @@ class AdminController extends Controller
 
     public function reports()
     {
+        // Each figure hits a different table, so FILTER (which only helps
+        // multiple counts against the SAME table) doesn't apply here — but
+        // 7 independent scalar subqueries in one SELECT is still 1 round
+        // trip instead of 7 (see analysis.md §4.8/§4.6).
+        $row = DB::selectOne("
+            select
+                (select count(*) from patient where patient_status <> 'discharged') as patients_active,
+                (select count(*) from appointment) as appointments_total,
+                (select count(*) from medical_record) as medical_records,
+                (select count(*) from prescription) as prescriptions,
+                (select count(*) from lab_test_order) as lab_orders,
+                (select coalesce(sum(amount_paid), 0) from payment) as revenue_collected,
+                (select coalesce(sum(total_amount), 0) from bill where status <> 'paid') as outstanding_unpaid
+        ");
+
         $report = [
-            'Patients (active)'    => DB::table('patient')->where('patient_status', '<>', 'discharged')->count(),
-            'Appointments total'   => DB::table('appointment')->count(),
-            'Medical records'      => DB::table('medical_record')->count(),
-            'Prescriptions'        => DB::table('prescription')->count(),
-            'Lab orders'           => DB::table('lab_test_order')->count(),
-            'Revenue collected'    => DB::table('payment')->sum('amount_paid'),
-            'Outstanding (unpaid)' => DB::table('bill')->where('status', '<>', 'paid')->sum('total_amount'),
+            'Patients (active)'    => (int) $row->patients_active,
+            'Appointments total'   => (int) $row->appointments_total,
+            'Medical records'      => (int) $row->medical_records,
+            'Prescriptions'        => (int) $row->prescriptions,
+            'Lab orders'           => (int) $row->lab_orders,
+            'Revenue collected'    => (float) $row->revenue_collected,
+            'Outstanding (unpaid)' => (float) $row->outstanding_unpaid,
         ];
         $rows = collect($report)->map(fn ($v, $k) => ['metric' => $k, 'value' => $v])->values();
 

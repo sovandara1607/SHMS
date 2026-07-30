@@ -123,6 +123,44 @@ class ScheduleManagementTest extends TestCase
         $response->assertJsonFragment(['id' => 'STF0010', 'role' => 'doctor', 'department' => 'Cardiology']);
     }
 
+    /**
+     * Guards against a regression to the LOWER(...) LIKE form: that shape
+     * can't use the trigram GIN index built on the raw (non-lowered)
+     * expression, so it silently falls back to a full table scan on
+     * `staff` at scale even though behavior looks identical at test size.
+     * Asserts both the case-insensitive matching behavior AND the actual
+     * generated SQL, since LOWER()+LIKE and whereLike() can look
+     * behaviorally identical while having very different query plans.
+     * whereLike(caseSensitive: false) compiles to a real `ilike` on
+     * Postgres (production) but to plain `like` on SQLite (this test's
+     * driver — SQLite has no ILIKE keyword, and its LIKE is already
+     * case-insensitive for ASCII) — the assertion below is driver-aware
+     * for that reason; what's constant across both is "no LOWER(".
+     */
+    public function test_staff_search_is_case_insensitive_and_uses_ilike_not_lower(): void
+    {
+        $admin = $this->makeAdmin();
+        $this->makeDoctorFixture();
+
+        $queries = [];
+        \Illuminate\Support\Facades\DB::listen(function ($query) use (&$queries) {
+            $queries[] = $query->sql;
+        });
+
+        // Deliberately mixed/uppercase input — must still match "Doc Tor"
+        // now that the LOWER()-wrapping is gone (ilike/whereLike is
+        // inherently case-insensitive, so this isn't a behavior change).
+        $response = $this->actingAs($admin)->get('/staff/search?q=DOC');
+        $response->assertOk();
+        $response->assertJsonFragment(['id' => 'STF0010', 'role' => 'doctor']);
+
+        $staffSearchSql = collect($queries)->first(fn ($sql) => str_contains($sql, 'from "staff"'));
+        $this->assertNotNull($staffSearchSql, 'expected to capture the staff search query');
+        $expectedOperator = \Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
+        $this->assertStringContainsStringIgnoringCase($expectedOperator, $staffSearchSql);
+        $this->assertStringNotContainsStringIgnoringCase('lower(', $staffSearchSql);
+    }
+
     public function test_receptionist_can_view_but_not_manage_schedule(): void
     {
         Staff::create(['staff_id' => 'STF0020', 'first_name' => 'Rita', 'last_name' => 'Front']);

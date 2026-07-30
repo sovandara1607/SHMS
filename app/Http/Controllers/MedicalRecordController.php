@@ -8,6 +8,7 @@ use App\Models\Doctor;
 use App\Services\AuditLogger;
 use App\Services\CentralServiceBus;
 use App\Services\CentralServiceClient;
+use App\Support\DropdownCache;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -45,9 +46,19 @@ class MedicalRecordController extends Controller
             ->whereIn('medical_record_id', $records->pluck('medical_record_id'))
             ->get()->groupBy('medical_record_id')->map->count();
 
+        $doctorsDebug = DropdownCache::remember('doctors-with-staff', fn () => Doctor::with('staff')->get()->map(fn ($d) => (object) [
+                'doctor_id' => $d->doctor_id,
+                'staff_id' => $d->staff_id,
+                'specialization' => $d->specialization,
+                'name' => $d->name(),
+                'first_name' => $d->staff?->first_name,
+                'last_name' => $d->staff?->last_name,
+            ]));
+        \Log::info('CTRL doctors', ['items' => $doctorsDebug->map(fn ($d) => is_object($d) ? get_class($d) : gettype($d).':'.var_export($d, true))->all()]);
+
         return view('medical.index', [
             'records' => $records, 'q' => $q, 'doctorId' => $doctorId, 'date' => $date,
-            'doctors' => Doctor::with('staff')->get(),
+            'doctors' => $doctorsDebug,
             'versionCounts' => $versionCounts,
         ]);
     }
@@ -67,7 +78,14 @@ class MedicalRecordController extends Controller
         return view('medical.history', [
             'record' => $record,
             'versions' => $versions,
-            'doctors' => Doctor::with('staff')->get(),
+            'doctors' => DropdownCache::remember('doctors-with-staff', fn () => Doctor::with('staff')->get()->map(fn ($d) => (object) [
+                'doctor_id' => $d->doctor_id,
+                'staff_id' => $d->staff_id,
+                'specialization' => $d->specialization,
+                'name' => $d->name(),
+                'first_name' => $d->staff?->first_name,
+                'last_name' => $d->staff?->last_name,
+            ])),
         ]);
     }
 
@@ -79,7 +97,6 @@ class MedicalRecordController extends Controller
         $body = $response->json();
 
         $record = MedicalRecordDTO::fromArray($body);
-        cache()->put('mr:viewed:' . Auth::id(), $record->medical_record_id, 600);
 
         $versions = DB::connection('mongodb')->table('medical_record_versions')
             ->where('medical_record_id', $record->medical_record_id)->orderBy('version')->get();
@@ -130,7 +147,14 @@ class MedicalRecordController extends Controller
 
         return view('medical.create', [
             'patient' => $patient,
-            'doctors'  => Doctor::with('staff')->get(),
+            'doctors'  => DropdownCache::remember('doctors-with-staff', fn () => Doctor::with('staff')->get()->map(fn ($d) => (object) [
+                'doctor_id' => $d->doctor_id,
+                'staff_id' => $d->staff_id,
+                'specialization' => $d->specialization,
+                'name' => $d->name(),
+                'first_name' => $d->staff?->first_name,
+                'last_name' => $d->staff?->last_name,
+            ])),
             'medicines' => $medicines,
         ]);
     }

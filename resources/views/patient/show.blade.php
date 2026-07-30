@@ -344,7 +344,7 @@ $age = $patient->date_of_birth ? \Carbon\Carbon::parse($patient->date_of_birth)-
             <select name="doctor_id" required class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
                 <option value="">— select —</option>
                 @foreach($doctors as $doc)
-                    <option value="{{ $doc->doctor_id }}">{{ $doc->name() }}@if($doc->specialization) — {{ $doc->specialization }}@endif</option>
+                    <option value="{{ $doc->doctor_id }}">{{ $doc->name }}@if($doc->specialization) — {{ $doc->specialization }}@endif</option>
                 @endforeach
             </select>
         </div>
@@ -378,7 +378,7 @@ $age = $patient->date_of_birth ? \Carbon\Carbon::parse($patient->date_of_birth)-
             <select name="nurse_id" required class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
                 <option value="">— select —</option>
                 @foreach($nurses as $n)
-                    <option value="{{ $n->nurse_id }}">{{ $n->name() }}@if($n->ward_name) — {{ $n->ward_name }}@endif</option>
+                    <option value="{{ $n->nurse_id }}">{{ $n->name }}@if($n->ward_name) — {{ $n->ward_name }}@endif</option>
                 @endforeach
             </select>
         </div>

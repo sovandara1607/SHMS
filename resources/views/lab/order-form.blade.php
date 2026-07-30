@@ -18,7 +18,7 @@
             <select name="doctor_id" required class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
                 <option value="">— select —</option>
                 @foreach($doctors as $d)
-                    <option value="{{ $d->doctor_id }}" @selected(old('doctor_id') === $d->doctor_id)>{{ $d->name() }}</option>
+                    <option value="{{ $d->doctor_id }}" @selected(old('doctor_id') === $d->doctor_id)>{{ $d->name }}</option>
                 @endforeach
             </select>
         </div>
@@ -27,7 +27,7 @@
             <select name="technician_id" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
                 <option value="">— unassigned —</option>
                 @foreach($technicians as $t)
-                    <option value="{{ $t->technician_id }}" @selected(old('technician_id') === $t->technician_id)>{{ $t->name() }}</option>
+                    <option value="{{ $t->technician_id }}" @selected(old('technician_id') === $t->technician_id)>{{ $t->name }}</option>
                 @endforeach
             </select>
         </div>

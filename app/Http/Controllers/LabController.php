@@ -8,6 +8,7 @@ use App\Models\LabTechnician;
 use App\Services\AuditLogger;
 use App\Services\CentralServiceBus;
 use App\Services\CentralServiceClient;
+use App\Support\DropdownCache;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -47,8 +48,19 @@ class LabController extends Controller
     public function createOrder()
     {
         return view('lab.order-form', [
-            'doctors' => Doctor::with('staff')->get(),
-            'technicians' => LabTechnician::with('staff')->get(),
+            'doctors' => DropdownCache::remember('doctors-with-staff', fn () => Doctor::with('staff')->get()->map(fn ($d) => (object) [
+                'doctor_id' => $d->doctor_id,
+                'staff_id' => $d->staff_id,
+                'specialization' => $d->specialization,
+                'name' => $d->name(),
+                'first_name' => $d->staff?->first_name,
+                'last_name' => $d->staff?->last_name,
+            ])),
+            'technicians' => DropdownCache::remember('technicians-with-staff', fn () => LabTechnician::with('staff')->get()->map(fn ($t) => (object) [
+                'technician_id' => $t->technician_id,
+                'staff_id' => $t->staff_id,
+                'name' => $t->name(),
+            ])),
         ]);
     }
 

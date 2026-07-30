@@ -6,6 +6,7 @@ use App\DTOs\AppointmentDTO;
 use App\Models\Doctor;
 use App\Services\AuditLogger;
 use App\Services\CentralServiceClient;
+use App\Support\DropdownCache;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -61,7 +62,14 @@ class AppointmentController extends Controller
         return view('appointment.index', [
             'appointments' => $appointments,
             'q' => $q, 'date' => $date, 'status' => $status, 'stats' => $body['stats'],
-            'doctors'  => Doctor::with('staff')->get(),
+            'doctors'  => DropdownCache::remember('doctors-with-staff', fn () => Doctor::with('staff')->get()->map(fn ($d) => (object) [
+                'doctor_id' => $d->doctor_id,
+                'staff_id' => $d->staff_id,
+                'specialization' => $d->specialization,
+                'name' => $d->name(),
+                'first_name' => $d->staff?->first_name,
+                'last_name' => $d->staff?->last_name,
+            ])),
             'month' => $month,
             'calendarDays' => $this->buildCalendarGrid($month, $body['calendar'] ?? []),
         ]);
@@ -95,7 +103,14 @@ class AppointmentController extends Controller
             'appointment' => new AppointmentDTO(),
             'mode' => 'create',
             'selectedPatient' => null,
-            'doctors' => Doctor::with('staff')->get(),
+            'doctors' => DropdownCache::remember('doctors-with-staff', fn () => Doctor::with('staff')->get()->map(fn ($d) => (object) [
+                'doctor_id' => $d->doctor_id,
+                'staff_id' => $d->staff_id,
+                'specialization' => $d->specialization,
+                'name' => $d->name(),
+                'first_name' => $d->staff?->first_name,
+                'last_name' => $d->staff?->last_name,
+            ])),
         ]);
     }
 
@@ -122,7 +137,14 @@ class AppointmentController extends Controller
             'appointment' => $appointment,
             'mode' => 'edit',
             'selectedPatient' => $appointment->patient,
-            'doctors' => Doctor::with('staff')->get(),
+            'doctors' => DropdownCache::remember('doctors-with-staff', fn () => Doctor::with('staff')->get()->map(fn ($d) => (object) [
+                'doctor_id' => $d->doctor_id,
+                'staff_id' => $d->staff_id,
+                'specialization' => $d->specialization,
+                'name' => $d->name(),
+                'first_name' => $d->staff?->first_name,
+                'last_name' => $d->staff?->last_name,
+            ])),
         ]);
     }
 

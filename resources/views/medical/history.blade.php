@@ -9,7 +9,7 @@
                 @php
                     $staffId = data_get($v, 'created_by');
                     $actor = $doctors->first(fn ($d) => $d->staff_id === $staffId);
-                    $actorName = $actor?->name() ?? $staffId ?? '—';
+                    $actorName = $actor?->name ?? $staffId ?? '—';
                     $snapshot = (array) data_get($v, 'snapshot', []);
                     $type = data_get($v, 'type', 'update');
                 @endphp

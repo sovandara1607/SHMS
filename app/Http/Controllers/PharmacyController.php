@@ -8,7 +8,6 @@ use App\Services\CentralServiceClient;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 
 class PharmacyController extends Controller
 {
@@ -52,7 +51,6 @@ class PharmacyController extends Controller
         $response = $this->centralService->createMedicine($data)->throw();
         $medicine = $response->json();
 
-        Cache::forget('medicine:lowstock');
         $this->audit->log('medicine.create', 'medicine', $medicine['medicine_id']);
 
         return redirect('/medicines')->with('success', "Medicine {$medicine['medicine_id']} added.");
@@ -91,7 +89,6 @@ class PharmacyController extends Controller
         abort_if($response->status() === 404, 404);
         $response->throw();
 
-        Cache::forget('medicine:lowstock');
         $this->audit->log('medicine.update', 'medicine', $id);
 
         return redirect('/medicines')->with('success', 'Medicine updated.');
@@ -236,7 +233,6 @@ class PharmacyController extends Controller
 
         $dispensing = $response->json();
         $this->audit->log('dispensing.create', 'dispensing_record', $dispensing['dispensing_id'], ['prescription' => $data['prescription_id']]);
-        Cache::forget('medicine:lowstock');
 
         return redirect('/medicines')->with('success', 'Medicine dispensed; inventory updated.');
     }

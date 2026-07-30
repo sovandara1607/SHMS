@@ -38,7 +38,7 @@ $target = $mode === 'create' ? '/appointments/create' : '/appointments/' . $appo
             <select name="doctor_id" x-model="doctorId" @change="fetchBookedSlots()" required class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
                 <option value="">— select —</option>
                 @foreach($doctors as $d)
-                    <option value="{{ $d->doctor_id }}">{{ $d->name() }} — {{ $d->specialization }}</option>
+                    <option value="{{ $d->doctor_id }}">{{ $d->name }} — {{ $d->specialization }}</option>
                 @endforeach
             </select>
         </div>
