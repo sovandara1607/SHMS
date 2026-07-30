@@ -307,19 +307,29 @@ class DashboardController extends Controller
             'critical_cases'  => $user->hasPermission('patient.view') ? '/patients' : null,
         ];
 
+        // ->map(fn ($row) => (array) $row)->all() on every list below: this
+        // whole method's return value goes through cachedRoleData()'s
+        // Cache::flexible(), and config/cache.php's serializable_classes
+        // => false makes unserialize() refuse to reconstruct ANY object on
+        // a cache hit (not just Eloquent models — plain stdClass query rows
+        // too), corrupting into __PHP_Incomplete_Class. Only plain arrays
+        // survive that round trip — see DropdownCache.php's docblock and
+        // computeAdminSummary() above, which already does this correctly.
         $todayPatients = DB::table('appointment as a')
             ->join('patient as p', 'p.patient_id', '=', 'a.patient_id')
             ->where('a.doctor_id', $doctorId)->where('a.appointment_date', $today)
             ->orderBy('a.appointment_time')
             ->selectRaw("(p.first_name||' '||p.last_name) as patient_name, a.appointment_time, a.reason, p.patient_status")
-            ->limit(6)->get();
+            ->limit(6)->get()
+            ->map(fn ($row) => (array) $row)->all();
 
         $pendingLabResults = DB::table('lab_test_order as o')
             ->join('patient as p', 'p.patient_id', '=', 'o.patient_id')
             ->where('o.doctor_id', $doctorId)->whereIn('o.status', ['pending', 'in_progress'])
             ->orderBy('o.order_date')
             ->selectRaw("o.test_name, (p.first_name||' '||p.last_name) as patient_name, o.status")
-            ->limit(6)->get();
+            ->limit(6)->get()
+            ->map(fn ($row) => (array) $row)->all();
 
         return compact('stats', 'kpiBadges', 'reportUrls', 'todayPatients', 'pendingLabResults');
     }
@@ -356,15 +366,20 @@ class DashboardController extends Controller
             'icu_watch'         => $user->hasPermission('patient.view') ? '/patients' : null,
         ];
 
+        // Resolved to a flat array (patient_name pre-computed from the
+        // relation) rather than caching live Eloquent models with a loaded
+        // relation — see the note on $todayPatients in computeDoctorData().
         $vitalsRound = PatientNurseAssignment::where('nurse_id', $nurseId)->where('status', 'active')
-            ->with('patient')->limit(5)->get();
+            ->with('patient')->limit(5)->get()
+            ->map(fn ($v) => ['status' => $v->status, 'patient_name' => $v->patient?->fullName() ?? '—'])->all();
 
         $medicationSchedule = DB::table('prescription_item as pi')
             ->join('prescription as pr', 'pr.prescription_id', '=', 'pi.prescription_id')
             ->join('patient as p', 'p.patient_id', '=', 'pr.patient_id')
             ->join('medicine as m', 'm.medicine_id', '=', 'pi.medicine_id')
             ->selectRaw("m.medicine_name, pi.dosage, pi.frequency, (p.first_name||' '||p.last_name) as patient_name")
-            ->limit(5)->get();
+            ->limit(5)->get()
+            ->map(fn ($row) => (array) $row)->all();
 
         return compact('stats', 'kpiBadges', 'reportUrls', 'vitalsRound', 'medicationSchedule');
     }
@@ -402,13 +417,19 @@ class DashboardController extends Controller
             'dispensed_today' => $user->hasPermission('dispensing.view') ? '/dispensing' : null,
         ];
 
-        $stockAlerts = Medicine::where('stock_quantity', '<=', 20)->orWhere('status', 'unavailable')->limit(5)->get();
+        // ->toArray(), not (array) cast: Medicine is an Eloquent model, and
+        // a bare (array) cast on an object with protected properties
+        // produces mangled/unusable keys — only safe on stdClass (the
+        // DB::table()->get() rows elsewhere in this file).
+        $stockAlerts = Medicine::where('stock_quantity', '<=', 20)->orWhere('status', 'unavailable')->limit(5)->get()
+            ->map(fn ($row) => $row->toArray())->all();
 
         $recentDispensing = DB::table('dispensing_record as dr')
             ->join('patient as p', 'p.patient_id', '=', 'dr.patient_id')
             ->orderByDesc('dr.dispensing_date')
             ->selectRaw("(p.first_name||' '||p.last_name) as patient_name, dr.dispensing_date, dr.status")
-            ->limit(5)->get();
+            ->limit(5)->get()
+            ->map(fn ($row) => (array) $row)->all();
 
         return compact('stats', 'kpiBadges', 'reportUrls', 'stockAlerts', 'recentDispensing');
     }
@@ -457,14 +478,16 @@ class DashboardController extends Controller
             ->where('a.status', 'scheduled')->where('a.appointment_date', '>=', $today)
             ->orderBy('a.appointment_date')->orderBy('a.appointment_time')
             ->selectRaw("(p.first_name||' '||p.last_name) as patient_name, (s.first_name||' '||s.last_name) as doctor_name, a.appointment_date, a.appointment_time, a.status")
-            ->limit(5)->get();
+            ->limit(5)->get()
+            ->map(fn ($row) => (array) $row)->all();
 
         $outstandingBills = DB::table('bill as b')
             ->join('patient as p', 'p.patient_id', '=', 'b.patient_id')
             ->where('b.status', '<>', 'paid')
             ->orderByDesc('b.total_amount')
             ->selectRaw("(p.first_name||' '||p.last_name) as patient_name, b.total_amount, b.status")
-            ->limit(5)->get();
+            ->limit(5)->get()
+            ->map(fn ($row) => (array) $row)->all();
 
         return compact('stats', 'kpiBadges', 'reportUrls', 'upcomingAppointments', 'outstandingBills');
     }
@@ -508,9 +531,13 @@ class DashboardController extends Controller
             ->whereIn('o.status', ['pending', 'in_progress'])
             ->orderBy('o.order_date')
             ->selectRaw("o.test_order_id, o.test_name, (p.first_name||' '||p.last_name) as patient_name, o.status")
-            ->limit(5)->get();
+            ->limit(5)->get()
+            ->map(fn ($row) => (array) $row)->all();
 
-        $equipmentStatus = LaboratoryEquipment::orderBy('equipment_name')->limit(5)->get();
+        // ->toArray(), not (array) cast — LaboratoryEquipment is an
+        // Eloquent model (see the note on $stockAlerts above).
+        $equipmentStatus = LaboratoryEquipment::orderBy('equipment_name')->limit(5)->get()
+            ->map(fn ($row) => $row->toArray())->all();
 
         return compact('stats', 'kpiBadges', 'reportUrls', 'activeQueue', 'equipmentStatus');
     }

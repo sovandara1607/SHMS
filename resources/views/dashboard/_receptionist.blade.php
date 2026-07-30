@@ -29,10 +29,10 @@
             @forelse($upcomingAppointments as $a)
                 <div class="flex items-center justify-between border-b border-slate-50 pb-2 last:border-0">
                     <div>
-                        <p class="text-sm font-medium text-slate-900">{{ $a->patient_name }}</p>
-                        <p class="text-xs text-slate-400">{{ $a->doctor_name }} &middot; {{ $a->appointment_date }}</p>
+                        <p class="text-sm font-medium text-slate-900">{{ $a['patient_name'] }}</p>
+                        <p class="text-xs text-slate-400">{{ $a['doctor_name'] }} &middot; {{ $a['appointment_date'] }}</p>
                     </div>
-                    <x-badge :status="$a->status" />
+                    <x-badge :status="$a['status']" />
                 </div>
             @empty
                 <p class="text-sm text-slate-400">No upcoming appointments.</p>
@@ -45,8 +45,8 @@
         <div class="space-y-3">
             @forelse($outstandingBills as $b)
                 <div class="flex items-center justify-between border-b border-slate-50 pb-2 last:border-0">
-                    <p class="text-sm font-medium text-slate-900">{{ $b->patient_name }} &middot; ${{ number_format((float) $b->total_amount, 2) }}</p>
-                    <x-badge :status="$b->status" />
+                    <p class="text-sm font-medium text-slate-900">{{ $b['patient_name'] }} &middot; ${{ number_format((float) $b['total_amount'], 2) }}</p>
+                    <x-badge :status="$b['status']" />
                 </div>
             @empty
                 <p class="text-sm text-slate-400">No outstanding bills.</p>

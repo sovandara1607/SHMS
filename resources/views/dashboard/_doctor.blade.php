@@ -28,10 +28,10 @@
             @forelse($todayPatients as $p)
                 <div class="flex items-center justify-between border-b border-slate-50 pb-2 last:border-0">
                     <div>
-                        <p class="text-sm font-medium text-slate-900">{{ $p->patient_name }}</p>
-                        <p class="text-xs text-slate-400">{{ $p->reason ?: 'Consultation' }} &middot; {{ \Illuminate\Support\Str::substr($p->appointment_time, 0, 5) }}</p>
+                        <p class="text-sm font-medium text-slate-900">{{ $p['patient_name'] }}</p>
+                        <p class="text-xs text-slate-400">{{ $p['reason'] ?: 'Consultation' }} &middot; {{ \Illuminate\Support\Str::substr($p['appointment_time'], 0, 5) }}</p>
                     </div>
-                    <x-badge :status="$p->patient_status" />
+                    <x-badge :status="$p['patient_status']" />
                 </div>
             @empty
                 <p class="text-sm text-slate-400">No patients scheduled today.</p>
@@ -45,10 +45,10 @@
             @forelse($pendingLabResults as $r)
                 <div class="flex items-center justify-between border-b border-slate-50 pb-2 last:border-0">
                     <div>
-                        <p class="text-sm font-medium text-slate-900">{{ $r->test_name }}</p>
-                        <p class="text-xs text-slate-400">{{ $r->patient_name }}</p>
+                        <p class="text-sm font-medium text-slate-900">{{ $r['test_name'] }}</p>
+                        <p class="text-xs text-slate-400">{{ $r['patient_name'] }}</p>
                     </div>
-                    <x-badge :status="$r->status" />
+                    <x-badge :status="$r['status']" />
                 </div>
             @empty
                 <p class="text-sm text-slate-400">No pending lab results.</p>

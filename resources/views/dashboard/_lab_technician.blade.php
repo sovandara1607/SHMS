@@ -30,10 +30,10 @@
             @forelse($activeQueue as $q)
                 <div class="flex items-center justify-between border-b border-slate-50 pb-2 last:border-0">
                     <div>
-                        <p class="text-sm font-medium text-slate-900">{{ $q->test_name }} &middot; {{ $q->patient_name }}</p>
-                        <p class="text-xs text-slate-400">{{ $q->test_order_id }}</p>
+                        <p class="text-sm font-medium text-slate-900">{{ $q['test_name'] }} &middot; {{ $q['patient_name'] }}</p>
+                        <p class="text-xs text-slate-400">{{ $q['test_order_id'] }}</p>
                     </div>
-                    <x-badge :status="$q->status" />
+                    <x-badge :status="$q['status']" />
                 </div>
             @empty
                 <p class="text-sm text-slate-400">No active lab orders.</p>
@@ -51,8 +51,8 @@
         <div class="space-y-3">
             @forelse($equipmentStatus as $e)
                 <div class="flex items-center justify-between border-b border-slate-50 pb-2 last:border-0">
-                    <p class="text-sm font-medium text-slate-900">{{ $e->equipment_name }}</p>
-                    <x-badge :status="$e->availability_status === 'available' ? 'ok' : $e->availability_status" />
+                    <p class="text-sm font-medium text-slate-900">{{ $e['equipment_name'] }}</p>
+                    <x-badge :status="$e['availability_status'] === 'available' ? 'ok' : $e['availability_status']" />
                 </div>
             @empty
                 <p class="text-sm text-slate-400">No equipment on record.</p>

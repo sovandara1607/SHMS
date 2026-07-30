@@ -25,10 +25,10 @@
             @forelse($stockAlerts as $m)
                 <div class="flex items-center justify-between border-b border-slate-50 pb-2 last:border-0">
                     <div>
-                        <p class="text-sm font-medium text-slate-900">{{ $m->medicine_name }}</p>
-                        <p class="text-xs text-slate-400">{{ $m->medicine_type }} &middot; {{ $m->stock_quantity }} left</p>
+                        <p class="text-sm font-medium text-slate-900">{{ $m['medicine_name'] }}</p>
+                        <p class="text-xs text-slate-400">{{ $m['medicine_type'] }} &middot; {{ $m['stock_quantity'] }} left</p>
                     </div>
-                    <x-badge :status="$m->stock_quantity == 0 ? 'expired' : 'low'" />
+                    <x-badge :status="$m['stock_quantity'] == 0 ? 'expired' : 'low'" />
                 </div>
             @empty
                 <p class="text-sm text-slate-400">No stock alerts.</p>
@@ -41,8 +41,8 @@
         <div class="space-y-3">
             @forelse($recentDispensing as $d)
                 <div class="flex items-center justify-between border-b border-slate-50 pb-2 last:border-0">
-                    <p class="text-sm font-medium text-slate-900">{{ $d->patient_name }}</p>
-                    <x-badge :status="$d->status" />
+                    <p class="text-sm font-medium text-slate-900">{{ $d['patient_name'] }}</p>
+                    <x-badge :status="$d['status']" />
                 </div>
             @empty
                 <p class="text-sm text-slate-400">No dispensing activity yet.</p>
