@@ -24,17 +24,54 @@ use Illuminate\Support\Facades\DB;
 class SeedLargeDataset extends Command
 {
     protected $signature = 'seed:large
-        {--patients=1000000 : Number of patients to generate}
-        {--appointments=200000 : Number of appointments to generate}
-        {--medical-records=200000 : Number of medical records to generate}
+        {--patients=3000000 : Number of patients to generate}
+        {--appointments=600000 : Number of appointments to generate}
+        {--medical-records=600000 : Number of medical records to generate}
         {--prescription-rate=0.3 : Fraction of medical records that also get a prescription (1-3 items)}
-        {--lab-orders=200000 : Number of standalone lab test orders to generate}
-        {--bills=200000 : Number of bills (with items + payments) to generate}
+        {--lab-orders=600000 : Number of standalone lab test orders to generate}
+        {--bills=600000 : Number of bills (with items + payments) to generate}
         {--chunk=2000 : Rows per bulk insert}';
 
-    protected $description = 'Bulk-generate a large dataset (patients/appointments/medical records/prescriptions/lab orders/bills) for scale testing';
+    protected $description = 'Bulk-generate a large dataset (patients/appointments/medical records/prescriptions/lab orders/bills) for scale testing, with Khmer patient/emergency-contact names';
 
     private \Faker\Generator $faker;
+
+    /**
+     * Real Cambodian given names in Khmer script, split by the gender
+     * they're conventionally given to (patient.gender drives which list is
+     * drawn from — 'other' draws from both). Surnames are unisex, matching
+     * actual Khmer naming convention (family name doesn't vary by gender).
+     * Kept as Khmer Unicode rather than romanized transliteration since
+     * that's the literal, most useful form for a Cambodian-context demo —
+     * see the email-generation note below for why the *email* local-part
+     * deliberately doesn't derive from these (Unicode in an email address
+     * is valid per EAI but trips plain FILTER_VALIDATE_EMAIL, which is
+     * what this app's own 'email' validation rule uses on the edit form).
+     */
+    private const KHMER_MALE_NAMES = [
+        'ដារា', 'សុវណ្ណ', 'សុវណ្ណារ័ត្ន', 'សុភាព', 'ពិសិដ្ឋ', 'វិចិត្រ', 'បុណ្ណថឿន', 'រិទ្ធិ',
+        'កុសល', 'ចាន់ថូ', 'មករា', 'វិបុល', 'វីរៈ', 'វុទ្ធី', 'ពន្លឺ', 'ពិសាច',
+        'សារ៉ាត', 'សុខា', 'សំណាង', 'ចំរើន', 'សម្បត្តិ', 'វណ្ណះ', 'ភក្ដី', 'រង្សី',
+        'សិរីវុទ្ធ', 'ចន្ថា', 'គីមឡុង', 'វណ្ឌី', 'វ៉ន់ថា', 'រតនៈ', 'សុវត្ថិ', 'ធារិទ្ធិ',
+        'បញ្ញា', 'សុផល', 'សុផាត់', 'វិសាល', 'អាទិត្យ', 'សំណាល', 'សុជាតិ', 'សុវិចិត្រ',
+    ];
+
+    private const KHMER_FEMALE_NAMES = [
+        'ស្រីមុំ', 'ស្រីនិច', 'ស្រីនាង', 'ស្រីលក្ខ', 'បុប្ផា', 'ចន្ទនារី', 'ចន្ទលីនា', 'ចិន្តា',
+        'ដាលីន', 'គន្ធា', 'ម៉ាលីស', 'មាលា', 'មុនីកា', 'ពេជ្រ', 'រតនា', 'រចនា',
+        'រស្មី', 'សុគន្ធា', 'សុផា', 'សុភា', 'ធារី', 'ចរិយា', 'វណ្ណា', 'រតនាគន្ធា',
+        'កុលាប', 'សុគន្ធកញ្ញា', 'ចាន់មនី', 'ប៉ាញា', 'ស្រីពៅ', 'ស្រីរតន៍', 'ស្រីទូច', 'អារី',
+        'ចន្ទី', 'សុភាវី', 'សុគន្ធនីច', 'មករា', 'សុវណ្ណារ៉ា', 'ស្រីមុំ', 'ចាន់សុភា', 'លក្ខិណា',
+    ];
+
+    private const KHMER_SURNAMES = [
+        'សុខ', 'ចាន់', 'គង់', 'ហេង', 'គឹម', 'លី', 'ថន', 'វង្ស',
+        'សេង', 'ណុប', 'ប៉ែន', 'សួន', 'តាំង', 'លឹម', 'យូ', 'ឈួន',
+        'សុវណ្ណ', 'សាន', 'គឿន', 'ជា', 'ហ៊ុន', 'ខៀវ', 'ប៊ុន', 'ស្រ៊ុន',
+        'ជិន', 'នួន', 'ព្រំ', 'មៅ', 'ញឹក', 'អុក', 'មាស', 'រស់',
+        'ស្រី', 'ស៊ីម', 'សារ', 'យិន', 'យឹម', 'កែវ', 'ឡុង', 'ផល',
+        'ផុន', 'ណូ', 'អុំ', 'វន', 'យាន', 'ទេព', 'ថៃ', 'ថោន',
+    ];
 
     public function handle(): int
     {
@@ -142,6 +179,18 @@ class SeedLargeDataset extends Command
         return $prefix . str_pad((string) $seq, 4, '0', STR_PAD_LEFT);
     }
 
+    /** @return array{0: string, 1: string} [given name, surname], both Khmer script */
+    private function khmerName(string $gender): array
+    {
+        $given = match ($gender) {
+            'male' => self::KHMER_MALE_NAMES,
+            'female' => self::KHMER_FEMALE_NAMES,
+            default => [...self::KHMER_MALE_NAMES, ...self::KHMER_FEMALE_NAMES],
+        };
+
+        return [$this->faker->randomElement($given), $this->faker->randomElement(self::KHMER_SURNAMES)];
+    }
+
     private function seedPatients(int $count, int $startSeq, int $chunkSize): void
     {
         $statuses = ['active', 'active', 'active', 'admitted', 'admitted', 'icu', 'discharged', 'inactive'];
@@ -156,20 +205,24 @@ class SeedLargeDataset extends Command
 
             for ($i = 0; $i < $n; $i++) {
                 $seq = $startSeq + $offset + $i;
-                $first = $this->faker->firstName();
-                $last = $this->faker->lastName();
+                $gender = $this->faker->randomElement(['male', 'female', 'other']);
+                [$first, $last] = $this->khmerName($gender);
+                [$contactFirst, $contactLast] = $this->khmerName($this->faker->randomElement(['male', 'female']));
+
                 $rows[] = [
                     'patient_id' => $this->key('PAT', $seq),
                     'first_name' => $first,
                     'last_name' => $last,
-                    'gender' => $this->faker->randomElement(['male', 'female', 'other']),
+                    'gender' => $gender,
                     'date_of_birth' => $this->faker->date('Y-m-d', '-1 year'),
                     'phone_number' => $this->faker->numerify('01#########'),
-                    'email' => strtolower($first . '.' . $last . $seq . '@example.test'),
+                    // Deliberately not derived from the (Khmer-script) name — see
+                    // the KHMER_MALE_NAMES docblock above for why.
+                    'email' => 'patient' . $seq . '.' . $this->faker->numerify('####') . '@example.test',
                     'address' => $this->faker->streetAddress(),
                     'blood_type' => $this->faker->randomElement($bloodTypes),
                     'allergy' => $this->faker->boolean(20) ? $this->faker->randomElement(['Penicillin', 'Latex', 'Sulfa', 'Peanuts']) : null,
-                    'emergency_contact_name' => $this->faker->name(),
+                    'emergency_contact_name' => $contactFirst . ' ' . $contactLast,
                     'emergency_contact_phone' => $this->faker->numerify('01#########'),
                     'patient_status' => $this->faker->randomElement($statuses),
                     'created_at' => now(),
