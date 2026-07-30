@@ -1,0 +1,14 @@
+{$APP_DOMAIN} {
+	root * /var/www/database-final/public
+	encode gzip
+
+	# php_fastcgi is Caddy's built-in FastCGI client — this replaces the
+	# reverse_proxy database-final:8000 used in deploy/digitalocean/Caddyfile
+	# (which proxied to the app container's `php artisan serve`). Talking
+	# straight to PHP-FPM over a unix socket is the native-hosting
+	# equivalent, and lets Caddy serve static assets (public/build/*)
+	# directly instead of round-tripping them through PHP.
+	php_fastcgi unix//run/php/php8.4-fpm-database-final.sock
+
+	file_server
+}
