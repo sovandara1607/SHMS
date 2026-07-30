@@ -43,6 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/patients/create', [PatientController::class, 'create'])->middleware('permission:patient.create');
     Route::post('/patients', [PatientController::class, 'store'])->middleware('permission:patient.create');
     Route::get('/patients/search', [PatientController::class, 'search'])->middleware('permission:patient.view');
+    Route::get('/patients/export', [PatientController::class, 'exportPatients'])->middleware('permission:patient.view');
     Route::get('/patients/{id}', [PatientController::class, 'show'])->middleware('permission:patient.view');
     Route::get('/patients/{id}/edit', [PatientController::class, 'edit'])->middleware('permission:patient.update');
     Route::post('/patients/{id}/adjust', [PatientController::class, 'adjust'])->middleware('permission:patient.update');

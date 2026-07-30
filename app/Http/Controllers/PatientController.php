@@ -46,6 +46,57 @@ class PatientController extends Controller
     }
 
     /**
+     * Mirrors index()'s filters exactly (including the doctor's
+     * assigned-patients scoping) so the export matches what's on screen.
+     * Queries Postgres directly rather than round-tripping every page
+     * through central-service — the patient table can run into the
+     * hundreds of thousands of rows, so this streams via cursor() instead
+     * of loading everything into memory at once.
+     */
+    public function exportPatients(Request $request)
+    {
+        $q = trim((string) $request->query('q', ''));
+        $status = $request->query('status', 'all');
+        $user = $request->user();
+
+        $query = \App\Models\Patient::query()
+            ->addSelect(['insurance_provider' => \App\Models\PatientInsurance::selectRaw('insurance_provider')
+                ->whereColumn('patient_id', 'patient.patient_id')
+                ->where('status', 'active')
+                ->orderByDesc('start_date')
+                ->limit(1),
+            ])
+            ->when($q !== '', function ($query) use ($q) {
+                $like = '%' . $q . '%';
+                $query->where(function ($sub) use ($like) {
+                    $sub->where('patient_id', 'ilike', $like)
+                        ->orWhereRaw("(first_name || ' ' || last_name) ilike ?", [$like]);
+                });
+            })
+            ->when($status !== 'all', fn ($query) => $query->where('patient_status', $status))
+            ->when($user->role === 'doctor', function ($query) use ($user) {
+                $doctorId = $user->staff?->doctor?->doctor_id;
+                $query->whereHas('doctorAssignments', fn ($q) => $q
+                    ->where('doctor_id', $doctorId)
+                    ->where('status', 'active'));
+            })
+            ->orderByDesc('created_at');
+
+        return response()->streamDownload(function () use ($query) {
+            $out = fopen('php://output', 'w');
+            fputcsv($out, ['Patient ID', 'Name', 'Gender', 'Date of Birth', 'Phone', 'Blood Type', 'Insurance', 'Status']);
+            foreach ($query->cursor() as $p) {
+                fputcsv($out, [
+                    $p->patient_id, $p->fullName(), $p->gender ? ucfirst($p->gender) : '',
+                    $p->date_of_birth, $p->phone_number, $p->blood_type,
+                    $p->insurance_provider, ucfirst($p->patient_status),
+                ]);
+            }
+            fclose($out);
+        }, 'patients-' . now()->format('Y-m-d') . '.csv', ['Content-Type' => 'text/csv']);
+    }
+
+    /**
      * Lightweight JSON lookup backing the patient-picker used by
      * appointment/billing/vitals/medical-record forms — never dump the full
      * patient table into a page (it's seeded to 1M+ rows for scale testing).

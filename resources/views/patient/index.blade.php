@@ -18,7 +18,7 @@ $filters = ['all' => 'All', 'active' => 'Active', 'admitted' => 'Admitted', 'icu
 >
     <x-page-header title="Patient Management" :subtitle="$patients->total() . ' total patients registered'">
         <x-slot:actions>
-            <x-button variant="secondary"><x-icon name="document" class="h-4 w-4" /> Export</x-button>
+            <x-button variant="secondary" :href="'/patients/export?' . http_build_query(['q' => $q, 'status' => $status])"><x-icon name="document" class="h-4 w-4" /> Export</x-button>
             @can('patient.create')
                 <x-button variant="primary" x-on:click="openPatientModal('/patients/create')"><x-icon name="plus" class="h-4 w-4" /> Add Patient</x-button>
             @endcan
