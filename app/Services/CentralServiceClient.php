@@ -135,6 +135,11 @@ class CentralServiceClient
         return $this->request()->get('/api/medical-records', $params);
     }
 
+    public function searchMedicalRecords(string $q): Response
+    {
+        return $this->request()->get('/api/medical-records/search', ['q' => $q]);
+    }
+
     public function getMedicalRecord(string $id): Response
     {
         return $this->request()->get("/api/medical-records/{$id}");

@@ -16,6 +16,7 @@ class MedicalRecordDTO implements \JsonSerializable
         public ?string $created_at = null,
         public ?PatientDTO $patient = null,
         public ?NamedEntity $doctor = null,
+        public ?NamedEntity $createdBy = null,
     ) {}
 
     public static function fromArray(array $a): self
@@ -32,6 +33,7 @@ class MedicalRecordDTO implements \JsonSerializable
             created_at: $a['created_at'] ?? null,
             patient: isset($a['patient']) ? PatientDTO::fromArray($a['patient']) : null,
             doctor: isset($a['doctor_name']) ? new NamedEntity($a['doctor_name']) : null,
+            createdBy: isset($a['created_by_name']) ? new NamedEntity($a['created_by_name']) : null,
         );
     }
 

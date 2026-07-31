@@ -16,6 +16,7 @@
         <div class="grid grid-cols-2 gap-y-1 text-sm">
             <span class="text-slate-500">Doctor</span><span class="text-slate-900">{{ $record->doctor?->name() }}</span>
             <span class="text-slate-500">Related Appointment</span><span class="text-slate-900">{{ $record->appointment_id ?? '—' }}</span>
+            <span class="text-slate-500">Created By</span><span class="text-slate-900">{{ $record->createdBy?->name() ?? '—' }}</span>
             <span class="text-slate-500">Created At</span><span class="text-slate-900">{{ $record->created_at }}</span>
             <span class="text-slate-500">Latest Version</span><span class="text-amber-600 font-medium">v{{ $latestVersion }}</span>
         </div>

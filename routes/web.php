@@ -67,6 +67,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/appointments/{id}/complete', [AppointmentController::class, 'complete'])->middleware('permission:appointment.complete');
 
     // Medical records & treatment
+    Route::get('/medical-records/search', [MedicalRecordController::class, 'search'])->middleware('permission:bill.create');
     Route::get('/medical-records', [MedicalRecordController::class, 'index'])->middleware('permission:medical_record.view');
     Route::get('/medical-records/create', [MedicalRecordController::class, 'create'])->middleware('permission:medical_record.create');
     Route::post('/medical-records', [MedicalRecordController::class, 'store'])->middleware('permission:medical_record.create');

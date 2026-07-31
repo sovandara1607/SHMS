@@ -22,6 +22,16 @@ class MedicalRecordController extends Controller
         private CentralServiceClient $centralService,
     ) {}
 
+    public function search(Request $request)
+    {
+        $q = trim((string) $request->query('q', ''));
+        if ($q === '') {
+            return response()->json([]);
+        }
+
+        return response()->json($this->centralService->searchMedicalRecords($q)->json());
+    }
+
     public function index(Request $request)
     {
         $q = trim((string) $request->query('q', ''));

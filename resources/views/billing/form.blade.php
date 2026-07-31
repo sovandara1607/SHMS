@@ -11,8 +11,8 @@
             <x-patient-picker name="patient_id" required />
         </div>
         <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-700">Related Appointment</label>
-            <x-appointment-picker name="appointment_id" />
+            <label class="mb-1.5 block text-sm font-medium text-slate-700">Related Medical Record</label>
+            <x-medical-record-picker name="medical_record_id" />
         </div>
     </div>
 

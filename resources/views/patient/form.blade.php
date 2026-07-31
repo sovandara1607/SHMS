@@ -115,6 +115,14 @@ $currentStatus = old('patient_status', $patient->patient_status ?? 'active');
                    class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
         </div>
     </div>
+    <div class="mt-4">
+        <label class="mb-1.5 block text-sm font-medium text-slate-700">Insurance Status</label>
+        <select name="insurance_status" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+            @foreach(['active' => 'Active', 'expired' => 'Expired', 'cancelled' => 'Cancelled'] as $value => $label)
+                <option value="{{ $value }}" @selected(old('insurance_status', $insurance->status ?? 'active') === $value)>{{ $label }}</option>
+            @endforeach
+        </select>
+    </div>
 
     <p class="mb-2 mt-5 text-xs font-semibold uppercase tracking-wider text-slate-400">Status</p>
     <div class="flex flex-wrap gap-2" x-data="{ status: '{{ $currentStatus }}' }">

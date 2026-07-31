@@ -71,6 +71,7 @@ $age = $patient->date_of_birth ? \Carbon\Carbon::parse($patient->date_of_birth)-
                     <div class="cursor-not-allowed rounded-lg border border-slate-100 bg-slate-50/60 px-3 py-2 opacity-80" title="Not directly editable — use Adjust Patient Info"><p class="text-xs text-slate-500">Phone</p><p class="mt-0.5 text-sm text-slate-900">{{ $patient->phone_number ?: '—' }}</p></div>
                     <div class="cursor-not-allowed rounded-lg border border-slate-100 bg-slate-50/60 px-3 py-2 opacity-80" title="Not directly editable — use Adjust Patient Info"><p class="text-xs text-slate-500">Email</p><p class="mt-0.5 truncate text-sm text-slate-900">{{ $patient->email ?: '—' }}</p></div>
                     <div class="cursor-not-allowed rounded-lg border border-slate-100 bg-slate-50/60 px-3 py-2 opacity-80" title="Not directly editable — use Adjust Patient Info"><p class="text-xs text-slate-500">Address</p><p class="mt-0.5 text-sm text-slate-900">{{ $patient->address ?: '—' }}</p></div>
+                    <div class="cursor-not-allowed rounded-lg border border-slate-100 bg-slate-50/60 px-3 py-2 opacity-80" title="Not directly editable"><p class="text-xs text-slate-500">Registered</p><p class="mt-0.5 text-sm text-slate-900">{{ $patient->created_at ? \Carbon\Carbon::parse($patient->created_at)->format('Y-m-d H:i') : '—' }}</p></div>
                 </div>
             </div>
             <div>
@@ -96,6 +97,7 @@ $age = $patient->date_of_birth ? \Carbon\Carbon::parse($patient->date_of_birth)-
                         <div class="cursor-not-allowed rounded-lg border border-slate-100 bg-slate-50/60 px-3 py-2 opacity-80" title="Not directly editable — use Adjust Patient Info"><p class="text-xs text-slate-500">Policy Number</p><p class="mt-0.5 text-sm text-slate-900">{{ $ins->policy_number ?: '—' }}</p></div>
                         <div class="cursor-not-allowed rounded-lg border border-slate-100 bg-slate-50/60 px-3 py-2 opacity-80" title="Not directly editable — use Adjust Patient Info"><p class="text-xs text-slate-500">Coverage</p><p class="mt-0.5 text-sm text-slate-900">{{ $ins->coverage_details ?: '—' }}</p></div>
                         <div class="cursor-not-allowed rounded-lg border border-slate-100 bg-slate-50/60 px-3 py-2 opacity-80" title="Not directly editable — use Adjust Patient Info"><p class="text-xs text-slate-500">Policy Period</p><p class="mt-0.5 text-sm text-slate-900">{{ $ins->start_date ?? '—' }} &rarr; {{ $ins->end_date ?? '—' }}</p></div>
+                        <div class="cursor-not-allowed rounded-lg border border-slate-100 bg-slate-50/60 px-3 py-2 opacity-80" title="Not directly editable — use Adjust Patient Info"><p class="text-xs text-slate-500">Status</p><p class="mt-0.5 text-sm text-slate-900"><x-badge :status="$ins->status" /></p></div>
                     </div>
                 </div>
             @endif

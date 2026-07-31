@@ -12,6 +12,7 @@ class PatientInsuranceDTO implements \JsonSerializable
         public ?string $coverage_details = null,
         public ?string $start_date = null,
         public ?string $end_date = null,
+        public ?string $status = null,
     ) {}
 
     public static function fromArray(array $a): self
@@ -24,6 +25,7 @@ class PatientInsuranceDTO implements \JsonSerializable
             coverage_details: $a['coverage_details'] ?? null,
             start_date: $a['start_date'] ?? null,
             end_date: $a['end_date'] ?? null,
+            status: $a['status'] ?? null,
         );
     }
 
